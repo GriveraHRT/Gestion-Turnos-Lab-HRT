@@ -194,22 +194,27 @@
           <button onclick="setPresetFilter('URGENCIAS')" id="preset-URGENCIAS" class="preset-btn px-2.5 py-1 text-xs font-semibold rounded-lg transition text-slate-600 hover:bg-slate-100 whitespace-nowrap flex items-center space-x-1">
             <span class="w-2 h-2 rounded-full bg-rose-500"></span>
             <span>🚨 Urgencias</span>
+            <span id="count-urgencias" class="text-[10px] bg-rose-100 text-rose-700 px-1.5 py-0.2 rounded-full font-bold ml-0.5">58</span>
           </button>
           <button onclick="setPresetFilter('RUTINA')" id="preset-RUTINA" class="preset-btn px-2.5 py-1 text-xs font-semibold rounded-lg transition text-slate-600 hover:bg-slate-100 whitespace-nowrap flex items-center space-x-1">
             <span class="w-2 h-2 rounded-full bg-blue-500"></span>
             <span>🔬 Rutina</span>
+            <span id="count-rutina" class="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.2 rounded-full font-bold ml-0.5">77</span>
           </button>
           <button onclick="setPresetFilter('TENS')" id="preset-TENS" class="preset-btn px-2.5 py-1 text-xs font-semibold rounded-lg transition text-slate-600 hover:bg-slate-100 whitespace-nowrap flex items-center space-x-1">
             <span class="w-2 h-2 rounded-full bg-cyan-500"></span>
             <span>💉 TENS</span>
+            <span id="count-tens" class="text-[10px] bg-cyan-100 text-cyan-700 px-1.5 py-0.2 rounded-full font-bold ml-0.5">47</span>
           </button>
           <button onclick="setPresetFilter('AUXILIARES')" id="preset-AUXILIARES" class="preset-btn px-2.5 py-1 text-xs font-semibold rounded-lg transition text-slate-600 hover:bg-slate-100 whitespace-nowrap flex items-center space-x-1">
             <span class="w-2 h-2 rounded-full bg-amber-500"></span>
             <span>🧹 Auxiliares</span>
+            <span id="count-auxiliares" class="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.2 rounded-full font-bold ml-0.5">9</span>
           </button>
           <button onclick="setPresetFilter('PROFESIONALES')" id="preset-PROFESIONALES" class="preset-btn px-2.5 py-1 text-xs font-semibold rounded-lg transition text-slate-600 hover:bg-slate-100 whitespace-nowrap flex items-center space-x-1">
             <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
             <span>🩺 TM y Bioquímicos</span>
+            <span id="count-profesionales" class="text-[10px] bg-indigo-100 text-indigo-700 px-1.5 py-0.2 rounded-full font-bold ml-0.5">56</span>
           </button>
         </div>
 
@@ -539,7 +544,7 @@
           <div class="grid grid-cols-2 gap-2">
             <div>
               <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Fecha Desde:</label>
-              <input type="date" id="modal-range-start" onchange="onRangeDatesChanged()" class="w-full text-xs p-1.5 border border-slate-300 rounded-lg bg-white font-medium text-slate-800 focus:ring-2 focus:ring-sky-500">
+              <input type="date" id="modal-range-start" onchange="onRangeStartDateChanged()" class="w-full text-xs p-1.5 border border-slate-300 rounded-lg bg-white font-medium text-slate-800 focus:ring-2 focus:ring-sky-500">
             </div>
             <div>
               <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Fecha Hasta:</label>
@@ -628,7 +633,7 @@
         <!-- Custom Code or Hours Input -->
         <div>
           <label class="block text-xs font-medium text-slate-700 mb-1">Código o Texto a Registrar (ej: FL, LM, DA, H+6, 16:00-17:00, L):</label>
-          <input type="text" id="modal-custom-code" placeholder="Código o glosa..." class="w-full px-3 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 font-semibold text-slate-800">
+          <input type="text" id="modal-custom-code" oninput="onCustomCodeInput(this.value)" placeholder="Código o glosa..." class="w-full px-3 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 font-semibold text-slate-800">
         </div>
 
       </div>

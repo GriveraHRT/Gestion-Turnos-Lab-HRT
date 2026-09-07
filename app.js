@@ -3,7 +3,16 @@
  * Hospital Regional de Talca - Versión 2027
  */
 
-const DATA_VERSION = '3.0';
+const DATA_VERSION = '3.1';
+
+const ESTAMENTO_ORDER = {
+  'Tecnólogo Médico': 1,
+  'Bioquímico': 2,
+  'TENS': 3,
+  'Auxiliar': 4,
+  'Interno TM': 5,
+  'Administrativo': 6
+};
 
 let state = {
   currentYear: 2026,
@@ -48,14 +57,39 @@ function formatDateToISO(d) {
 
 function parseISODate(str) {
   const parts = str.split('-');
-  return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+  return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10), 12, 0, 0);
 }
 
-function getChileHolidaysSet(year) {
+function getAllChileHolidaysSet() {
   const set = new Set();
-  const hList = state.holidays[String(year)] || [];
-  hList.forEach(h => set.add(h.date));
+  if (state.holidays) {
+    Object.values(state.holidays).forEach(list => {
+      if (Array.isArray(list)) {
+        list.forEach(h => set.add(h.date));
+      }
+    });
+  }
   return set;
+}
+
+function addWorkdays(startDateStr, targetWorkdays) {
+  if (!startDateStr || targetWorkdays <= 0) return startDateStr;
+  const holidays = getAllChileHolidaysSet();
+  const cur = parseISODate(startDateStr);
+  let count = 0;
+  while (true) {
+    const curStr = formatDateToISO(cur);
+    const dow = cur.getDay(); // 0 = Sun, 6 = Sat
+    const isWeekend = (dow === 0 || dow === 6);
+    const isHoliday = holidays.has(curStr);
+    if (!isWeekend && !isHoliday) {
+      count++;
+      if (count >= targetWorkdays) {
+        return curStr;
+      }
+    }
+    cur.setDate(cur.getDate() + 1);
+  }
 }
 
 function getEligibleDatesInRange(startDateStr, endDateStr, mode) {
@@ -64,8 +98,7 @@ function getEligibleDatesInRange(startDateStr, endDateStr, mode) {
   const end = parseISODate(endDateStr);
   if (end < start) return [];
 
-  const year = start.getFullYear();
-  const holidays = getChileHolidaysSet(year);
+  const holidays = getAllChileHolidaysSet();
   const dates = [];
 
   const cur = new Date(start);
@@ -155,6 +188,16 @@ function loadInitialData() {
         state.staff = parsed;
       }
     } catch(e) {}
+  }
+
+  const savedTurns2026 = localStorage.getItem('hrt_turns_2026');
+  if (savedTurns2026) {
+    try { state.turns2026 = JSON.parse(savedTurns2026); } catch(e) {}
+  }
+
+  const savedTDM2026 = localStorage.getItem('hrt_tdm_2026');
+  if (savedTDM2026) {
+    try { state.tdm2026 = JSON.parse(savedTDM2026); } catch(e) {}
   }
 
   const savedTurns2027 = localStorage.getItem('hrt_turns_2027');
@@ -308,8 +351,52 @@ function clearSearch() {
   applyFilters();
 }
 
+function updatePresetBadges() {
+  const staffList = Object.values(state.staff);
+  const countAll = document.getElementById('count-all');
+  if (countAll) countAll.innerText = staffList.length;
+
+  const countUrg = document.getElementById('count-urgencias');
+  if (countUrg) countUrg.innerText = staffList.filter(s => matchesPreset(s, 'URGENCIAS')).length;
+
+  const countRut = document.getElementById('count-rutina');
+  if (countRut) countRut.innerText = staffList.filter(s => matchesPreset(s, 'RUTINA')).length;
+
+  const countTens = document.getElementById('count-tens');
+  if (countTens) countTens.innerText = staffList.filter(s => matchesPreset(s, 'TENS')).length;
+
+  const countAux = document.getElementById('count-auxiliares');
+  if (countAux) countAux.innerText = staffList.filter(s => matchesPreset(s, 'AUXILIARES')).length;
+
+  const countProf = document.getElementById('count-profesionales');
+  if (countProf) countProf.innerText = staffList.filter(s => matchesPreset(s, 'PROFESIONALES')).length;
+}
+
+function hasUrgencyShiftInCurrentMonth(staffId) {
+  const year = state.currentYear;
+  const month = state.currentMonth;
+  const daysInMonth = new Date(year, month, 0).getDate();
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const ev = getShiftEvent(staffId, dateStr);
+    if (ev) {
+      if (ev.code === 'L' || ev.code === 'N') return true;
+      if (ev.sheet && ev.sheet.toUpperCase().includes('URGENCIA')) return true;
+    }
+  }
+  return false;
+}
+
 function setPresetFilter(preset) {
   state.presetFilter = preset;
+
+  // Harmonize conflicting dropdown filters when clicking a preset
+  state.estamentoFilter = 'ALL';
+  state.jornadaFilter = 'ALL';
+  const estSelect = document.getElementById('select-estamento-filter');
+  if (estSelect) estSelect.value = 'ALL';
+  const jorSelect = document.getElementById('select-jornada-filter');
+  if (jorSelect) jorSelect.value = 'ALL';
 
   const presets = ['ALL', 'URGENCIAS', 'RUTINA', 'TENS', 'AUXILIARES', 'PROFESIONALES'];
   presets.forEach(p => {
@@ -334,15 +421,40 @@ function changeGrouping(value) {
 function matchesSearch(member, rawQuery) {
   if (!rawQuery) return true;
   const qNorm = normalizeText(rawQuery);
+  if (!qNorm) return true;
+
+  // Shortcut for auditing incomplete profiles
+  if ((qNorm === 'sin rut' || qNorm === 'falta rut' || qNorm === 'pendiente' || qNorm === 'sin ruts') && (!member.rut || (member.missing_fields && member.missing_fields.length > 0))) {
+    return true;
+  }
+
+  const qWords = qNorm.split(/\s+/).filter(Boolean);
   const qRut = normalizeRut(rawQuery);
 
-  if (normalizeText(member.name).includes(qNorm)) return true;
-  if (member.official_name && normalizeText(member.official_name).includes(qNorm)) return true;
-  if (member.rut && qRut.length > 0 && normalizeRut(member.rut).includes(qRut)) return true;
-  if (member.section && normalizeText(member.section).includes(qNorm)) return true;
-  if (member.estamento && normalizeText(member.estamento).includes(qNorm)) return true;
-  if (member.role && normalizeText(member.role).includes(qNorm)) return true;
-  return false;
+  // If query is numeric or unpunctuated RUT with K, match directly against normalized RUT
+  if (qRut.length >= 2 && /^[\dK]+$/.test(qRut)) {
+    if (member.rut && normalizeRut(member.rut).includes(qRut)) return true;
+  }
+
+  let estAbbr = '';
+  const est = member.estamento || member.role || '';
+  if (est === 'Tecnólogo Médico' || est === 'Profesional') estAbbr = 'tm';
+  else if (est === 'Bioquímico') estAbbr = 'bq';
+  else if (est === 'Auxiliar') estAbbr = 'aux';
+
+  // Tokenized multi-word search (supports "Rivera Guillermo", "TM Urgencia", etc.)
+  const searchable = [
+    normalizeText(member.name),
+    member.official_name ? normalizeText(member.official_name) : '',
+    member.rut ? normalizeRut(member.rut) : '',
+    member.section ? normalizeText(member.section) : '',
+    normalizeText(est),
+    estAbbr,
+    member.role ? normalizeText(member.role) : '',
+    member.jornada ? normalizeText(member.jornada) : ''
+  ].join(' ');
+
+  return qWords.every(word => searchable.includes(word));
 }
 
 function matchesPreset(member, preset) {
@@ -354,7 +466,7 @@ function matchesPreset(member, preset) {
   const sheets = (member.sheets || []).map(s => s.toLowerCase());
 
   if (preset === 'URGENCIAS') {
-    return jor === 'Turno' || sec.includes('urgencia') || sheets.some(s => s.includes('urgencia'));
+    return jor === 'Turno' || sec.includes('urgencia') || sheets.some(s => s.includes('urgencia')) || hasUrgencyShiftInCurrentMonth(member.id);
   }
   if (preset === 'RUTINA') {
     return jor === 'Diurno' || sheets.some(s => s.includes('rutina')) || (!sec.includes('urgencia') && jor !== 'Turno');
@@ -373,6 +485,7 @@ function matchesPreset(member, preset) {
 
 
 function renderApp() {
+  updatePresetBadges();
   if (state.activeTab === 'TOMA DE MUESTRA') {
     renderTDMView();
   } else if (state.activeTab === 'DIRECTORIO') {
@@ -504,8 +617,8 @@ function renderMatrixView() {
           <div class="truncate text-xs cursor-pointer hover:text-sky-600" onclick="openStaffModal('${member.id}')" title="Editar funcionario">
             ${member.name} ${nameBadges}
           </div>
-          <button onclick="event.stopPropagation(); openRangeModalForStaff('${member.id}')" class="row-quick-range-btn px-1.5 py-0.5 rounded bg-teal-50 text-teal-700 hover:bg-teal-100 text-[10px] font-bold border border-teal-200" title="Programar rango para ${member.name}">
-            🌴 Rango
+          <button onclick="event.stopPropagation(); openRangeModalForStaff('${member.id}')" class="row-quick-range-btn px-2 py-0.5 rounded-md bg-teal-50 text-teal-800 hover:bg-teal-100 text-[11px] font-bold border border-teal-300 shadow-2xs shrink-0 ml-2" title="Programar ausencia o vacaciones para ${member.name}">
+            🌴 Ausencia
           </button>
         </div>
         <div class="text-[10px] text-slate-400 font-normal leading-tight truncate">${subInfo}</div>
@@ -587,35 +700,40 @@ function renderMatrixView() {
   });
 }
 
-function getStaffForSheet(sheetName) {
+function getStaffForSheet(sheetName, ignoreUiFilters = false) {
   let list = Object.values(state.staff);
 
   // Search filter with smart RUT normalization
-  if (state.searchQuery) {
+  if (!ignoreUiFilters && state.searchQuery) {
     list = list.filter(m => matchesSearch(m, state.searchQuery));
   }
 
   // CALENDARIO GENERAL handles all staff with presets, subdivision, and explicit filters
   if (sheetName === 'CALENDARIO GENERAL') {
-    list = list.filter(m => matchesPreset(m, state.presetFilter));
+    if (!ignoreUiFilters) {
+      list = list.filter(m => matchesPreset(m, state.presetFilter));
 
-    if (state.estamentoFilter && state.estamentoFilter !== 'ALL') {
-      list = list.filter(m => (m.estamento || m.role) === state.estamentoFilter);
-    }
+      if (state.estamentoFilter && state.estamentoFilter !== 'ALL') {
+        list = list.filter(m => (m.estamento || m.role) === state.estamentoFilter);
+      }
 
-    if (state.jornadaFilter && state.jornadaFilter !== 'ALL') {
-      list = list.filter(m => (m.jornada || 'Diurno') === state.jornadaFilter);
+      if (state.jornadaFilter && state.jornadaFilter !== 'ALL') {
+        list = list.filter(m => (m.jornada || 'Diurno') === state.jornadaFilter);
+      }
     }
 
     list.sort((a, b) => {
-      if (state.groupBy === 'ESTAMENTO') {
+      if (state.groupBy === 'ESTAMENTO' || ignoreUiFilters) {
         const estA = a.estamento || a.role || '';
         const estB = b.estamento || b.role || '';
+        const orderA = ESTAMENTO_ORDER[estA] || 99;
+        const orderB = ESTAMENTO_ORDER[estB] || 99;
+        if (orderA !== orderB) return orderA - orderB;
         if (estA !== estB) return estA.localeCompare(estB);
       } else if (state.groupBy === 'JORNADA') {
         const jorA = a.jornada || 'Diurno';
         const jorB = b.jornada || 'Diurno';
-        if (jorA !== jorB) return jorA.localeCompare(jorB);
+        if (jorA !== jorB) return jorA === 'Turno' ? -1 : 1;
       } else if (state.groupBy === 'SECTION') {
         const secA = a.section || '';
         const secB = b.section || '';
@@ -1087,8 +1205,26 @@ function openShiftModal(staffId, dateStr, currentCode, currentEventType) {
   const member = state.staff[staffId];
   if (!member) return;
 
-  const eventType = currentEventType || (currentCode === 'L' || currentCode === 'N' ? 'TURNO' : 'VACACIONES');
-  const code = currentCode || (eventType === 'VACACIONES' ? 'FL' : '');
+  let eventType = currentEventType || '';
+  let code = currentCode || '';
+
+  if (!eventType && code) {
+    const upperCode = code.toUpperCase();
+    if (['L', 'N', 'M', 'T'].includes(upperCode) || upperCode.includes(':')) eventType = 'TURNO';
+    else if (upperCode === 'FL') eventType = 'VACACIONES';
+    else if (upperCode === 'DA') eventType = 'ADMINISTRATIVO';
+    else if (upperCode === 'LM') eventType = 'LICENCIA_MEDICA';
+    else if (upperCode.startsWith('H+')) eventType = 'DEVOLUCION_TIEMPO';
+    else if (upperCode === '*') eventType = 'COMISION_SERVICIO';
+    else if (upperCode === 'PSG') eventType = 'SIN_GOCE_SUELDO';
+    else eventType = 'TURNO';
+  }
+
+  const isCellEmpty = !code && !eventType;
+  if (isCellEmpty) {
+    eventType = 'VACACIONES';
+    code = '';
+  }
 
   state.rangeModalState = {
     staffId: staffId,
@@ -1107,10 +1243,15 @@ function openShiftModal(staffId, dateStr, currentCode, currentEventType) {
 
   document.getElementById('modal-range-start').value = dateStr;
   document.getElementById('modal-range-end').value = dateStr;
+  document.getElementById('modal-range-end').min = dateStr;
   document.getElementById('mode-all-days').checked = true;
   document.getElementById('modal-custom-code').value = code;
 
-  highlightActiveEventButton(eventType, code);
+  if (isCellEmpty) {
+    document.querySelectorAll('.event-choice-btn').forEach(btn => btn.classList.remove('is-active-choice'));
+  } else {
+    highlightActiveEventButton(eventType, code);
+  }
   onRangeDatesChanged();
 
   const histNotice = document.getElementById('modal-historical-notice');
@@ -1130,14 +1271,14 @@ function openRangeModalForStaff(staffId) {
   const year = state.currentYear;
   const month = String(state.currentMonth).padStart(2, '0');
   const startDate = `${year}-${month}-01`;
-  const endObj = new Date(year, state.currentMonth - 1, 14);
-  const endDate = formatDateToISO(endObj);
+  const isWorkdays = document.getElementById('mode-workdays')?.checked || false;
+  const endDate = isWorkdays ? addWorkdays(startDate, 10) : formatDateToISO(new Date(year, state.currentMonth - 1, 14));
 
   state.rangeModalState = {
     staffId: staffId,
     startDate: startDate,
     endDate: endDate,
-    mode: 'all',
+    mode: isWorkdays ? 'workdays' : 'all',
     eventType: 'VACACIONES',
     code: 'FL'
   };
@@ -1150,7 +1291,7 @@ function openRangeModalForStaff(staffId) {
 
   document.getElementById('modal-range-start').value = startDate;
   document.getElementById('modal-range-end').value = endDate;
-  document.getElementById('mode-all-days').checked = true;
+  document.getElementById('modal-range-end').min = startDate;
   document.getElementById('modal-custom-code').value = 'FL';
 
   highlightActiveEventButton('VACACIONES', 'FL');
@@ -1170,8 +1311,8 @@ function openRangeModal() {
   const year = state.currentYear;
   const month = String(state.currentMonth).padStart(2, '0');
   const startDate = `${year}-${month}-01`;
-  const endObj = new Date(year, state.currentMonth - 1, 14);
-  const endDate = formatDateToISO(endObj);
+  const isWorkdays = document.getElementById('mode-workdays')?.checked || false;
+  const endDate = isWorkdays ? addWorkdays(startDate, 10) : formatDateToISO(new Date(year, state.currentMonth - 1, 14));
 
   const staffSelectCont = document.getElementById('modal-staff-select-container');
   const staffSelect = document.getElementById('modal-staff-select');
@@ -1187,7 +1328,7 @@ function openRangeModal() {
       staffId: firstStaffId,
       startDate: startDate,
       endDate: endDate,
-      mode: 'all',
+      mode: isWorkdays ? 'workdays' : 'all',
       eventType: 'VACACIONES',
       code: 'FL'
     };
@@ -1199,7 +1340,7 @@ function openRangeModal() {
 
   document.getElementById('modal-range-start').value = startDate;
   document.getElementById('modal-range-end').value = endDate;
-  document.getElementById('mode-all-days').checked = true;
+  document.getElementById('modal-range-end').min = startDate;
   document.getElementById('modal-custom-code').value = 'FL';
 
   highlightActiveEventButton('VACACIONES', 'FL');
@@ -1221,14 +1362,34 @@ function onModalStaffChange(staffId) {
   }
 }
 
+function onRangeStartDateChanged() {
+  const startInput = document.getElementById('modal-range-start');
+  const endInput = document.getElementById('modal-range-end');
+  if (startInput && endInput) {
+    if (endInput.value && startInput.value > endInput.value) {
+      endInput.value = startInput.value;
+    }
+    endInput.min = startInput.value;
+  }
+  onRangeDatesChanged();
+}
+
 function onRangeDatesChanged() {
   const startInput = document.getElementById('modal-range-start');
   const endInput = document.getElementById('modal-range-end');
   const workdaysRadio = document.getElementById('mode-workdays');
   if (!startInput || !endInput) return;
 
-  const startVal = startInput.value;
-  const endVal = endInput.value;
+  let startVal = startInput.value;
+  let endVal = endInput.value;
+  if (!startVal) return;
+
+  if (endVal && endVal < startVal) {
+    endVal = startVal;
+    endInput.value = startVal;
+  }
+  endInput.min = startVal;
+
   const isWorkdays = workdaysRadio ? workdaysRadio.checked : false;
   const mode = isWorkdays ? 'workdays' : 'all';
 
@@ -1256,10 +1417,23 @@ function onRangeDatesChanged() {
 function setRangeDays(days) {
   const startVal = document.getElementById('modal-range-start').value;
   if (!startVal) return;
-  const start = parseISODate(startVal);
-  const end = new Date(start);
-  end.setDate(end.getDate() + (days - 1));
-  document.getElementById('modal-range-end').value = formatDateToISO(end);
+  const isWorkdays = document.getElementById('mode-workdays')?.checked;
+
+  if (isWorkdays) {
+    let targetWorkdays = days;
+    if (days === 7) targetWorkdays = 5;
+    else if (days === 14) targetWorkdays = 10;
+    else if (days === 15) targetWorkdays = 15;
+    else if (days === 21) targetWorkdays = 15;
+
+    const endStr = addWorkdays(startVal, targetWorkdays);
+    document.getElementById('modal-range-end').value = endStr;
+  } else {
+    const start = parseISODate(startVal);
+    const end = new Date(start);
+    end.setDate(end.getDate() + (days - 1));
+    document.getElementById('modal-range-end').value = formatDateToISO(end);
+  }
   onRangeDatesChanged();
 }
 
@@ -1278,6 +1452,29 @@ function selectEventType(eventType, defaultCode) {
   state.rangeModalState.code = defaultCode;
   document.getElementById('modal-custom-code').value = defaultCode;
   highlightActiveEventButton(eventType, defaultCode);
+}
+
+function onCustomCodeInput(val) {
+  if (!state.rangeModalState) return;
+  const code = (val || '').trim().toUpperCase();
+  state.rangeModalState.code = code;
+
+  if (code === 'FL') {
+    state.rangeModalState.eventType = 'VACACIONES';
+  } else if (code === 'DA') {
+    state.rangeModalState.eventType = 'ADMINISTRATIVO';
+  } else if (code === 'LM') {
+    state.rangeModalState.eventType = 'LICENCIA_MEDICA';
+  } else if (code.startsWith('H+')) {
+    state.rangeModalState.eventType = 'DEVOLUCION_TIEMPO';
+  } else if (code === '*') {
+    state.rangeModalState.eventType = 'COMISION_SERVICIO';
+  } else if (code === 'PSG') {
+    state.rangeModalState.eventType = 'SIN_GOCE_SUELDO';
+  } else if (['L', 'N', 'M', 'T'].includes(code)) {
+    state.rangeModalState.eventType = 'TURNO';
+  }
+  highlightActiveEventButton(state.rangeModalState.eventType, code);
 }
 
 function highlightActiveEventButton(eventType, code) {
@@ -1315,8 +1512,22 @@ function saveShiftModal() {
   const member = state.staff[staffId];
   if (!member) return;
 
-  const customCode = document.getElementById('modal-custom-code').value.trim();
-  const eventType = state.rangeModalState.eventType || 'TURNO';
+  let customCode = document.getElementById('modal-custom-code').value.trim();
+  let eventType = state.rangeModalState.eventType || 'TURNO';
+
+  if (!customCode) {
+    if (eventType === 'VACACIONES') customCode = 'FL';
+    else if (eventType === 'ADMINISTRATIVO') customCode = 'DA';
+    else if (eventType === 'LICENCIA_MEDICA') customCode = 'LM';
+    else if (eventType === 'DEVOLUCION_TIEMPO') customCode = 'H+6';
+    else if (eventType === 'COMISION_SERVICIO') customCode = '*';
+    else if (eventType === 'SIN_GOCE_SUELDO') customCode = 'PSG';
+    else {
+      alert('Por favor selecciona una opción de turno o ausencia, o escribe un código.');
+      return;
+    }
+  }
+
   const startVal = document.getElementById('modal-range-start').value;
   const endVal = document.getElementById('modal-range-end').value;
   const isWorkdays = document.getElementById('mode-workdays').checked;
@@ -1328,12 +1539,13 @@ function saveShiftModal() {
     return;
   }
 
-  const targetList = state.currentYear === 2026 ? state.turns2026 : state.turns2027;
-
   eligibleDates.forEach(dateStr => {
     const dateParts = dateStr.split('-');
+    const yearNum = parseInt(dateParts[0], 10);
     const m = parseInt(dateParts[1], 10);
     const d = parseInt(dateParts[2], 10);
+
+    const targetList = yearNum === 2026 ? state.turns2026 : state.turns2027;
 
     const existing = targetList.find(t => t.staff_id === staffId && t.date === dateStr);
     if (existing) {
@@ -1374,14 +1586,8 @@ function clearCurrentRangeShift() {
   const eligibleDates = new Set(getEligibleDatesInRange(startVal, endVal, mode));
   if (eligibleDates.size === 0) return;
 
-  const targetList = state.currentYear === 2026 ? state.turns2026 : state.turns2027;
-  const filtered = targetList.filter(t => !(t.staff_id === staffId && eligibleDates.has(t.date)));
-
-  if (state.currentYear === 2026) {
-    state.turns2026 = filtered;
-  } else {
-    state.turns2027 = filtered;
-  }
+  state.turns2026 = state.turns2026.filter(t => !(t.staff_id === staffId && eligibleDates.has(t.date)));
+  state.turns2027 = state.turns2027.filter(t => !(t.staff_id === staffId && eligibleDates.has(t.date)));
 
   rebuildTurnsMap();
   closeShiftModal();
@@ -1429,6 +1635,16 @@ function closeStaffModal() {
   document.getElementById('modal-staff-editor').classList.add('hidden');
 }
 
+function formatRut(rut) {
+  if (!rut) return '';
+  const clean = rut.replace(/[^0-9kK]/g, '').toUpperCase();
+  if (clean.length < 2) return rut.toUpperCase();
+  const dv = clean.slice(-1);
+  const num = clean.slice(0, -1);
+  const formattedNum = num.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  return `${formattedNum}-${dv}`;
+}
+
 function saveStaffModal() {
   const id = document.getElementById('staff-edit-id').value;
   const name = document.getElementById('staff-edit-name').value.trim();
@@ -1447,15 +1663,16 @@ function saveStaffModal() {
   else if (estamento === 'Auxiliar') role = 'Auxiliar';
   else if (estamento === 'Administrativo') role = 'Administrativo';
 
+  const formattedRut = formatRut(rut);
   const missing = [];
-  if (!rut) missing.push('RUT pendiente');
+  if (!formattedRut) missing.push('RUT pendiente');
   if (name.split(' ').length < 2) missing.push('Segundo apellido pendiente');
 
   state.staff[id] = {
     id: id,
     name: name,
     official_name: name,
-    rut: rut,
+    rut: formattedRut,
     estamento: estamento,
     jornada: jornada,
     role: role,
@@ -1471,7 +1688,6 @@ function saveStaffModal() {
   renderApp();
 }
 
-
 function saveChanges() {
   saveChangesToStorage();
   alert('¡Cambios guardados exitosamente en tu navegador!');
@@ -1480,6 +1696,8 @@ function saveChanges() {
 function saveChangesToStorage() {
   try {
     localStorage.setItem('hrt_staff_directory', JSON.stringify(state.staff));
+    localStorage.setItem('hrt_turns_2026', JSON.stringify(state.turns2026));
+    localStorage.setItem('hrt_tdm_2026', JSON.stringify(state.tdm2026));
     localStorage.setItem('hrt_turns_2027', JSON.stringify(state.turns2027));
     localStorage.setItem('hrt_tdm_2027', JSON.stringify(state.tdm2027));
   } catch(e) {
@@ -1563,6 +1781,8 @@ function importJSONBackup(event) {
     try {
       const data = JSON.parse(e.target.result);
       if (data.staff) state.staff = data.staff;
+      if (data.turns_2026) state.turns2026 = data.turns_2026;
+      if (data.tdm_2026) state.tdm2026 = data.tdm_2026;
       if (data.turns_2027) state.turns2027 = data.turns_2027;
       if (data.tdm_2027) state.tdm2027 = data.tdm_2027;
       rebuildTurnsMap();
@@ -1609,7 +1829,7 @@ function exportToExcel() {
       }
       wsData.push(dowRow);
 
-      const staffList = getStaffForSheet(sheetName);
+      const staffList = getStaffForSheet(sheetName, true);
       staffList.forEach(st => {
         const row = [st.name, st.rut || '', st.estamento || st.role || '', st.jornada || 'Diurno', st.section || ''];
         for (let d = 1; d <= daysInM; d++) {
@@ -1619,7 +1839,18 @@ function exportToExcel() {
             row.push(ass ? 'X' : '');
           } else {
             const ev = getShiftEvent(st.id, dateStr);
-            row.push(ev ? (ev.code || ev.event_type || '') : '');
+            let val = '';
+            if (ev) {
+              if (ev.code) val = ev.code;
+              else if (ev.event_type === 'VACACIONES') val = 'FL';
+              else if (ev.event_type === 'ADMINISTRATIVO') val = 'DA';
+              else if (ev.event_type === 'LICENCIA_MEDICA') val = 'LM';
+              else if (ev.event_type === 'DEVOLUCION_TIEMPO') val = 'H+6';
+              else if (ev.event_type === 'COMISION_SERVICIO') val = '*';
+              else if (ev.event_type === 'SIN_GOCE_SUELDO') val = 'PSG';
+              else val = ev.event_type || '';
+            }
+            row.push(val);
           }
         }
         wsData.push(row);
@@ -1639,7 +1870,12 @@ function exportToExcel() {
   dotData.push([]);
   dotData.push(['FUNCIONARIO', 'RUT', 'ESTAMENTO', 'JORNADA', 'SECCIÓN', 'ESTADO']);
   Object.values(state.staff)
-    .sort((a, b) => (a.estamento || a.role || '').localeCompare(b.estamento || b.role || '') || a.name.localeCompare(b.name))
+    .sort((a, b) => {
+      const ordA = ESTAMENTO_ORDER[a.estamento || a.role || ''] || 99;
+      const ordB = ESTAMENTO_ORDER[b.estamento || b.role || ''] || 99;
+      if (ordA !== ordB) return ordA - ordB;
+      return (a.name || '').localeCompare(b.name || '');
+    })
     .forEach(s => {
       const status = (s.missing_fields && s.missing_fields.length > 0) ? ('Pendiente: ' + s.missing_fields.join(', ')) : 'Completo';
       dotData.push([

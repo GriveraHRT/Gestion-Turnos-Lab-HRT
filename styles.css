@@ -257,14 +257,14 @@ body {
 
 /* Row quick range action button */
 .row-quick-range-btn {
-  opacity: 0;
-  transition: opacity 0.15s ease, transform 0.15s ease;
+  opacity: 0.85;
+  transition: opacity 0.15s ease, transform 0.15s ease, background-color 0.15s ease;
 }
 tr:hover .row-quick-range-btn {
   opacity: 1;
 }
 .row-quick-range-btn:hover {
-  transform: scale(1.15);
+  transform: scale(1.05);
 }
 
 /* Grouping divider styles */

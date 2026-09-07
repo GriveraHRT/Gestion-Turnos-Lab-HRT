@@ -602,7 +602,7 @@ for pid, s in staff_db.items():
         estamento = 'Bioquímico'
     elif name in ['Jimena Gonzalez'] or 'ADMINISTRATIVO' in p:
         estamento = 'Administrativo'
-    elif name in ['Patricia Morales Rojas', 'Maria Jose Peñailillo']:
+    elif name in ['Patricia Morales Rojas', 'Maria Jose Peñailillo', 'Guillermo Rivera']:
         estamento = 'Tecnólogo Médico'
     elif role == 'TENS' or 'TENS' in sec or 'TECNICO DE NIVEL SUPERIOR' in p or 'AUXILIAR PARAMEDICO' in p:
         estamento = 'TENS'

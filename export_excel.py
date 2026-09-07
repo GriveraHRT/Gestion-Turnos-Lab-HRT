@@ -8,6 +8,15 @@ from openpyxl.utils import get_column_letter
 MONTH_NAMES_ES = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE']
 DAY_LETTERS = ['D', 'L', 'M', 'M', 'J', 'V', 'S'] # 0=Domingo, 1=Lunes, ...
 
+ESTAMENTO_ORDER = {
+    'Tecnólogo Médico': 1,
+    'Bioquímico': 2,
+    'TENS': 3,
+    'Auxiliar': 4,
+    'Interno TM': 5,
+    'Administrativo': 6
+}
+
 def generate_hospital_excel(year=2027, output_path=None):
     if output_path is None:
         output_path = f"TURNOS_LABORATORIO_HRT_{year}.xlsx"
@@ -93,7 +102,7 @@ def generate_hospital_excel(year=2027, output_path=None):
         # Filter staff for this sheet
         if sheet_title == 'CALENDARIO GENERAL':
             sheet_staff = list(staff_dict.values())
-            sheet_staff.sort(key=lambda x: (x.get('estamento', '') or x.get('role', ''), x.get('name', '')))
+            sheet_staff.sort(key=lambda x: (ESTAMENTO_ORDER.get(x.get('estamento') or x.get('role', ''), 99), x.get('name', '')))
         elif sheet_title == 'LAB. URGENCIA':
             sheet_staff = [s for s in staff_dict.values() if any('URGENCIA' in sh.upper() for sh in s.get('sheets', [])) or 'urgencia' in s.get('section', '').lower()]
             sheet_staff.sort(key=lambda x: (x.get('section', ''), x.get('name', '')))
@@ -258,7 +267,7 @@ def generate_hospital_excel(year=2027, output_path=None):
     ws_dot.cell(row=1, column=1, value="HOSPITAL REGIONAL DE TALCA - DOTACIÓN OFICIAL LABORATORIO").font = Font(name='Arial', size=13, bold=True, color='0F172A')
     ws_dot.cell(row=2, column=1, value=f"Registro consolidado de personal, estamentos y estado de datos ({year})").font = Font(name='Arial', size=10, color='475569')
 
-    headers = ["FUNCIONARIO", "RUT", "ESTAMENTO", "SECCIÓN", "PESTAÑAS ASIGNADAS", "ESTADO"]
+    headers = ["FUNCIONARIO", "RUT", "ESTAMENTO", "JORNADA", "SECCIÓN", "ESTADO"]
     for i, h in enumerate(headers, 1):
         c = ws_dot.cell(row=4, column=i, value=h)
         c.font = Font(name='Arial', size=9, bold=True, color='FFFFFF')
@@ -266,12 +275,12 @@ def generate_hospital_excel(year=2027, output_path=None):
         c.border = thin_border
 
     dot_row = 5
-    for s in sorted(staff_dict.values(), key=lambda x: (x.get('role', ''), x.get('name', ''))):
+    for s in sorted(staff_dict.values(), key=lambda x: (ESTAMENTO_ORDER.get(x.get('estamento') or x.get('role', ''), 99), x.get('name', ''))):
         ws_dot.cell(row=dot_row, column=1, value=s['name']).border = thin_border
         ws_dot.cell(row=dot_row, column=2, value=s.get('rut') or 'PENDIENTE').border = thin_border
-        ws_dot.cell(row=dot_row, column=3, value=s.get('role', '')).border = thin_border
-        ws_dot.cell(row=dot_row, column=4, value=s.get('section', '')).border = thin_border
-        ws_dot.cell(row=dot_row, column=5, value=', '.join(s.get('sheets', []))).border = thin_border
+        ws_dot.cell(row=dot_row, column=3, value=s.get('estamento') or s.get('role', '')).border = thin_border
+        ws_dot.cell(row=dot_row, column=4, value=s.get('jornada') or 'Diurno').border = thin_border
+        ws_dot.cell(row=dot_row, column=5, value=s.get('section', '')).border = thin_border
         status = 'Completo' if not s.get('missing_fields') else 'Pendiente: ' + ', '.join(s['missing_fields'])
         c_status = ws_dot.cell(row=dot_row, column=6, value=status)
         c_status.border = thin_border
