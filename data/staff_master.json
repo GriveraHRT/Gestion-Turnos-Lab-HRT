@@ -1,0 +1,1430 @@
+{
+  "jorge_moraga": {
+    "id": "jorge_moraga",
+    "name": "Jorge Moraga",
+    "rut": "17.795.876-K",
+    "role": "Profesional",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "tiara_araya": {
+    "id": "tiara_araya",
+    "name": "Tiara Araya",
+    "rut": "18.982.762-8",
+    "role": "Profesional",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA",
+      "PROFESIONALES RUTINA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "erica_santelices": {
+    "id": "erica_santelices",
+    "name": "Erica Santelices",
+    "rut": "19.805.795-9",
+    "role": "Profesional",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "gabriela_chandia": {
+    "id": "gabriela_chandia",
+    "name": "Gabriela Chandia",
+    "rut": "18.893.934-1",
+    "role": "Profesional",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "jorge_perez": {
+    "id": "jorge_perez",
+    "name": "Jorge Perez",
+    "rut": "17.884.899-2",
+    "role": "Profesional",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "ociel_beltran": {
+    "id": "ociel_beltran",
+    "name": "Ociel Beltran",
+    "rut": "20.367.852-5",
+    "role": "Profesional",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "sergio_bravo_caroca": {
+    "id": "sergio_bravo_caroca",
+    "name": "Sergio Bravo Caroca",
+    "rut": "12.869.248-7",
+    "role": "Profesional",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "daniela_castillo": {
+    "id": "daniela_castillo",
+    "name": "Daniela Castillo",
+    "rut": "18.981.532-8",
+    "role": "Profesional",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "javier_malpica": {
+    "id": "javier_malpica",
+    "name": "Javier Malpica",
+    "rut": "18.905.196-4",
+    "role": "Profesional",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "olivia_belen_rosales": {
+    "id": "olivia_belen_rosales",
+    "name": "Olivia Belen Rosales",
+    "rut": "17.171.464-8",
+    "role": "Profesional",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "leticia_oliva_albornoz": {
+    "id": "leticia_oliva_albornoz",
+    "name": "Leticia Oliva Albornoz",
+    "rut": "17.825.088-4",
+    "role": "Profesional",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "valentino_becerra": {
+    "id": "valentino_becerra",
+    "name": "Valentino Becerra",
+    "rut": "18.543.174-6",
+    "role": "Profesional",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "nicolas_blanco": {
+    "id": "nicolas_blanco",
+    "name": "Nicolas Blanco",
+    "rut": "20.305.562-5",
+    "role": "Profesional",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "jeanette_san_martin": {
+    "id": "jeanette_san_martin",
+    "name": "Jeanette San Martín",
+    "rut": "18.474.938-6",
+    "role": "Profesional",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA",
+      "PROFESIONALES RUTINA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "camila_gonzalez": {
+    "id": "camila_gonzalez",
+    "name": "Camila Gonzalez",
+    "rut": "",
+    "role": "Profesional",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA",
+      "PROFESIONALES RUTINA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "arlett_hormazabal_cardenas": {
+    "id": "arlett_hormazabal_cardenas",
+    "name": "Arlett Hormazabal Cardenas",
+    "rut": "18.573.118-9",
+    "role": "Profesional",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA",
+      "PROFESIONALES RUTINA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "guillermo_rivera": {
+    "id": "guillermo_rivera",
+    "name": "Guillermo Rivera",
+    "rut": "18.892.014-4",
+    "role": "Profesional",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA",
+      "PROFESIONALES RUTINA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "deisy_moreno": {
+    "id": "deisy_moreno",
+    "name": "Deisy Moreno",
+    "rut": "16.453.944-K",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "rossana_albornoz_arenas": {
+    "id": "rossana_albornoz_arenas",
+    "name": "Rossana Albornoz Arenas",
+    "rut": "14.295.792-2",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "elieser_valdebenito": {
+    "id": "elieser_valdebenito",
+    "name": "Elieser Valdebenito",
+    "rut": "17.845.030-1",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA",
+      "TENS RUTINA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "ana_toledo_ramos": {
+    "id": "ana_toledo_ramos",
+    "name": "Ana Toledo Ramos",
+    "rut": "13.205.345-6",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "barbara_gutierrez_gomez": {
+    "id": "barbara_gutierrez_gomez",
+    "name": "Barbara Gutierrez Gomez",
+    "rut": "17.497.764-K",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA",
+      "TENS RUTINA",
+      "TOMA DE MUESTRA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "barbara_cepeda_martinez": {
+    "id": "barbara_cepeda_martinez",
+    "name": "Barbara Cepeda Martinez",
+    "rut": "18.225.862-8",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "esmeralda_abarza": {
+    "id": "esmeralda_abarza",
+    "name": "Esmeralda Abarza",
+    "rut": "20.070.227-1",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA",
+      "TENS RUTINA",
+      "TOMA DE MUESTRA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "lucia_pena": {
+    "id": "lucia_pena",
+    "name": "Lucia Peña",
+    "rut": "11.147.047-2",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA",
+      "TENS RUTINA",
+      "TOMA DE MUESTRA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "michelle_mino": {
+    "id": "michelle_mino",
+    "name": "Michelle Miño",
+    "rut": "19.473.563-4",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "loreto_ramirez": {
+    "id": "loreto_ramirez",
+    "name": "Loreto Ramirez",
+    "rut": "16.270.558-K",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "carolina_campos": {
+    "id": "carolina_campos",
+    "name": "Carolina Campos",
+    "rut": "19.696.154-2",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "sergio_rojo": {
+    "id": "sergio_rojo",
+    "name": "Sergio Rojo",
+    "rut": "15.596.799-4",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "yessenia_caceres": {
+    "id": "yessenia_caceres",
+    "name": "Yessenia Caceres",
+    "rut": "",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA",
+      "TENS RUTINA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "anahis_albornoz": {
+    "id": "anahis_albornoz",
+    "name": "Anahis Albornoz",
+    "rut": "",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA",
+      "TENS RUTINA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "rodrigo_cantero": {
+    "id": "rodrigo_cantero",
+    "name": "Rodrigo Cantero",
+    "rut": "",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA",
+      "TENS RUTINA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "susana_santos": {
+    "id": "susana_santos",
+    "name": "Susana Santos",
+    "rut": "18.474.372-8",
+    "role": "Profesional",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA",
+      "PROFESIONALES RUTINA",
+      "TOMA DE MUESTRA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "tamara_lara": {
+    "id": "tamara_lara",
+    "name": "Tamara Lara",
+    "rut": "",
+    "role": "Profesional",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA",
+      "PROFESIONALES RUTINA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": true
+  },
+  "carolina_valenzuela_ramirez": {
+    "id": "carolina_valenzuela_ramirez",
+    "name": "Carolina Valenzuela Ramirez",
+    "rut": "16.729.277-1",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA",
+      "TENS RUTINA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "marcia_vega_c_interna_tm": {
+    "id": "marcia_vega_c_interna_tm",
+    "name": "Marcia Vega C. (Interna TM)",
+    "rut": "20.349.105-0",
+    "role": "Profesional",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [],
+    "is_intern": true,
+    "is_replacement": false
+  },
+  "muriel_correa": {
+    "id": "muriel_correa",
+    "name": "Muriel Correa",
+    "rut": "",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA",
+      "TENS RUTINA",
+      "TOMA DE MUESTRA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "barbara_alcantara": {
+    "id": "barbara_alcantara",
+    "name": "Barbara Alcantara",
+    "rut": "",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA",
+      "TENS RUTINA",
+      "TOMA DE MUESTRA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "ignacio_brunel": {
+    "id": "ignacio_brunel",
+    "name": "Ignacio Brunel",
+    "rut": "",
+    "role": "Profesional",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA",
+      "PROFESIONALES RUTINA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "makarena_zurita_o_interna_tm": {
+    "id": "makarena_zurita_o_interna_tm",
+    "name": "Makarena Zurita O. (Interna TM)",
+    "rut": "19.748.642-2",
+    "role": "Profesional",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [],
+    "is_intern": true,
+    "is_replacement": false
+  },
+  "fernando_barrera_c_interno_tm": {
+    "id": "fernando_barrera_c_interno_tm",
+    "name": "Fernando Barrera C. (Interno TM)",
+    "rut": "20.194.193-8",
+    "role": "Profesional",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [],
+    "is_intern": true,
+    "is_replacement": false
+  },
+  "consuelo_alarcon": {
+    "id": "consuelo_alarcon",
+    "name": "Consuelo Alarcon",
+    "rut": "17.684.739-5",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA",
+      "TENS RUTINA",
+      "TOMA DE MUESTRA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "francisca_campos_sepulveda": {
+    "id": "francisca_campos_sepulveda",
+    "name": "Francisca Campos Sepulveda",
+    "rut": "19.473.128-0",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA",
+      "TENS RUTINA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "constanza_gomez_sepulveda": {
+    "id": "constanza_gomez_sepulveda",
+    "name": "Constanza Gomez Sepulveda",
+    "rut": "19.172.843-2",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA",
+      "TENS RUTINA",
+      "TOMA DE MUESTRA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "guillermo_acuna_gonzalez": {
+    "id": "guillermo_acuna_gonzalez",
+    "name": "Guillermo Acuña Gonzalez",
+    "rut": "18.571.660-3",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA",
+      "TENS RUTINA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "merlam_espinoza": {
+    "id": "merlam_espinoza",
+    "name": "Merlam Espinoza",
+    "rut": "",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA",
+      "TENS RUTINA",
+      "TOMA DE MUESTRA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "nicol_riquelme_galvez": {
+    "id": "nicol_riquelme_galvez",
+    "name": "Nicol Riquelme Galvez",
+    "rut": "",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA",
+      "TENS RUTINA",
+      "TOMA DE MUESTRA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "francisca_urzua_g_interna_tm": {
+    "id": "francisca_urzua_g_interna_tm",
+    "name": "Francisca Urzúa G. (Interna TM)",
+    "rut": "20.350.835-2",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [],
+    "is_intern": true,
+    "is_replacement": false
+  },
+  "martin_munoz_d_interno_tm": {
+    "id": "martin_munoz_d_interno_tm",
+    "name": "Martin Muñoz D. (Interno TM)",
+    "rut": "21.003.614-8",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [],
+    "is_intern": true,
+    "is_replacement": false
+  },
+  "francisco_san_martin_a_interno_tm": {
+    "id": "francisco_san_martin_a_interno_tm",
+    "name": "Francisco San Martín A. (Interno TM)",
+    "rut": "21.028.706-K",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [],
+    "is_intern": true,
+    "is_replacement": false
+  },
+  "elizabel_sanchez": {
+    "id": "elizabel_sanchez",
+    "name": "Elizabel Sanchez",
+    "rut": "",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA",
+      "TENS RUTINA",
+      "TOMA DE MUESTRA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "johana_valdes_carrasco_interna_tm": {
+    "id": "johana_valdes_carrasco_interna_tm",
+    "name": "Johana Valdés Carrasco (Interna TM)",
+    "rut": "21.432.595-0",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [],
+    "is_intern": true,
+    "is_replacement": false
+  },
+  "melissa_silva_villagra_interna_tm": {
+    "id": "melissa_silva_villagra_interna_tm",
+    "name": "Melissa Silva Villagra (Interna TM)",
+    "rut": "21.604.468-1",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [],
+    "is_intern": true,
+    "is_replacement": false
+  },
+  "lucas_valenzuela_r_interno_tm": {
+    "id": "lucas_valenzuela_r_interno_tm",
+    "name": "Lucas Valenzuela R. (Interno TM)",
+    "rut": "20.926.367-K",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [],
+    "is_intern": true,
+    "is_replacement": false
+  },
+  "reemplazo": {
+    "id": "reemplazo",
+    "name": "Reemplazo",
+    "rut": "",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [
+      "RUT pendiente",
+      "Segundo apellido pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": true
+  },
+  "juan_bravo_novoa_interno_tm": {
+    "id": "juan_bravo_novoa_interno_tm",
+    "name": "Juan Bravo Novoa (Interno TM)",
+    "rut": "21.381.113-4",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [],
+    "is_intern": true,
+    "is_replacement": false
+  },
+  "fernanda_torres_cofre_interna_tm": {
+    "id": "fernanda_torres_cofre_interna_tm",
+    "name": "Fernanda Torres Cofré (Interna TM)",
+    "rut": "21.480.189-2",
+    "role": "TENS",
+    "section": "Urgencia",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "missing_fields": [],
+    "is_intern": true,
+    "is_replacement": false
+  },
+  "rosa_bernal_munoz": {
+    "id": "rosa_bernal_munoz",
+    "name": "Rosa Bernal Muñoz",
+    "rut": "13.372.467-2",
+    "role": "TENS",
+    "section": "Rutina TENS",
+    "sheets": [
+      "TENS RUTINA",
+      "TOMA DE MUESTRA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "jimena_caceres_valdes": {
+    "id": "jimena_caceres_valdes",
+    "name": "Jimena Caceres Valdes",
+    "rut": "10.237.028-7",
+    "role": "TENS",
+    "section": "Rutina TENS",
+    "sheets": [
+      "TENS RUTINA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "ruth_jara_lara": {
+    "id": "ruth_jara_lara",
+    "name": "Ruth Jara Lara",
+    "rut": "",
+    "role": "TENS",
+    "section": "Rutina TENS",
+    "sheets": [
+      "TENS RUTINA",
+      "TOMA DE MUESTRA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "ingrid_silva_valdivia": {
+    "id": "ingrid_silva_valdivia",
+    "name": "Ingrid Silva Valdivia",
+    "rut": "",
+    "role": "TENS",
+    "section": "Rutina TENS",
+    "sheets": [
+      "TENS RUTINA",
+      "TOMA DE MUESTRA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "laura_perez": {
+    "id": "laura_perez",
+    "name": "Laura Perez",
+    "rut": "",
+    "role": "TENS",
+    "section": "Rutina TENS",
+    "sheets": [
+      "TENS RUTINA",
+      "TOMA DE MUESTRA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "patricia_morales_rojas": {
+    "id": "patricia_morales_rojas",
+    "name": "Patricia Morales Rojas",
+    "rut": "",
+    "role": "TENS",
+    "section": "Rutina TENS",
+    "sheets": [
+      "TENS RUTINA",
+      "PROFESIONALES RUTINA",
+      "TOMA DE MUESTRA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "susana_quintana": {
+    "id": "susana_quintana",
+    "name": "Susana Quintana",
+    "rut": "",
+    "role": "TENS",
+    "section": "Rutina TENS",
+    "sheets": [
+      "TENS RUTINA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "jimena_gonzalez": {
+    "id": "jimena_gonzalez",
+    "name": "Jimena Gonzalez",
+    "rut": "",
+    "role": "TENS",
+    "section": "Funciones Administrativas",
+    "sheets": [
+      "TENS RUTINA",
+      "TOMA DE MUESTRA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "reemplazos": {
+    "id": "reemplazos",
+    "name": "Reemplazos",
+    "rut": "",
+    "role": "TENS",
+    "section": "Funciones Administrativas",
+    "sheets": [
+      "TENS RUTINA"
+    ],
+    "missing_fields": [
+      "RUT pendiente",
+      "Segundo apellido pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": true
+  },
+  "valeria_montes": {
+    "id": "valeria_montes",
+    "name": "Valeria Montes",
+    "rut": "",
+    "role": "TENS",
+    "section": "Funciones Administrativas",
+    "sheets": [
+      "TENS RUTINA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "maria_riquelme": {
+    "id": "maria_riquelme",
+    "name": "María Riquelme",
+    "rut": "",
+    "role": "TENS",
+    "section": "Funciones Administrativas",
+    "sheets": [
+      "TENS RUTINA",
+      "TOMA DE MUESTRA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "camila_reyes_vivero": {
+    "id": "camila_reyes_vivero",
+    "name": "Camila Reyes Vivero",
+    "rut": "",
+    "role": "TENS",
+    "section": "Funciones Administrativas",
+    "sheets": [
+      "TENS RUTINA",
+      "PROFESIONALES RUTINA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "consuelo_cerda_wehinger": {
+    "id": "consuelo_cerda_wehinger",
+    "name": "Consuelo Cerda Wehinger",
+    "rut": "16.858.185-8",
+    "role": "Profesional",
+    "section": "Hematología",
+    "sheets": [
+      "PROFESIONALES RUTINA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "juan_cerpa_castillo": {
+    "id": "juan_cerpa_castillo",
+    "name": "Juan Cerpa Castillo",
+    "rut": "17.481.858-4",
+    "role": "Profesional",
+    "section": "Hematología",
+    "sheets": [
+      "PROFESIONALES RUTINA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "romina_diaz_espinoza": {
+    "id": "romina_diaz_espinoza",
+    "name": "Romina Diaz Espinoza",
+    "rut": "16.452.193-1",
+    "role": "Profesional",
+    "section": "Hematología",
+    "sheets": [
+      "PROFESIONALES RUTINA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "marcela_salgado_carreno": {
+    "id": "marcela_salgado_carreno",
+    "name": "Marcela Salgado Carreño",
+    "rut": "15.598.712-1",
+    "role": "Profesional",
+    "section": "Hematología",
+    "sheets": [
+      "PROFESIONALES RUTINA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "miryam_espina_herrera": {
+    "id": "miryam_espina_herrera",
+    "name": "Miryam Espina Herrera",
+    "rut": "11.643.219-5",
+    "role": "Profesional",
+    "section": "Hematología",
+    "sheets": [
+      "PROFESIONALES RUTINA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "alejandra_vorphal_vasquez": {
+    "id": "alejandra_vorphal_vasquez",
+    "name": "Alejandra Vorphal Vasquez",
+    "rut": "15.597.023-5",
+    "role": "Profesional",
+    "section": "Inmunoquímica",
+    "sheets": [
+      "PROFESIONALES RUTINA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "carolina_arancibia_jara": {
+    "id": "carolina_arancibia_jara",
+    "name": "Carolina Arancibia Jara",
+    "rut": "13.305.532-K",
+    "role": "Profesional",
+    "section": "Inmunoquímica",
+    "sheets": [
+      "PROFESIONALES RUTINA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "daniel_schulz": {
+    "id": "daniel_schulz",
+    "name": "Daniel Schulz",
+    "rut": "",
+    "role": "Profesional",
+    "section": "Inmunoquímica",
+    "sheets": [
+      "PROFESIONALES RUTINA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "loreto_diaz_rios": {
+    "id": "loreto_diaz_rios",
+    "name": "Loreto Diaz Rios",
+    "rut": "",
+    "role": "Profesional",
+    "section": "Inmunoquímica",
+    "sheets": [
+      "PROFESIONALES RUTINA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "lara_tamara": {
+    "id": "lara_tamara",
+    "name": "Lara Tamara",
+    "rut": "",
+    "role": "Profesional",
+    "section": "Inmunoquímica",
+    "sheets": [
+      "PROFESIONALES RUTINA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": true
+  },
+  "daniel_calderon_calderon": {
+    "id": "daniel_calderon_calderon",
+    "name": "Daniel Calderon Calderon",
+    "rut": "16.325.454-9",
+    "role": "Profesional",
+    "section": "Microbiología",
+    "sheets": [
+      "PROFESIONALES RUTINA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "melissa_canales_mejias": {
+    "id": "melissa_canales_mejias",
+    "name": "Melissa Canales Mejias",
+    "rut": "18.891.582-5",
+    "role": "Profesional",
+    "section": "Microbiología",
+    "sheets": [
+      "PROFESIONALES RUTINA",
+      "TOMA DE MUESTRA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "diego_rojas_verdugo": {
+    "id": "diego_rojas_verdugo",
+    "name": "Diego Rojas Verdugo",
+    "rut": "",
+    "role": "Profesional",
+    "section": "Microbiología",
+    "sheets": [
+      "PROFESIONALES RUTINA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "nicole_hernandez_norambuena": {
+    "id": "nicole_hernandez_norambuena",
+    "name": "Nicole Hernandez Norambuena",
+    "rut": "17.824.912-6",
+    "role": "Profesional",
+    "section": "Microbiología",
+    "sheets": [
+      "PROFESIONALES RUTINA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "francisco_sepulveda": {
+    "id": "francisco_sepulveda",
+    "name": "Francisco Sepulveda",
+    "rut": "",
+    "role": "Profesional",
+    "section": "Microbiología",
+    "sheets": [
+      "PROFESIONALES RUTINA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "katalina_barrera": {
+    "id": "katalina_barrera",
+    "name": "Katalina Barrera",
+    "rut": "",
+    "role": "Profesional",
+    "section": "Microbiología",
+    "sheets": [
+      "PROFESIONALES RUTINA",
+      "TOMA DE MUESTRA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "barbara_fuenzalida_ibanez": {
+    "id": "barbara_fuenzalida_ibanez",
+    "name": "Barbara Fuenzalida Ibañez",
+    "rut": "13.201.301-2",
+    "role": "Profesional",
+    "section": "Microbiología",
+    "sheets": [
+      "PROFESIONALES RUTINA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "rodrigo_benavente_contreras": {
+    "id": "rodrigo_benavente_contreras",
+    "name": "Rodrigo Benavente Contreras",
+    "rut": "15.596.995-4",
+    "role": "Profesional",
+    "section": "Urgencia Y Biología Molecular",
+    "sheets": [
+      "PROFESIONALES RUTINA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "carolina_diaz_ponce": {
+    "id": "carolina_diaz_ponce",
+    "name": "Carolina Diaz Ponce",
+    "rut": "15.599.121-6",
+    "role": "Profesional",
+    "section": "Administrativa",
+    "sheets": [
+      "PROFESIONALES RUTINA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "arlette_garrido_mino": {
+    "id": "arlette_garrido_mino",
+    "name": "Arlette Garrido Miño",
+    "rut": "16.275.312-6",
+    "role": "Profesional",
+    "section": "Administrativa",
+    "sheets": [
+      "PROFESIONALES RUTINA"
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "cristian_andrade": {
+    "id": "cristian_andrade",
+    "name": "Cristian Andrade",
+    "rut": "",
+    "role": "Profesional",
+    "section": "Microbiología",
+    "sheets": [
+      "PROFESIONALES RUTINA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": true
+  },
+  "constanza_riquelme": {
+    "id": "constanza_riquelme",
+    "name": "Constanza Riquelme",
+    "rut": "",
+    "role": "Profesional",
+    "section": "Administrativa",
+    "sheets": [
+      "PROFESIONALES RUTINA",
+      "TOMA DE MUESTRA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "camila_gutierrez": {
+    "id": "camila_gutierrez",
+    "name": "Camila Gutierrez",
+    "rut": "",
+    "role": "Profesional",
+    "section": "Inmunoquímica",
+    "sheets": [
+      "PROFESIONALES RUTINA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "tm_constanza": {
+    "id": "tm_constanza",
+    "name": "Tm Constanza",
+    "rut": "",
+    "role": "TENS",
+    "section": "Auxiliares",
+    "sheets": [
+      "TOMA DE MUESTRA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "tm_susana": {
+    "id": "tm_susana",
+    "name": "Tm Susana",
+    "rut": "",
+    "role": "TENS",
+    "section": "Auxiliares",
+    "sheets": [
+      "TOMA DE MUESTRA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "constanza_tm": {
+    "id": "constanza_tm",
+    "name": "Constanza Tm",
+    "rut": "",
+    "role": "TENS",
+    "section": "Auxiliares",
+    "sheets": [
+      "TOMA DE MUESTRA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "nicol_riquelme_capacitacion_recepcion": {
+    "id": "nicol_riquelme_capacitacion_recepcion",
+    "name": "Nicol Riquelme Capacitación Recepcion",
+    "rut": "",
+    "role": "TENS",
+    "section": "Auxiliares",
+    "sheets": [
+      "TOMA DE MUESTRA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "laura_perez_recepcion_de_pacientes": {
+    "id": "laura_perez_recepcion_de_pacientes",
+    "name": "Laura Perez Recepción De Pacientes",
+    "rut": "",
+    "role": "TENS",
+    "section": "Auxiliares",
+    "sheets": [
+      "TOMA DE MUESTRA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "esmeralda_abarza_recepcion_de_pacientes": {
+    "id": "esmeralda_abarza_recepcion_de_pacientes",
+    "name": "Esmeralda Abarza Recepcion De Pacientes",
+    "rut": "",
+    "role": "TENS",
+    "section": "Auxiliares",
+    "sheets": [
+      "TOMA DE MUESTRA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "elizabel_sanchez_capacitacion_recepcion": {
+    "id": "elizabel_sanchez_capacitacion_recepcion",
+    "name": "Elizabel Sanchez Capacitación Recepción",
+    "rut": "",
+    "role": "TENS",
+    "section": "Auxiliares",
+    "sheets": [
+      "TOMA DE MUESTRA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "maria_jose_penailillo": {
+    "id": "maria_jose_penailillo",
+    "name": "Maria Jose Peñailillo",
+    "rut": "",
+    "role": "TENS",
+    "section": "Auxiliares",
+    "sheets": [
+      "TOMA DE MUESTRA"
+    ],
+    "missing_fields": [
+      "RUT pendiente"
+    ],
+    "is_intern": false,
+    "is_replacement": false
+  }
+}

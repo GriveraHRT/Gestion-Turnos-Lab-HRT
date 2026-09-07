@@ -1,0 +1,549 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Gestión de Turnos y Calendario - Laboratorio HRT</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#0284c7',
+              600: '#0369a1',
+              700: '#075985',
+              800: '#0c4a6e',
+              900: '#0f172a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="styles.css">
+  <!-- Vendor libraries -->
+  <script src="assets/xlsx.full.min.js"></script>
+  <script src="assets/lucide.min.js"></script>
+  <!-- Initial Bundle Data -->
+  <script src="data/data_bundle.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- Top Hospital Header -->
+  <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50 border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        
+        <!-- Hospital Branding -->
+        <div class="flex items-center space-x-3">
+          <div class="h-10 w-10 rounded-lg bg-sky-600 flex items-center justify-center text-white shadow-md">
+            <i data-lucide="flask-conical" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <h1 class="text-lg font-bold tracking-tight text-white">Hospital Regional de Talca</h1>
+              <span class="px-2 py-0.5 text-xs font-semibold bg-sky-950 text-sky-400 rounded-full border border-sky-800">Laboratorio Clínico</span>
+            </div>
+            <p class="text-xs text-slate-400">Planificación de Turnos, Ausentismos y Toma de Muestras</p>
+          </div>
+        </div>
+
+        <!-- Year Toggle (2026 Histórico vs 2027 Nuevo) -->
+        <div class="flex items-center bg-slate-800 p-1 rounded-xl border border-slate-700 shadow-inner">
+          <button id="btn-year-2026" onclick="setYear(2026)" class="px-4 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center space-x-1.5 bg-slate-700 text-slate-300 hover:text-white">
+            <i data-lucide="archive" class="w-3.5 h-3.5"></i>
+            <span>2026 (Histórico)</span>
+          </button>
+          <button id="btn-year-2027" onclick="setYear(2027)" class="px-4 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center space-x-1.5 bg-sky-500 text-white shadow-sm">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+            <span>2027 (Planificación)</span>
+          </button>
+        </div>
+
+        <!-- Top Actions -->
+        <div class="flex items-center space-x-2">
+          <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow flex items-center space-x-1.5 transition">
+            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+            <span class="hidden sm:inline">Exportar Excel</span>
+          </button>
+          <button onclick="saveChanges()" class="bg-sky-600 hover:bg-sky-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow flex items-center space-x-1.5 transition">
+            <i data-lucide="save" class="w-4 h-4"></i>
+            <span class="hidden sm:inline">Guardar</span>
+          </button>
+          <div class="relative group">
+            <button class="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white p-2 rounded-lg text-xs transition border border-slate-700">
+              <i data-lucide="settings" class="w-4 h-4"></i>
+            </button>
+            <div class="absolute right-0 mt-1 w-52 bg-white text-slate-800 rounded-xl shadow-2xl border border-slate-200 py-2 hidden group-hover:block z-50 animate-fade-in">
+              <div class="px-3 py-1 text-xs font-bold text-slate-400 uppercase tracking-wider">Copia de Seguridad</div>
+              <button onclick="exportJSONBackup()" class="w-full text-left px-4 py-2 text-xs hover:bg-slate-100 flex items-center space-x-2">
+                <i data-lucide="download" class="w-3.5 h-3.5 text-slate-500"></i>
+                <span>Descargar Backup JSON</span>
+              </button>
+              <label class="w-full text-left px-4 py-2 text-xs hover:bg-slate-100 flex items-center space-x-2 cursor-pointer">
+                <i data-lucide="upload" class="w-3.5 h-3.5 text-slate-500"></i>
+                <span>Cargar Backup JSON</span>
+                <input type="file" id="input-json-file" accept=".json" class="hidden" onchange="importJSONBackup(event)">
+              </label>
+              <div class="border-t border-slate-100 my-1"></div>
+              <button onclick="clone2026to2027()" class="w-full text-left px-4 py-2 text-xs text-indigo-600 hover:bg-indigo-50 flex items-center space-x-2">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                <span>Importar Plantilla 2026 a 2027</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Secondary Navigation Bar: Functional Sheets -->
+  <nav class="bg-white border-b border-slate-200 shadow-sm sticky top-16 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between overflow-x-auto py-2.5">
+        
+        <!-- Functional Tabs -->
+        <div class="flex items-center space-x-1 sm:space-x-2 flex-nowrap" id="section-tabs">
+          <button onclick="switchTab('LAB. URGENCIA')" data-tab="LAB. URGENCIA" class="tab-btn active px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 whitespace-nowrap bg-rose-50 text-rose-700 border border-rose-200">
+            <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+            <span>🚨 Lab. Urgencia</span>
+          </button>
+          <button onclick="switchTab('PROFESIONALES RUTINA')" data-tab="PROFESIONALES RUTINA" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 whitespace-nowrap text-slate-600 hover:bg-slate-100">
+            <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+            <span>🔬 Profesionales Rutina</span>
+          </button>
+          <button onclick="switchTab('TENS RUTINA')" data-tab="TENS RUTINA" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 whitespace-nowrap text-slate-600 hover:bg-slate-100">
+            <span class="w-2 h-2 rounded-full bg-cyan-500"></span>
+            <span>💉 TENS Rutina</span>
+          </button>
+          <button onclick="switchTab('AUXILIARES ')" data-tab="AUXILIARES " class="tab-btn px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 whitespace-nowrap text-slate-600 hover:bg-slate-100">
+            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+            <span>🧹 Auxiliares</span>
+          </button>
+          <button onclick="switchTab('TOMA DE MUESTRA')" data-tab="TOMA DE MUESTRA" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 whitespace-nowrap text-slate-600 hover:bg-slate-100">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span>🩸 Toma de Muestras (TDM)</span>
+          </button>
+          <div class="h-5 w-px bg-slate-200 mx-1"></div>
+          <button onclick="switchTab('DIRECTORIO')" data-tab="DIRECTORIO" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 whitespace-nowrap text-slate-600 hover:bg-slate-100">
+            <i data-lucide="users" class="w-3.5 h-3.5 text-slate-500"></i>
+            <span>👥 Dotación & Personal</span>
+          </button>
+          <button onclick="switchTab('METRICAS')" data-tab="METRICAS" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 whitespace-nowrap text-slate-600 hover:bg-slate-100">
+            <i data-lucide="bar-chart-3" class="w-3.5 h-3.5 text-slate-500"></i>
+            <span>📊 Estadísticas</span>
+          </button>
+        </div>
+
+        <!-- Quick Stats Alert / Quota Monitor -->
+        <div id="quota-warning-badge" class="hidden sm:flex items-center space-x-2 bg-amber-50 border border-amber-200 text-amber-800 px-3 py-1 rounded-lg text-xs">
+          <i data-lucide="alert-circle" class="w-3.5 h-3.5 text-amber-600"></i>
+          <span class="font-semibold">Regla TENS:</span>
+          <span>Máximo 4-5 ausencias/día</span>
+        </div>
+
+      </div>
+    </div>
+  </nav>
+
+  <!-- Controls Bar: Month Picker & Search Filter -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-2 w-full">
+    <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+      
+      <!-- Month Navigation Buttons -->
+      <div class="flex items-center space-x-2 overflow-x-auto pb-1 md:pb-0" id="month-picker-container">
+        <button onclick="prevMonth()" class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition">
+          <i data-lucide="chevron-left" class="w-4 h-4"></i>
+        </button>
+        <div class="flex items-center space-x-1" id="months-list">
+          <!-- Populated by JS: Ene, Feb, Mar... -->
+        </div>
+        <button onclick="nextMonth()" class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition">
+          <i data-lucide="chevron-right" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Search & Filters -->
+      <div class="flex items-center space-x-2">
+        <div class="relative w-full sm:w-64">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
+          <input type="text" id="input-search" oninput="applyFilters()" placeholder="Buscar funcionario o RUT..." class="w-full pl-9 pr-4 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white transition">
+        </div>
+        <select id="select-role-filter" onchange="applyFilters()" class="text-xs py-1.5 px-3 bg-slate-50 border border-slate-300 rounded-lg text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500">
+          <option value="ALL">Todos los Cargos</option>
+          <option value="Profesional">Profesionales</option>
+          <option value="TENS">TENS</option>
+          <option value="Auxiliar">Auxiliares</option>
+          <option value="Interno TM">Internos TM</option>
+        </select>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Interactive Legend Bar -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 w-full">
+    <div class="flex items-center justify-between bg-slate-100/80 px-3 py-2 rounded-lg border border-slate-200 text-xs overflow-x-auto gap-3">
+      <span class="font-bold text-slate-500 uppercase tracking-wider text-[10px]">Leyenda:</span>
+      <div class="flex items-center space-x-3 flex-wrap gap-y-1">
+        <div class="flex items-center space-x-1.5">
+          <span class="w-3.5 h-3.5 rounded bg-red-500 inline-block shadow-sm"></span>
+          <span class="font-medium text-slate-700">Feriado Legal (Vacaciones)</span>
+        </div>
+        <div class="flex items-center space-x-1.5">
+          <span class="w-3.5 h-3.5 rounded bg-yellow-400 inline-block shadow-sm"></span>
+          <span class="font-medium text-slate-700">Día Administrativo</span>
+        </div>
+        <div class="flex items-center space-x-1.5">
+          <span class="w-3.5 h-3.5 rounded bg-purple-400 inline-block shadow-sm"></span>
+          <span class="font-medium text-slate-700">Devolución de Tiempo</span>
+        </div>
+        <div class="flex items-center space-x-1.5">
+          <span class="w-3.5 h-3.5 rounded bg-pink-400 inline-block shadow-sm"></span>
+          <span class="font-medium text-slate-700">Comisión de Servicio (*)</span>
+        </div>
+        <div class="flex items-center space-x-1.5">
+          <span class="w-3.5 h-3.5 rounded bg-orange-400 inline-block shadow-sm"></span>
+          <span class="font-medium text-slate-700">Licencia Médica</span>
+        </div>
+        <div class="flex items-center space-x-1.5">
+          <span class="w-3.5 h-3.5 rounded bg-blue-900 inline-block shadow-sm"></span>
+          <span class="font-medium text-slate-700">Permiso Sin Goce</span>
+        </div>
+        <div class="flex items-center space-x-1.5">
+          <span class="w-3.5 h-3.5 rounded bg-orange-200 text-orange-900 text-[10px] font-bold flex items-center justify-center">L</span>
+          <span class="font-medium text-slate-700">Largo (08-20h)</span>
+        </div>
+        <div class="flex items-center space-x-1.5">
+          <span class="w-3.5 h-3.5 rounded bg-slate-700 text-white text-[10px] font-bold flex items-center justify-center">N</span>
+          <span class="font-medium text-slate-700">Noche (20-08h)</span>
+        </div>
+        <div class="flex items-center space-x-1.5">
+          <span class="w-3.5 h-3.5 rounded bg-orange-500 inline-block shadow-sm"></span>
+          <span class="font-medium text-slate-700">Fin de Semana</span>
+        </div>
+      </div>
+      <div class="text-slate-400 text-[11px] hidden lg:block italic">
+        * Haz clic en cualquier día para asignar o editar
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Workspace Area -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 w-full flex-grow">
+    
+    <!-- 1. Matrix View Container (Urgencia, Rutina Profesionales, TENS, Auxiliares) -->
+    <div id="view-matrix" class="table-matrix-wrapper bg-white">
+      <table class="table-matrix" id="shift-matrix-table">
+        <thead id="matrix-head">
+          <!-- Rendered dynamically -->
+        </thead>
+        <tbody id="matrix-body">
+          <!-- Rendered dynamically -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 2. Special Toma de Muestras (TDM) Coordinator Board View -->
+    <div id="view-tdm" class="hidden space-y-4">
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-base font-bold text-slate-800 flex items-center space-x-2">
+            <span class="h-3 w-3 rounded-full bg-emerald-500"></span>
+            <span>Tablero de Coordinación Diaria - Toma de Muestras (TDM)</span>
+          </h2>
+          <p class="text-xs text-slate-500 mt-0.5">
+            Designación de puestos operativos y horarios. El personal proviene de Rutina TENS, Urgencia y Profesionales sin duplicar personas.
+          </p>
+        </div>
+        
+        <!-- Day Selector for TDM -->
+        <div class="flex items-center space-x-2 bg-slate-50 p-1.5 rounded-lg border border-slate-200">
+          <button onclick="stepTDMDay(-1)" class="p-1 rounded bg-white hover:bg-slate-100 text-slate-600 shadow-xs">
+            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+          </button>
+          <input type="date" id="tdm-date-input" onchange="onTDMDateChange(this.value)" class="text-xs font-semibold bg-transparent border-0 focus:ring-0 text-slate-700 cursor-pointer">
+          <button onclick="stepTDMDay(1)" class="p-1 rounded bg-white hover:bg-slate-100 text-slate-600 shadow-xs">
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+          </button>
+          <button onclick="setTDMToday()" class="text-xs font-bold text-emerald-600 hover:text-emerald-700 px-2 py-1 bg-emerald-50 rounded">Hoy</button>
+        </div>
+      </div>
+
+      <!-- TDM Stations Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="tdm-stations-grid">
+        <!-- Rendered dynamically -->
+      </div>
+      
+      <!-- TDM Monthly Overview Table -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm mt-6">
+        <h3 class="text-sm font-bold text-slate-800 mb-2 flex items-center space-x-2">
+          <i data-lucide="calendar" class="w-4 h-4 text-emerald-600"></i>
+          <span>Resumen Mensual de Designaciones Toma de Muestra</span>
+        </h3>
+        <div class="table-matrix-wrapper" id="tdm-monthly-table-wrapper">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Directorio & Dotación View -->
+    <div id="view-directorio" class="hidden space-y-4">
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+        <div>
+          <h2 class="text-base font-bold text-slate-800 flex items-center space-x-2">
+            <i data-lucide="users" class="w-5 h-5 text-sky-600"></i>
+            <span>Dotación y Directorio de Funcionarios</span>
+          </h2>
+          <p class="text-xs text-slate-500 mt-0.5">
+            Listado oficial del personal del laboratorio. Aquí puedes completar RUTs y apellidos pendientes para mantener el formato uniforme.
+          </p>
+        </div>
+        <button onclick="openNewStaffModal()" class="bg-sky-600 hover:bg-sky-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow flex items-center space-x-1.5">
+          <i data-lucide="user-plus" class="w-4 h-4"></i>
+          <span>Agregar Funcionario</span>
+        </button>
+      </div>
+
+      <!-- Audit Summary Cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="directorio-stats-cards">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Staff Table -->
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-slate-200 text-left text-xs" id="table-staff-directory">
+            <thead class="bg-slate-900 text-white font-semibold">
+              <tr>
+                <th class="px-4 py-3">Nombre Funcionario</th>
+                <th class="px-4 py-3">RUT</th>
+                <th class="px-4 py-3">Estamento / Rol</th>
+                <th class="px-4 py-3">Sección / Área</th>
+                <th class="px-4 py-3">Pestañas en Planilla</th>
+                <th class="px-4 py-3">Estado Datos</th>
+                <th class="px-4 py-3 text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 bg-white" id="directorio-table-body">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Estadísticas y Métricas View -->
+    <div id="view-metricas" class="hidden space-y-4">
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+        <h2 class="text-base font-bold text-slate-800 flex items-center space-x-2">
+          <i data-lucide="bar-chart-2" class="w-5 h-5 text-indigo-600"></i>
+          <span>Panel de Estadísticas y Control de Ausentismos</span>
+        </h2>
+        <p class="text-xs text-slate-500 mt-0.5">
+          Monitoreo de días de vacaciones, administrativos, licencias y cumplimiento del tope de ausencias diarias.
+        </p>
+      </div>
+
+      <!-- High level KPIs -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="metrics-kpis">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Absences Breakdown by Staff -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+        <h3 class="text-sm font-bold text-slate-800 mb-3 flex items-center space-x-2">
+          <i data-lucide="pie-chart" class="w-4 h-4 text-slate-600"></i>
+          <span>Desglose Individual de Ausentismos y Horas (<span id="stats-year-label">2027</span>)</span>
+        </h3>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-xs text-left divide-y divide-slate-200" id="table-metrics-staff">
+            <thead class="bg-slate-100 text-slate-700 font-bold">
+              <tr>
+                <th class="px-3 py-2">Funcionario</th>
+                <th class="px-3 py-2">Estamento</th>
+                <th class="px-3 py-2">Sección</th>
+                <th class="px-3 py-2 text-center text-red-700">Vacaciones (Días)</th>
+                <th class="px-3 py-2 text-center text-yellow-700">Administrativos (Días)</th>
+                <th class="px-3 py-2 text-center text-purple-700">Devoluciones (Horas)</th>
+                <th class="px-3 py-2 text-center text-orange-700">Licencias Médicas</th>
+                <th class="px-3 py-2 text-center text-slate-700">Turnos Noche</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100" id="table-metrics-body">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 text-slate-400 text-xs py-4 border-t border-slate-800 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div class="flex items-center space-x-2">
+        <span class="font-bold text-slate-200">Hospital Regional de Talca</span>
+        <span>•</span>
+        <span>Unidad de Laboratorio Clínico</span>
+      </div>
+      <div class="flex items-center space-x-3 text-slate-400">
+        <span>Sistema de Gestión de Turnos 2027</span>
+        <span>•</span>
+        <span>Versión 2.0 Web</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL: Quick Shift / Absence Picker -->
+  <div id="modal-shift-picker" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 hidden p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-100 animate-fade-in">
+      
+      <!-- Modal Header -->
+      <div class="bg-slate-900 text-white p-4 flex items-center justify-between">
+        <div>
+          <h3 class="text-sm font-bold" id="modal-shift-title">Asignar Turno / Evento</h3>
+          <p class="text-xs text-slate-400 mt-0.5" id="modal-shift-subtitle">Funcionario - Fecha</p>
+        </div>
+        <button onclick="closeShiftModal()" class="text-slate-400 hover:text-white p-1 rounded-lg">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-4 space-y-4">
+        
+        <!-- Absence & Leave Options -->
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">Permisos y Ausentismos</label>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="selectEventType('VACACIONES', '')" class="flex items-center space-x-2 p-2.5 rounded-xl border border-red-200 bg-red-50 hover:bg-red-100 text-red-800 text-xs font-semibold transition">
+              <span class="w-3 h-3 rounded-full bg-red-500"></span>
+              <span>🌴 Vacaciones (FL)</span>
+            </button>
+            <button onclick="selectEventType('ADMINISTRATIVO', '')" class="flex items-center space-x-2 p-2.5 rounded-xl border border-yellow-200 bg-yellow-50 hover:bg-yellow-100 text-yellow-800 text-xs font-semibold transition">
+              <span class="w-3 h-3 rounded-full bg-yellow-400"></span>
+              <span>📋 Administrativo (DA)</span>
+            </button>
+            <button onclick="selectEventType('DEVOLUCION_TIEMPO', 'H+6')" class="flex items-center space-x-2 p-2.5 rounded-xl border border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-800 text-xs font-semibold transition">
+              <span class="w-3 h-3 rounded-full bg-purple-500"></span>
+              <span>⏱️ Devolución / Extras</span>
+            </button>
+            <button onclick="selectEventType('COMISION_SERVICIO', '*')" class="flex items-center space-x-2 p-2.5 rounded-xl border border-pink-200 bg-pink-50 hover:bg-pink-100 text-pink-800 text-xs font-semibold transition">
+              <span class="w-3 h-3 rounded-full bg-pink-500"></span>
+              <span>🏢 Comisión (*)</span>
+            </button>
+            <button onclick="selectEventType('LICENCIA_MEDICA', 'LM')" class="flex items-center space-x-2 p-2.5 rounded-xl border border-orange-200 bg-orange-50 hover:bg-orange-100 text-orange-800 text-xs font-semibold transition">
+              <span class="w-3 h-3 rounded-full bg-orange-500"></span>
+              <span>🏥 Licencia Médica</span>
+            </button>
+            <button onclick="selectEventType('SIN_GOCE_SUELDO', '')" class="flex items-center space-x-2 p-2.5 rounded-xl border border-blue-900/30 bg-blue-900/10 hover:bg-blue-900/20 text-blue-950 text-xs font-semibold transition">
+              <span class="w-3 h-3 rounded-full bg-blue-900"></span>
+              <span>💼 Sin Goce Sueldo</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Shift Types -->
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">Turnos Rotativos / Horarios</label>
+          <div class="grid grid-cols-4 gap-2 text-center">
+            <button onclick="selectEventType('TURNO', 'L')" class="p-2 rounded-xl border border-orange-300 bg-orange-100 hover:bg-orange-200 text-orange-900 text-xs font-bold transition">
+              <div>L</div>
+              <div class="text-[10px] font-normal text-orange-700">Largo</div>
+            </button>
+            <button onclick="selectEventType('TURNO', 'N')" class="p-2 rounded-xl border border-slate-600 bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold transition">
+              <div>N</div>
+              <div class="text-[10px] font-normal text-slate-300">Noche</div>
+            </button>
+            <button onclick="selectEventType('TURNO', 'M')" class="p-2 rounded-xl border border-sky-300 bg-sky-100 hover:bg-sky-200 text-sky-900 text-xs font-bold transition">
+              <div>M</div>
+              <div class="text-[10px] font-normal text-sky-700">Mañana</div>
+            </button>
+            <button onclick="selectEventType('TURNO', 'T')" class="p-2 rounded-xl border border-indigo-300 bg-indigo-100 hover:bg-indigo-200 text-indigo-900 text-xs font-bold transition">
+              <div>T</div>
+              <div class="text-[10px] font-normal text-indigo-700">Tarde</div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Custom Code or Hours Input -->
+        <div>
+          <label class="block text-xs font-medium text-slate-700 mb-1">Texto o Código Personalizado (ej: H+6, H+9, 16:00-17:00, L(1h dev)):</label>
+          <input type="text" id="modal-custom-code" placeholder="Código o rango horario..." class="w-full px-3 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500">
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="bg-slate-50 px-4 py-3 border-t border-slate-100 flex items-center justify-between">
+        <button onclick="clearCurrentDayShift()" class="text-rose-600 hover:text-rose-700 font-bold text-xs flex items-center space-x-1">
+          <i data-lucide="trash-2" class="w-4 h-4"></i>
+          <span>Limpiar Día (Libre)</span>
+        </button>
+        <div class="flex items-center space-x-2">
+          <button onclick="closeShiftModal()" class="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-200 rounded-lg transition font-medium">Cancelar</button>
+          <button onclick="saveShiftModal()" class="px-4 py-1.5 text-xs bg-sky-600 hover:bg-sky-500 text-white rounded-lg shadow font-bold transition">Aplicar</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL: Staff Editor (Completar RUT o Apellidos) -->
+  <div id="modal-staff-editor" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 hidden p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-100 animate-fade-in">
+      <div class="bg-slate-900 text-white p-4 flex items-center justify-between">
+        <h3 class="text-sm font-bold flex items-center space-x-2">
+          <i data-lucide="user-cog" class="w-4 h-4 text-sky-400"></i>
+          <span id="modal-staff-title">Editar Datos del Funcionario</span>
+        </h3>
+        <button onclick="closeStaffModal()" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div class="p-5 space-y-3 text-xs">
+        <input type="hidden" id="staff-edit-id">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Nombre Completo:</label>
+          <input type="text" id="staff-edit-name" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-sky-500">
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">RUT (Formato: 12.345.678-K):</label>
+          <input type="text" id="staff-edit-rut" placeholder="12345678-9" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-sky-500">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Estamento / Rol:</label>
+            <select id="staff-edit-role" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-sky-500">
+              <option value="Profesional">Profesional</option>
+              <option value="TENS">TENS</option>
+              <option value="Auxiliar">Auxiliar</option>
+              <option value="Interno TM">Interno TM</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Sección / Especialidad:</label>
+            <input type="text" id="staff-edit-section" placeholder="Hematología, Urgencia..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-sky-500">
+          </div>
+        </div>
+      </div>
+      <div class="bg-slate-50 px-5 py-3 border-t border-slate-100 flex items-center justify-end space-x-2">
+        <button onclick="closeStaffModal()" class="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-200 rounded-lg font-medium">Cancelar</button>
+        <button onclick="saveStaffModal()" class="px-4 py-1.5 text-xs bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-lg shadow">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main JavaScript Logic -->
+  <script src="app.js"></script>
+</body>
+</html>

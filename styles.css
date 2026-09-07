@@ -1,0 +1,210 @@
+﻿/* Custom Styling for Turnos Lab HRT */
+:root {
+  --primary-navy: #0f172a;
+  --primary-blue: #1e40af;
+  --accent-cyan: #0284c7;
+  --accent-emerald: #059669;
+  --accent-amber: #d97706;
+  --accent-rose: #e11d48;
+  --accent-purple: #9333ea;
+  --bg-slate: #f8fafc;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background-color: var(--bg-slate);
+  color: #1e293b;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Matrix Table Styling */
+.table-matrix-wrapper {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: calc(100vh - 240px);
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+}
+
+.table-matrix {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: max-content;
+  min-width: 100%;
+}
+
+.table-matrix th,
+.table-matrix td {
+  border-right: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0;
+  text-align: center;
+}
+
+/* Sticky Headers and Columns */
+.sticky-col-header {
+  position: sticky;
+  left: 0;
+  z-index: 30;
+  background-color: #0f172a;
+  color: white;
+  min-width: 250px;
+  width: 250px;
+  text-align: left !important;
+  padding: 0.5rem 0.75rem !important;
+}
+
+.sticky-col-header-2 {
+  position: sticky;
+  left: 250px;
+  z-index: 30;
+  background-color: #1e293b;
+  color: white;
+  min-width: 110px;
+  width: 110px;
+  text-align: left !important;
+  padding: 0.5rem 0.75rem !important;
+}
+
+.sticky-col-body {
+  position: sticky;
+  left: 0;
+  z-index: 20;
+  background-color: #ffffff;
+  min-width: 250px;
+  width: 250px;
+  text-align: left !important;
+  padding: 0.4rem 0.75rem !important;
+  box-shadow: 2px 0 4px -2px rgba(0,0,0,0.1);
+}
+
+.sticky-col-body-2 {
+  position: sticky;
+  left: 250px;
+  z-index: 20;
+  background-color: #f8fafc;
+  min-width: 110px;
+  width: 110px;
+  text-align: left !important;
+  padding: 0.4rem 0.75rem !important;
+  box-shadow: 2px 0 4px -2px rgba(0,0,0,0.1);
+}
+
+.sticky-row-header {
+  position: sticky;
+  top: 0;
+  z-index: 25;
+  background-color: #0f172a;
+  color: white;
+}
+
+/* Cell Types & Colors */
+.cell-shift {
+  width: 38px;
+  min-width: 38px;
+  max-width: 44px;
+  height: 38px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.cell-shift:hover {
+  filter: brightness(0.92);
+  transform: scale(1.04);
+  z-index: 10;
+  box-shadow: 0 0 8px rgba(0,0,0,0.2);
+}
+
+/* Event Color Classes */
+.event-vacaciones {
+  background-color: #ef4444 !important;
+  color: #ffffff !important;
+}
+.event-administrativo {
+  background-color: #facc15 !important;
+  color: #854d0e !important;
+}
+.event-devolucion_tiempo {
+  background-color: #c084fc !important;
+  color: #4c1d95 !important;
+}
+.event-comision_servicio {
+  background-color: #f472b6 !important;
+  color: #831843 !important;
+}
+.event-sin_goce_sueldo {
+  background-color: #1e3a8a !important;
+  color: #ffffff !important;
+}
+.event-permiso_tarde {
+  background-color: #38bdf8 !important;
+  color: #0c4a6e !important;
+}
+.event-largo {
+  background-color: #fed7aa !important;
+  color: #9a3412 !important;
+}
+.event-noche {
+  background-color: #334155 !important;
+  color: #f8fafc !important;
+}
+.event-saliente {
+  background-color: #e2e8f0 !important;
+  color: #475569 !important;
+}
+.event-encargado {
+  background-color: #94a3b8 !important;
+  color: #0f172a !important;
+}
+.event-tdm-assigned {
+  background-color: #10b981 !important;
+  color: #ffffff !important;
+}
+
+/* Weekend highlighting */
+.is-weekend-header {
+  background-color: #ea580c !important;
+  color: #ffffff !important;
+}
+.is-weekend-col {
+  background-color: #fff7ed;
+}
+.is-holiday-header {
+  background-color: #dc2626 !important;
+  color: #ffffff !important;
+}
+.is-holiday-col {
+  background-color: #fef2f2;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out forwards;
+}
