@@ -577,6 +577,58 @@ for date_str, items in tdm_raw_by_day.items():
             'code': 'X'
         })
 
+# Enrich staff with estamento and jornada
+BQ_NAMES = {'Alejandra Vorphal Vasquez', 'Camila Reyes Vivero', 'Rodrigo Benavente Contreras', 'Daniel Schulz', 'Camila Gutierrez', 'Carolina Arancibia Jara'}
+
+ln_counts = {}
+for t in turns_2026:
+    if t.get('code') in ['L', 'N']:
+        ln_counts[t['staff_id']] = ln_counts.get(t['staff_id'], 0) + 1
+
+for pid, s in staff_db.items():
+    name = s['name']
+    role = s.get('role', '')
+    sec = s.get('section', '')
+    is_intern = s.get('is_intern', False)
+    clean_rut = s.get('rut', '').replace('.', '')
+    dot_rec = dot_records.get(clean_rut)
+    p = dot_rec['planta'] if dot_rec else ''
+
+    if is_intern or 'Intern' in name:
+        estamento = 'Interno TM'
+    elif role == 'Auxiliar' or 'Auxiliar' in sec or 'AUXILIAR' in p:
+        estamento = 'Auxiliar'
+    elif name in BQ_NAMES or 'BIOQUIM' in p:
+        estamento = 'Bioquímico'
+    elif name in ['Jimena Gonzalez'] or 'ADMINISTRATIVO' in p:
+        estamento = 'Administrativo'
+    elif name in ['Patricia Morales Rojas', 'Maria Jose Peñailillo']:
+        estamento = 'Tecnólogo Médico'
+    elif role == 'TENS' or 'TENS' in sec or 'TECNICO DE NIVEL SUPERIOR' in p or 'AUXILIAR PARAMEDICO' in p:
+        estamento = 'TENS'
+    elif role == 'Profesional' or 'TECNOLOGO' in p:
+        estamento = 'Tecnólogo Médico'
+    else:
+        estamento = 'TENS'
+
+    ln = ln_counts.get(pid, 0)
+    if ln >= 20 or (sec == 'Urgencia' and not is_intern and pid in [
+        'jorge_moraga', 'tiara_araya', 'erica_santelices', 'gabriela_chandia',
+        'jorge_perez', 'ociel_beltran', 'sergio_bravo_caroca', 'daniela_castillo',
+        'javier_malpica', 'olivia_belen_rosales', 'leticia_oliva_albornoz',
+        'valentino_becerra', 'nicolas_blanco', 'susana_santos', 'ignacio_brunel',
+        'deisy_moreno', 'rossana_albornoz_arenas', 'elieser_valdebenito',
+        'ana_toledo_ramos', 'barbara_gutierrez_gomez', 'barbara_cepeda_martinez',
+        'esmeralda_abarza', 'lucia_pena', 'michelle_mino', 'loreto_ramirez',
+        'carolina_campos', 'sergio_rojo', 'yessenia_caceres', 'turno_reemplazo_urgencia'
+    ]):
+        jornada = 'Turno'
+    else:
+        jornada = 'Diurno'
+
+    s['estamento'] = estamento
+    s['jornada'] = jornada
+
 print(f"Refined Staff count: {len(staff_db)}")
 print(f"Refined Shifts count: {len(turns_2026)}")
 print(f"Refined TDM assignments: {len(tdm_2026)}")

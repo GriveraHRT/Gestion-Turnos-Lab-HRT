@@ -3,14 +3,17 @@
  * Hospital Regional de Talca - Versión 2027
  */
 
-const DATA_VERSION = '2.2';
+const DATA_VERSION = '3.0';
 
 let state = {
   currentYear: 2026,
   currentMonth: 1,
-  activeTab: 'LAB. URGENCIA',
+  activeTab: 'CALENDARIO GENERAL',
+  presetFilter: 'ALL',
+  groupBy: 'ESTAMENTO',
+  estamentoFilter: 'ALL',
+  jornadaFilter: 'ALL',
   searchQuery: '',
-  roleFilter: 'ALL',
   selectedCell: null,
   selectedTDMDate: '2026-01-02',
   staff: {},
@@ -20,8 +23,70 @@ let state = {
   tdm2027: [],
   holidays: {},
   _turnsMap: null,
-  _turnsMapYear: null
+  _turnsMapYear: null,
+  rangeModalState: null
 };
+
+function normalizeText(str) {
+  return (str || '')
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
+
+function normalizeRut(rut) {
+  return (rut || '').replace(/[\.\-\s]/g, '').toUpperCase();
+}
+
+function formatDateToISO(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function parseISODate(str) {
+  const parts = str.split('-');
+  return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+}
+
+function getChileHolidaysSet(year) {
+  const set = new Set();
+  const hList = state.holidays[String(year)] || [];
+  hList.forEach(h => set.add(h.date));
+  return set;
+}
+
+function getEligibleDatesInRange(startDateStr, endDateStr, mode) {
+  if (!startDateStr || !endDateStr) return [];
+  const start = parseISODate(startDateStr);
+  const end = parseISODate(endDateStr);
+  if (end < start) return [];
+
+  const year = start.getFullYear();
+  const holidays = getChileHolidaysSet(year);
+  const dates = [];
+
+  const cur = new Date(start);
+  while (cur <= end) {
+    const curStr = formatDateToISO(cur);
+    const dow = cur.getDay(); // 0 = Sun, 6 = Sat
+
+    if (mode === 'workdays') {
+      const isWeekend = (dow === 0 || dow === 6);
+      const isHoliday = holidays.has(curStr);
+      if (!isWeekend && !isHoliday) {
+        dates.push(curStr);
+      }
+    } else {
+      dates.push(curStr);
+    }
+    cur.setDate(cur.getDate() + 1);
+  }
+  return dates;
+}
+
 
 const MONTH_NAMES = [
   'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
@@ -197,13 +262,20 @@ function switchTab(tabId) {
   document.querySelectorAll('.tab-btn').forEach(btn => {
     const btnTab = (btn.dataset.tab || '').trim();
     if (btnTab === normTab) {
-      btn.className = 'tab-btn active px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 whitespace-nowrap bg-sky-100 text-sky-800 border border-sky-300 shadow-xs';
+      btn.className = 'tab-btn active px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 whitespace-nowrap bg-sky-100 text-sky-800 border border-sky-300 shadow-xs';
     } else {
-      btn.className = 'tab-btn px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 whitespace-nowrap text-slate-600 hover:bg-slate-100';
+      btn.className = 'tab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 whitespace-nowrap text-slate-600 hover:bg-slate-100';
     }
   });
 
-  document.getElementById('view-matrix').classList.toggle('hidden', normTab === 'TOMA DE MUESTRA' || normTab === 'DIRECTORIO' || normTab === 'METRICAS');
+  const isMatrix = (normTab === 'CALENDARIO GENERAL' || normTab === 'LAB. URGENCIA' || normTab === 'PROFESIONALES RUTINA' || normTab === 'TENS RUTINA' || normTab === 'AUXILIARES');
+
+  const generalControls = document.getElementById('general-calendar-controls');
+  if (generalControls) {
+    generalControls.classList.toggle('hidden', normTab !== 'CALENDARIO GENERAL');
+  }
+
+  document.getElementById('view-matrix').classList.toggle('hidden', !isMatrix);
   document.getElementById('view-tdm').classList.toggle('hidden', normTab !== 'TOMA DE MUESTRA');
   document.getElementById('view-directorio').classList.toggle('hidden', normTab !== 'DIRECTORIO');
   document.getElementById('view-metricas').classList.toggle('hidden', normTab !== 'METRICAS');
@@ -212,10 +284,93 @@ function switchTab(tabId) {
 }
 
 function applyFilters() {
-  state.searchQuery = document.getElementById('input-search').value.toLowerCase().trim();
-  state.roleFilter = document.getElementById('select-role-filter').value;
+  const searchInput = document.getElementById('input-search');
+  state.searchQuery = searchInput ? searchInput.value.trim() : '';
+
+  const clearBtn = document.getElementById('btn-clear-search');
+  if (clearBtn) {
+    if (state.searchQuery.length > 0) clearBtn.classList.remove('hidden');
+    else clearBtn.classList.add('hidden');
+  }
+
+  const estSelect = document.getElementById('select-estamento-filter');
+  if (estSelect) state.estamentoFilter = estSelect.value;
+
+  const jorSelect = document.getElementById('select-jornada-filter');
+  if (jorSelect) state.jornadaFilter = jorSelect.value;
+
   renderApp();
 }
+
+function clearSearch() {
+  const searchInput = document.getElementById('input-search');
+  if (searchInput) searchInput.value = '';
+  applyFilters();
+}
+
+function setPresetFilter(preset) {
+  state.presetFilter = preset;
+
+  const presets = ['ALL', 'URGENCIAS', 'RUTINA', 'TENS', 'AUXILIARES', 'PROFESIONALES'];
+  presets.forEach(p => {
+    const btn = document.getElementById(`preset-${p}`);
+    if (btn) {
+      if (p === preset) {
+        btn.className = 'preset-btn active px-2.5 py-1 text-xs font-bold rounded-lg transition bg-sky-600 text-white shadow-xs whitespace-nowrap flex items-center space-x-1';
+      } else {
+        btn.className = 'preset-btn px-2.5 py-1 text-xs font-semibold rounded-lg transition text-slate-600 hover:bg-slate-100 whitespace-nowrap flex items-center space-x-1';
+      }
+    }
+  });
+
+  renderApp();
+}
+
+function changeGrouping(value) {
+  state.groupBy = value;
+  renderApp();
+}
+
+function matchesSearch(member, rawQuery) {
+  if (!rawQuery) return true;
+  const qNorm = normalizeText(rawQuery);
+  const qRut = normalizeRut(rawQuery);
+
+  if (normalizeText(member.name).includes(qNorm)) return true;
+  if (member.official_name && normalizeText(member.official_name).includes(qNorm)) return true;
+  if (member.rut && qRut.length > 0 && normalizeRut(member.rut).includes(qRut)) return true;
+  if (member.section && normalizeText(member.section).includes(qNorm)) return true;
+  if (member.estamento && normalizeText(member.estamento).includes(qNorm)) return true;
+  if (member.role && normalizeText(member.role).includes(qNorm)) return true;
+  return false;
+}
+
+function matchesPreset(member, preset) {
+  if (!preset || preset === 'ALL') return true;
+
+  const sec = (member.section || '').toLowerCase();
+  const jor = member.jornada || '';
+  const est = member.estamento || member.role || '';
+  const sheets = (member.sheets || []).map(s => s.toLowerCase());
+
+  if (preset === 'URGENCIAS') {
+    return jor === 'Turno' || sec.includes('urgencia') || sheets.some(s => s.includes('urgencia'));
+  }
+  if (preset === 'RUTINA') {
+    return jor === 'Diurno' || sheets.some(s => s.includes('rutina')) || (!sec.includes('urgencia') && jor !== 'Turno');
+  }
+  if (preset === 'TENS') {
+    return est === 'TENS' || member.role === 'TENS' || sheets.some(s => s.includes('tens'));
+  }
+  if (preset === 'AUXILIARES') {
+    return est === 'Auxiliar' || member.role === 'Auxiliar' || sheets.some(s => s.includes('auxiliar'));
+  }
+  if (preset === 'PROFESIONALES') {
+    return est === 'Tecnólogo Médico' || est === 'Bioquímico' || est === 'Interno TM' || member.role === 'Profesional' || sheets.some(s => s.includes('profesional'));
+  }
+  return true;
+}
+
 
 function renderApp() {
   if (state.activeTab === 'TOMA DE MUESTRA') {
@@ -234,6 +389,9 @@ function renderMatrixView() {
   const tableHead = document.getElementById('matrix-head');
   const tableBody = document.getElementById('matrix-body');
   if (!tableHead || !tableBody) return;
+
+  const countAllSpan = document.getElementById('count-all');
+  if (countAllSpan) countAllSpan.innerText = Object.keys(state.staff).length;
 
   const year = state.currentYear;
   const month = state.currentMonth;
@@ -283,28 +441,52 @@ function renderMatrixView() {
   const activeStaff = getStaffForSheet(state.activeTab);
   tableBody.innerHTML = '';
   if (activeStaff.length === 0) {
-    tableBody.innerHTML = `<tr><td colspan="${daysInMonth + 2}" class="p-8 text-center text-slate-400 text-xs">No se encontraron funcionarios para este criterio de búsqueda.</td></tr>`;
+    tableBody.innerHTML = `<tr><td colspan="${daysInMonth + 2}" class="p-8 text-center text-slate-400 text-xs">No se encontraron funcionarios para este criterio de búsqueda o filtro.</td></tr>`;
     return;
+  }
+
+  // Pre-calculate group counts for divider badges
+  const groupCounts = {};
+  if (state.groupBy !== 'NONE') {
+    activeStaff.forEach(m => {
+      let gKey = 'General';
+      if (state.groupBy === 'ESTAMENTO') gKey = m.estamento || m.role || 'Otros';
+      else if (state.groupBy === 'JORNADA') gKey = m.jornada === 'Turno' ? 'Turno Rotativo (Urgencias / 4to Turno)' : 'Personal Diurno (Jornada Ordinaria 44h)';
+      else if (state.groupBy === 'SECTION') gKey = m.section || 'General / Sin Sección';
+      groupCounts[gKey] = (groupCounts[gKey] || 0) + 1;
+    });
   }
 
   let lastGroup = null;
   activeStaff.forEach((member, index) => {
-    const currentGroup = member.section || member.role;
-    if (currentGroup && currentGroup !== lastGroup && (state.activeTab === 'PROFESIONALES RUTINA' || state.activeTab === 'LAB. URGENCIA')) {
+    let currentGroup = null;
+    if (state.groupBy === 'ESTAMENTO') {
+      currentGroup = member.estamento || member.role || 'Otros';
+    } else if (state.groupBy === 'JORNADA') {
+      currentGroup = member.jornada === 'Turno' ? 'Turno Rotativo (Urgencias / 4to Turno)' : 'Personal Diurno (Jornada Ordinaria 44h)';
+    } else if (state.groupBy === 'SECTION') {
+      currentGroup = member.section || 'General / Sin Sección';
+    }
+
+    if (currentGroup && currentGroup !== lastGroup && state.groupBy !== 'NONE') {
       lastGroup = currentGroup;
       const groupRow = document.createElement('tr');
-      groupRow.className = 'bg-slate-100/90 font-bold text-slate-700 text-xs tracking-wider uppercase';
+      groupRow.className = 'group-header-row bg-slate-100/95 font-bold text-slate-700 text-xs tracking-wider uppercase';
       groupRow.innerHTML = `
-        <td class="sticky-col-group bg-slate-200/90 font-extrabold text-slate-800 py-1.5 px-3 border-r border-slate-300" colspan="2">
-          ${currentGroup}
+        <td class="sticky-col-group-header bg-slate-200 font-extrabold text-slate-800 py-1.5 px-3 border-r border-slate-300" colspan="2">
+          <div class="flex items-center space-x-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-sky-600 inline-block shadow-2xs"></span>
+            <span class="text-xs font-bold tracking-tight text-slate-900">${currentGroup}</span>
+            <span class="text-[10px] font-semibold text-sky-800 bg-sky-100 px-2 py-0.5 rounded-full lowercase">${groupCounts[currentGroup] || 0} funcionarios</span>
+          </div>
         </td>
-        <td colspan="${daysInMonth}" class="bg-slate-100/70 border-b border-slate-200"></td>
+        <td colspan="${daysInMonth}" class="bg-slate-100/80 border-b border-slate-200"></td>
       `;
       tableBody.appendChild(groupRow);
     }
 
     const row = document.createElement('tr');
-    row.className = index % 2 === 0 ? 'bg-white hover:bg-slate-50/80 transition' : 'bg-slate-50/50 hover:bg-slate-50/80 transition';
+    row.className = index % 2 === 0 ? 'bg-white hover:bg-slate-50/80 transition group' : 'bg-slate-50/50 hover:bg-slate-50/80 transition group';
 
     let nameBadges = '';
     if (member.is_intern) nameBadges += '<span class="ml-1 px-1.5 py-0.2 text-[9px] bg-purple-100 text-purple-700 rounded font-semibold">Interno</span>';
@@ -313,12 +495,20 @@ function renderMatrixView() {
       nameBadges += '<span class="ml-1 px-1.5 py-0.2 text-[9px] bg-yellow-100 text-yellow-800 rounded cursor-pointer" title="Datos pendientes: ' + member.missing_fields.join(', ') + '">⚠️</span>';
     }
 
-    const rutDisplay = member.rut || '<span class="text-slate-400 italic">Sin RUT</span>';
+    const rutDisplay = member.rut || '<span class="text-amber-600 font-medium italic text-[10px]">Sin RUT</span>';
+    const subInfo = [member.estamento || member.role, member.jornada, member.section].filter(Boolean).join(' • ');
 
     let rowHtml = `
       <td class="sticky-col-body font-semibold text-slate-900 border-r border-slate-200">
-        <div class="truncate text-xs cursor-pointer hover:text-sky-600" onclick="openStaffModal('${member.id}')" title="Editar funcionario">${member.name} ${nameBadges}</div>
-        <div class="text-[10px] text-slate-400 font-normal leading-tight">${member.section || member.role}</div>
+        <div class="flex items-center justify-between">
+          <div class="truncate text-xs cursor-pointer hover:text-sky-600" onclick="openStaffModal('${member.id}')" title="Editar funcionario">
+            ${member.name} ${nameBadges}
+          </div>
+          <button onclick="event.stopPropagation(); openRangeModalForStaff('${member.id}')" class="row-quick-range-btn px-1.5 py-0.5 rounded bg-teal-50 text-teal-700 hover:bg-teal-100 text-[10px] font-bold border border-teal-200" title="Programar rango para ${member.name}">
+            🌴 Rango
+          </button>
+        </div>
+        <div class="text-[10px] text-slate-400 font-normal leading-tight truncate">${subInfo}</div>
       </td>
       <td class="sticky-col-body-2 font-mono text-[11px] text-slate-600 border-r border-slate-200">
         ${rutDisplay}
@@ -363,6 +553,7 @@ function renderMatrixView() {
         } else if (evType === 'SIN_GOCE_SUELDO') {
           cellClass += ' event-sin_goce_sueldo';
           cellTitle += ' | Permiso sin goce de sueldo';
+          if (!cellText) cellText = 'PSG';
         } else if (evType === 'PERMISO_TARDE') {
           cellClass += ' event-permiso_tarde';
           cellTitle += ' | Permiso Tarde';
@@ -399,20 +590,45 @@ function renderMatrixView() {
 function getStaffForSheet(sheetName) {
   let list = Object.values(state.staff);
 
+  // Search filter with smart RUT normalization
   if (state.searchQuery) {
-    list = list.filter(m => 
-      m.name.toLowerCase().includes(state.searchQuery) ||
-      (m.rut && m.rut.toLowerCase().includes(state.searchQuery)) ||
-      (m.section && m.section.toLowerCase().includes(state.searchQuery))
-    );
+    list = list.filter(m => matchesSearch(m, state.searchQuery));
   }
 
-  if (state.roleFilter !== 'ALL') {
-    list = list.filter(m => m.role === state.roleFilter);
+  // CALENDARIO GENERAL handles all staff with presets, subdivision, and explicit filters
+  if (sheetName === 'CALENDARIO GENERAL') {
+    list = list.filter(m => matchesPreset(m, state.presetFilter));
+
+    if (state.estamentoFilter && state.estamentoFilter !== 'ALL') {
+      list = list.filter(m => (m.estamento || m.role) === state.estamentoFilter);
+    }
+
+    if (state.jornadaFilter && state.jornadaFilter !== 'ALL') {
+      list = list.filter(m => (m.jornada || 'Diurno') === state.jornadaFilter);
+    }
+
+    list.sort((a, b) => {
+      if (state.groupBy === 'ESTAMENTO') {
+        const estA = a.estamento || a.role || '';
+        const estB = b.estamento || b.role || '';
+        if (estA !== estB) return estA.localeCompare(estB);
+      } else if (state.groupBy === 'JORNADA') {
+        const jorA = a.jornada || 'Diurno';
+        const jorB = b.jornada || 'Diurno';
+        if (jorA !== jorB) return jorA.localeCompare(jorB);
+      } else if (state.groupBy === 'SECTION') {
+        const secA = a.section || '';
+        const secB = b.section || '';
+        if (secA !== secB) return secA.localeCompare(secB);
+      }
+      return (a.name || '').localeCompare(b.name || '');
+    });
+
+    return list;
   }
 
+  // Legacy sheets logic
   const sNorm = (sheetName || '').trim().toUpperCase();
-
   if (sNorm === 'LAB. URGENCIA') {
     list = list.filter(m => (m.sheets || []).some(s => s.toUpperCase().includes('URGENCIA')) || (m.section && m.section.toLowerCase().includes('urgencia')));
   } else if (sNorm === 'PROFESIONALES RUTINA') {
@@ -711,9 +927,9 @@ function renderDirectorioView() {
 
   const staffList = Object.values(state.staff);
   const total = staffList.length;
-  const profesionales = staffList.filter(s => s.role === 'Profesional').length;
-  const tens = staffList.filter(s => s.role === 'TENS').length;
-  const auxiliares = staffList.filter(s => s.role === 'Auxiliar').length;
+  const tms = staffList.filter(s => s.estamento === 'Tecnólogo Médico' || s.estamento === 'Bioquímico' || s.role === 'Profesional').length;
+  const tens = staffList.filter(s => s.estamento === 'TENS' || s.role === 'TENS').length;
+  const auxiliares = staffList.filter(s => s.estamento === 'Auxiliar' || s.role === 'Auxiliar').length;
   const missingData = staffList.filter(s => s.missing_fields && s.missing_fields.length > 0).length;
 
   statsCards.innerHTML = `
@@ -722,8 +938,8 @@ function renderDirectorioView() {
       <div class="text-xl font-bold text-slate-800">${total}</div>
     </div>
     <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs">
-      <div class="text-[11px] font-semibold text-blue-600">Profesionales</div>
-      <div class="text-xl font-bold text-blue-900">${profesionales}</div>
+      <div class="text-[11px] font-semibold text-blue-600">TM y Bioquímicos</div>
+      <div class="text-xl font-bold text-blue-900">${tms}</div>
     </div>
     <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs">
       <div class="text-[11px] font-semibold text-cyan-600">TENS</div>
@@ -753,13 +969,13 @@ function renderDirectorioView() {
         ${member.rut || '<span class="text-amber-600 font-bold">FALTA RUT</span>'}
       </td>
       <td class="px-4 py-3">
-        <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-100 text-slate-700">${member.role}</span>
+        <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-sky-50 text-sky-800 border border-sky-200">${member.estamento || member.role}</span>
+      </td>
+      <td class="px-4 py-3">
+        <span class="px-2 py-0.5 rounded text-[11px] font-semibold ${member.jornada === 'Turno' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700'}">${member.jornada || 'Diurno'}</span>
       </td>
       <td class="px-4 py-3 text-slate-600">
         ${member.section || '-'}
-      </td>
-      <td class="px-4 py-3 text-slate-500 text-[10px]">
-        ${(member.sheets || []).join(', ')}
       </td>
       <td class="px-4 py-3">
         ${statusBadge}
@@ -855,7 +1071,7 @@ function renderMetricasView() {
       tr.className = 'hover:bg-slate-50 transition';
       tr.innerHTML = `
         <td class="px-3 py-2 font-semibold text-slate-800">${item.staff.name}</td>
-        <td class="px-3 py-2 text-slate-500">${item.staff.role}</td>
+        <td class="px-3 py-2 text-slate-600 font-medium">${item.staff.estamento || item.staff.role}</td>
         <td class="px-3 py-2 text-slate-500">${item.staff.section || '-'}</td>
         <td class="px-3 py-2 text-center font-bold text-red-600">${item.vacaciones || '-'}</td>
         <td class="px-3 py-2 text-center font-bold text-yellow-600">${item.administrativos || '-'}</td>
@@ -871,17 +1087,31 @@ function openShiftModal(staffId, dateStr, currentCode, currentEventType) {
   const member = state.staff[staffId];
   if (!member) return;
 
-  state.selectedCell = {
+  const eventType = currentEventType || (currentCode === 'L' || currentCode === 'N' ? 'TURNO' : 'VACACIONES');
+  const code = currentCode || (eventType === 'VACACIONES' ? 'FL' : '');
+
+  state.rangeModalState = {
     staffId: staffId,
-    date: dateStr,
-    code: currentCode,
-    eventType: currentEventType || 'TURNO',
-    sheet: state.activeTab
+    startDate: dateStr,
+    endDate: dateStr,
+    mode: 'all',
+    eventType: eventType,
+    code: code
   };
 
   document.getElementById('modal-shift-title').innerText = `${member.name}`;
-  document.getElementById('modal-shift-subtitle').innerText = `Fecha: ${dateStr} (${member.section || member.role})`;
-  document.getElementById('modal-custom-code').value = currentCode || '';
+  document.getElementById('modal-shift-subtitle').innerText = `${member.estamento || member.role} • ${member.jornada || 'Diurno'} • ${member.section || ''}`;
+
+  const staffSelectCont = document.getElementById('modal-staff-select-container');
+  if (staffSelectCont) staffSelectCont.classList.add('hidden');
+
+  document.getElementById('modal-range-start').value = dateStr;
+  document.getElementById('modal-range-end').value = dateStr;
+  document.getElementById('mode-all-days').checked = true;
+  document.getElementById('modal-custom-code').value = code;
+
+  highlightActiveEventButton(eventType, code);
+  onRangeDatesChanged();
 
   const histNotice = document.getElementById('modal-historical-notice');
   if (histNotice) {
@@ -893,62 +1123,276 @@ function openShiftModal(staffId, dateStr, currentCode, currentEventType) {
   initLucide();
 }
 
-function closeShiftModal() {
-  document.getElementById('modal-shift-picker').classList.add('hidden');
-  state.selectedCell = null;
+function openRangeModalForStaff(staffId) {
+  const member = state.staff[staffId];
+  if (!member) return;
+
+  const year = state.currentYear;
+  const month = String(state.currentMonth).padStart(2, '0');
+  const startDate = `${year}-${month}-01`;
+  const endObj = new Date(year, state.currentMonth - 1, 14);
+  const endDate = formatDateToISO(endObj);
+
+  state.rangeModalState = {
+    staffId: staffId,
+    startDate: startDate,
+    endDate: endDate,
+    mode: 'all',
+    eventType: 'VACACIONES',
+    code: 'FL'
+  };
+
+  document.getElementById('modal-shift-title').innerText = `Programar Ausencia por Rango: ${member.name}`;
+  document.getElementById('modal-shift-subtitle').innerText = `${member.estamento || member.role} • ${member.jornada || 'Diurno'}`;
+
+  const staffSelectCont = document.getElementById('modal-staff-select-container');
+  if (staffSelectCont) staffSelectCont.classList.add('hidden');
+
+  document.getElementById('modal-range-start').value = startDate;
+  document.getElementById('modal-range-end').value = endDate;
+  document.getElementById('mode-all-days').checked = true;
+  document.getElementById('modal-custom-code').value = 'FL';
+
+  highlightActiveEventButton('VACACIONES', 'FL');
+  onRangeDatesChanged();
+
+  const histNotice = document.getElementById('modal-historical-notice');
+  if (histNotice) {
+    if (state.currentYear === 2026) histNotice.classList.remove('hidden');
+    else histNotice.classList.add('hidden');
+  }
+
+  document.getElementById('modal-shift-picker').classList.remove('hidden');
+  initLucide();
+}
+
+function openRangeModal() {
+  const year = state.currentYear;
+  const month = String(state.currentMonth).padStart(2, '0');
+  const startDate = `${year}-${month}-01`;
+  const endObj = new Date(year, state.currentMonth - 1, 14);
+  const endDate = formatDateToISO(endObj);
+
+  const staffSelectCont = document.getElementById('modal-staff-select-container');
+  const staffSelect = document.getElementById('modal-staff-select');
+  if (staffSelectCont && staffSelect) {
+    staffSelectCont.classList.remove('hidden');
+    const sorted = Object.values(state.staff).sort((a, b) => a.name.localeCompare(b.name));
+    staffSelect.innerHTML = sorted.map(s => `
+      <option value="${s.id}">${s.name} (${s.estamento || s.role} - ${s.jornada || 'Diurno'})</option>
+    `).join('');
+
+    const firstStaffId = sorted[0]?.id;
+    state.rangeModalState = {
+      staffId: firstStaffId,
+      startDate: startDate,
+      endDate: endDate,
+      mode: 'all',
+      eventType: 'VACACIONES',
+      code: 'FL'
+    };
+    staffSelect.value = firstStaffId;
+  }
+
+  document.getElementById('modal-shift-title').innerText = 'Programar Ausencia por Rango';
+  document.getElementById('modal-shift-subtitle').innerText = 'Selecciona funcionario y define el rango de fechas';
+
+  document.getElementById('modal-range-start').value = startDate;
+  document.getElementById('modal-range-end').value = endDate;
+  document.getElementById('mode-all-days').checked = true;
+  document.getElementById('modal-custom-code').value = 'FL';
+
+  highlightActiveEventButton('VACACIONES', 'FL');
+  onRangeDatesChanged();
+
+  const histNotice = document.getElementById('modal-historical-notice');
+  if (histNotice) {
+    if (state.currentYear === 2026) histNotice.classList.remove('hidden');
+    else histNotice.classList.add('hidden');
+  }
+
+  document.getElementById('modal-shift-picker').classList.remove('hidden');
+  initLucide();
+}
+
+function onModalStaffChange(staffId) {
+  if (state.rangeModalState) {
+    state.rangeModalState.staffId = staffId;
+  }
+}
+
+function onRangeDatesChanged() {
+  const startInput = document.getElementById('modal-range-start');
+  const endInput = document.getElementById('modal-range-end');
+  const workdaysRadio = document.getElementById('mode-workdays');
+  if (!startInput || !endInput) return;
+
+  const startVal = startInput.value;
+  const endVal = endInput.value;
+  const isWorkdays = workdaysRadio ? workdaysRadio.checked : false;
+  const mode = isWorkdays ? 'workdays' : 'all';
+
+  if (state.rangeModalState) {
+    state.rangeModalState.startDate = startVal;
+    state.rangeModalState.endDate = endVal;
+    state.rangeModalState.mode = mode;
+  }
+
+  const eligibleDates = getEligibleDatesInRange(startVal, endVal, mode);
+  const count = eligibleDates.length;
+
+  const badge = document.getElementById('modal-range-badge');
+  const applyLabel = document.getElementById('btn-apply-label');
+  const clearLabel = document.getElementById('btn-clear-range-label');
+
+  const unit = count === 1 ? 'día' : 'días';
+  const modeDesc = isWorkdays ? 'hábiles' : 'corridos';
+
+  if (badge) badge.innerText = `${count} ${unit} (${modeDesc})`;
+  if (applyLabel) applyLabel.innerText = count === 1 ? 'Aplicar a 1 día' : `Aplicar a ${count} días`;
+  if (clearLabel) clearLabel.innerText = count === 1 ? 'Limpiar día' : `Limpiar ${count} días`;
+}
+
+function setRangeDays(days) {
+  const startVal = document.getElementById('modal-range-start').value;
+  if (!startVal) return;
+  const start = parseISODate(startVal);
+  const end = new Date(start);
+  end.setDate(end.getDate() + (days - 1));
+  document.getElementById('modal-range-end').value = formatDateToISO(end);
+  onRangeDatesChanged();
+}
+
+function setRangeToEndOfMonth() {
+  const startVal = document.getElementById('modal-range-start').value;
+  if (!startVal) return;
+  const start = parseISODate(startVal);
+  const end = new Date(start.getFullYear(), start.getMonth() + 1, 0);
+  document.getElementById('modal-range-end').value = formatDateToISO(end);
+  onRangeDatesChanged();
 }
 
 function selectEventType(eventType, defaultCode) {
-  if (!state.selectedCell) return;
-  state.selectedCell.eventType = eventType;
-  state.selectedCell.code = defaultCode;
+  if (!state.rangeModalState) return;
+  state.rangeModalState.eventType = eventType;
+  state.rangeModalState.code = defaultCode;
   document.getElementById('modal-custom-code').value = defaultCode;
+  highlightActiveEventButton(eventType, defaultCode);
 }
 
-function clearCurrentDayShift() {
-  if (!state.selectedCell) return;
-  const targetList = state.currentYear === 2026 ? state.turns2026 : state.turns2027;
-  const idx = targetList.findIndex(t => t.staff_id === state.selectedCell.staffId && t.date === state.selectedCell.date);
-  if (idx !== -1) {
-    targetList.splice(idx, 1);
+function highlightActiveEventButton(eventType, code) {
+  document.querySelectorAll('.event-choice-btn').forEach(btn => {
+    btn.classList.remove('is-active-choice');
+  });
+
+  const codeMap = {
+    'FL': 'btn-ev-vacaciones',
+    'DA': 'btn-ev-administrativo',
+    'LM': 'btn-ev-licencia',
+    'H+6': 'btn-ev-devolucion',
+    '*': 'btn-ev-comision',
+    'PSG': 'btn-ev-singoce',
+    'L': 'btn-ev-largo',
+    'N': 'btn-ev-noche',
+    'M': 'btn-ev-manana',
+    'T': 'btn-ev-tarde'
+  };
+
+  const btnId = codeMap[code];
+  if (btnId) {
+    const btn = document.getElementById(btnId);
+    if (btn) btn.classList.add('is-active-choice');
   }
-  rebuildTurnsMap();
-  closeShiftModal();
-  saveChangesToStorage();
-  renderApp();
 }
 
 function saveShiftModal() {
-  if (!state.selectedCell) return;
-  const customCode = document.getElementById('modal-custom-code').value.trim();
-  const targetList = state.currentYear === 2026 ? state.turns2026 : state.turns2027;
-  
-  const member = state.staff[state.selectedCell.staffId];
-  const dateParts = state.selectedCell.date.split('-');
+  if (!state.rangeModalState || !state.rangeModalState.staffId) {
+    alert('Por favor selecciona un funcionario.');
+    return;
+  }
 
-  const existing = targetList.find(t => t.staff_id === state.selectedCell.staffId && t.date === state.selectedCell.date);
-  if (existing) {
-    existing.code = customCode;
-    existing.event_type = state.selectedCell.eventType;
+  const staffId = state.rangeModalState.staffId;
+  const member = state.staff[staffId];
+  if (!member) return;
+
+  const customCode = document.getElementById('modal-custom-code').value.trim();
+  const eventType = state.rangeModalState.eventType || 'TURNO';
+  const startVal = document.getElementById('modal-range-start').value;
+  const endVal = document.getElementById('modal-range-end').value;
+  const isWorkdays = document.getElementById('mode-workdays').checked;
+  const mode = isWorkdays ? 'workdays' : 'all';
+
+  const eligibleDates = getEligibleDatesInRange(startVal, endVal, mode);
+  if (eligibleDates.length === 0) {
+    alert('El rango de fechas seleccionado no contiene días válidos.');
+    return;
+  }
+
+  const targetList = state.currentYear === 2026 ? state.turns2026 : state.turns2027;
+
+  eligibleDates.forEach(dateStr => {
+    const dateParts = dateStr.split('-');
+    const m = parseInt(dateParts[1], 10);
+    const d = parseInt(dateParts[2], 10);
+
+    const existing = targetList.find(t => t.staff_id === staffId && t.date === dateStr);
+    if (existing) {
+      existing.code = customCode;
+      existing.event_type = eventType;
+    } else {
+      targetList.push({
+        date: dateStr,
+        month: m,
+        day: d,
+        staff_id: member.id,
+        staff_name: member.name,
+        role: member.role,
+        estamento: member.estamento || member.role,
+        jornada: member.jornada || 'Diurno',
+        section: member.section,
+        sheet: state.activeTab,
+        code: customCode,
+        event_type: eventType
+      });
+    }
+  });
+
+  rebuildTurnsMap();
+  closeShiftModal();
+  saveChangesToStorage();
+  renderApp();
+}
+
+function clearCurrentRangeShift() {
+  if (!state.rangeModalState || !state.rangeModalState.staffId) return;
+  const staffId = state.rangeModalState.staffId;
+  const startVal = document.getElementById('modal-range-start').value;
+  const endVal = document.getElementById('modal-range-end').value;
+  const isWorkdays = document.getElementById('mode-workdays').checked;
+  const mode = isWorkdays ? 'workdays' : 'all';
+
+  const eligibleDates = new Set(getEligibleDatesInRange(startVal, endVal, mode));
+  if (eligibleDates.size === 0) return;
+
+  const targetList = state.currentYear === 2026 ? state.turns2026 : state.turns2027;
+  const filtered = targetList.filter(t => !(t.staff_id === staffId && eligibleDates.has(t.date)));
+
+  if (state.currentYear === 2026) {
+    state.turns2026 = filtered;
   } else {
-    targetList.push({
-      date: state.selectedCell.date,
-      month: parseInt(dateParts[1]),
-      day: parseInt(dateParts[2]),
-      staff_id: member.id,
-      staff_name: member.name,
-      role: member.role,
-      section: member.section,
-      sheet: state.activeTab,
-      code: customCode,
-      event_type: state.selectedCell.eventType
-    });
+    state.turns2027 = filtered;
   }
 
   rebuildTurnsMap();
   closeShiftModal();
   saveChangesToStorage();
   renderApp();
+}
+
+function closeShiftModal() {
+  document.getElementById('modal-shift-picker').classList.add('hidden');
+  state.rangeModalState = null;
+  state.selectedCell = null;
 }
 
 function openStaffModal(staffId) {
@@ -958,7 +1402,8 @@ function openStaffModal(staffId) {
   document.getElementById('staff-edit-id').value = member.id;
   document.getElementById('staff-edit-name').value = member.name;
   document.getElementById('staff-edit-rut').value = member.rut || '';
-  document.getElementById('staff-edit-role').value = member.role || 'Profesional';
+  document.getElementById('staff-edit-estamento').value = member.estamento || (member.role === 'Profesional' ? 'Tecnólogo Médico' : member.role || 'Tecnólogo Médico');
+  document.getElementById('staff-edit-jornada').value = member.jornada || 'Diurno';
   document.getElementById('staff-edit-section').value = member.section || '';
   document.getElementById('modal-staff-title').innerText = `Editar Funcionario: ${member.name}`;
 
@@ -971,8 +1416,9 @@ function openNewStaffModal() {
   document.getElementById('staff-edit-id').value = newId;
   document.getElementById('staff-edit-name').value = '';
   document.getElementById('staff-edit-rut').value = '';
-  document.getElementById('staff-edit-role').value = 'Profesional';
-  document.getElementById('staff-edit-section').value = state.activeTab === 'LAB. URGENCIA' ? 'Urgencia' : 'Rutina';
+  document.getElementById('staff-edit-estamento').value = 'Tecnólogo Médico';
+  document.getElementById('staff-edit-jornada').value = 'Diurno';
+  document.getElementById('staff-edit-section').value = 'Rutina';
   document.getElementById('modal-staff-title').innerText = 'Nuevo Funcionario';
 
   document.getElementById('modal-staff-editor').classList.remove('hidden');
@@ -987,13 +1433,19 @@ function saveStaffModal() {
   const id = document.getElementById('staff-edit-id').value;
   const name = document.getElementById('staff-edit-name').value.trim();
   const rut = document.getElementById('staff-edit-rut').value.trim();
-  const role = document.getElementById('staff-edit-role').value;
+  const estamento = document.getElementById('staff-edit-estamento').value;
+  const jornada = document.getElementById('staff-edit-jornada').value;
   const section = document.getElementById('staff-edit-section').value.trim();
 
   if (!name) {
     alert('Por favor introduce el nombre del funcionario.');
     return;
   }
+
+  let role = 'Profesional';
+  if (estamento === 'TENS') role = 'TENS';
+  else if (estamento === 'Auxiliar') role = 'Auxiliar';
+  else if (estamento === 'Administrativo') role = 'Administrativo';
 
   const missing = [];
   if (!rut) missing.push('RUT pendiente');
@@ -1004,11 +1456,13 @@ function saveStaffModal() {
     name: name,
     official_name: name,
     rut: rut,
+    estamento: estamento,
+    jornada: jornada,
     role: role,
     section: section,
-    sheets: state.staff[id] ? state.staff[id].sheets : [state.activeTab],
+    sheets: state.staff[id] ? state.staff[id].sheets : ['CALENDARIO GENERAL'],
     missing_fields: missing,
-    is_intern: role === 'Interno TM',
+    is_intern: estamento === 'Interno TM',
     is_replacement: false
   };
 
@@ -1016,6 +1470,7 @@ function saveStaffModal() {
   saveChangesToStorage();
   renderApp();
 }
+
 
 function saveChanges() {
   saveChangesToStorage();
@@ -1129,7 +1584,7 @@ function exportToExcel() {
 
   const wb = XLSX.utils.book_new();
   const year = state.currentYear;
-  const sheets = ['LAB. URGENCIA', 'PROFESIONALES RUTINA', 'TENS RUTINA', 'AUXILIARES', 'TOMA DE MUESTRA'];
+  const sheets = ['CALENDARIO GENERAL', 'LAB. URGENCIA', 'PROFESIONALES RUTINA', 'TENS RUTINA', 'AUXILIARES', 'TOMA DE MUESTRA'];
 
   sheets.forEach(sheetName => {
     const wsData = [];
@@ -1141,13 +1596,13 @@ function exportToExcel() {
       const daysInM = new Date(year, m, 0).getDate();
       wsData.push([`TURNOS ${MONTH_NAMES[m-1].toUpperCase()} ${year}`]);
 
-      const headerRow = ['FUNCIONARIO', 'RUT', 'ESTAMENTO', 'SECCIÓN'];
+      const headerRow = ['FUNCIONARIO', 'RUT', 'ESTAMENTO', 'JORNADA', 'SECCIÓN'];
       for (let d = 1; d <= daysInM; d++) {
         headerRow.push(d);
       }
       wsData.push(headerRow);
 
-      const dowRow = ['', '', '', ''];
+      const dowRow = ['', '', '', '', ''];
       for (let d = 1; d <= daysInM; d++) {
         const dow = new Date(year, m - 1, d).getDay();
         dowRow.push(DAY_LETTERS[dow]);
@@ -1156,7 +1611,7 @@ function exportToExcel() {
 
       const staffList = getStaffForSheet(sheetName);
       staffList.forEach(st => {
-        const row = [st.name, st.rut || '', st.role, st.section || ''];
+        const row = [st.name, st.rut || '', st.estamento || st.role || '', st.jornada || 'Diurno', st.section || ''];
         for (let d = 1; d <= daysInM; d++) {
           const dateStr = `${year}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
           if (sheetName === 'TOMA DE MUESTRA') {
@@ -1182,17 +1637,17 @@ function exportToExcel() {
   dotData.push(['HOSPITAL REGIONAL DE TALCA - LABORATORIO CLÍNICO']);
   dotData.push([`DOTACIÓN OFICIAL Y ESTADO DE DATOS - AÑO ${year}`]);
   dotData.push([]);
-  dotData.push(['FUNCIONARIO', 'RUT', 'ESTAMENTO', 'SECCIÓN', 'PESTAÑAS EN PLANILLA', 'ESTADO']);
+  dotData.push(['FUNCIONARIO', 'RUT', 'ESTAMENTO', 'JORNADA', 'SECCIÓN', 'ESTADO']);
   Object.values(state.staff)
-    .sort((a, b) => (a.role || '').localeCompare(b.role || '') || a.name.localeCompare(b.name))
+    .sort((a, b) => (a.estamento || a.role || '').localeCompare(b.estamento || b.role || '') || a.name.localeCompare(b.name))
     .forEach(s => {
       const status = (s.missing_fields && s.missing_fields.length > 0) ? ('Pendiente: ' + s.missing_fields.join(', ')) : 'Completo';
       dotData.push([
         s.name,
         s.rut || 'PENDIENTE',
-        s.role || '',
+        s.estamento || s.role || '',
+        s.jornada || 'Diurno',
         s.section || '',
-        (s.sheets || []).join(', '),
         status
       ]);
     });

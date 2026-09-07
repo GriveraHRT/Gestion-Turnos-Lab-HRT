@@ -70,6 +70,7 @@ def generate_hospital_excel(year=2027, output_path=None):
     }
 
     sheets_to_generate = [
+        ('CALENDARIO GENERAL', 'General'),
         ('LAB. URGENCIA', 'Urgencia'),
         ('PROFESIONALES RUTINA', 'Profesionales'),
         ('TENS RUTINA', 'TENS'),
@@ -90,18 +91,24 @@ def generate_hospital_excel(year=2027, output_path=None):
         current_row = 4
 
         # Filter staff for this sheet
-        if sheet_title == 'LAB. URGENCIA':
+        if sheet_title == 'CALENDARIO GENERAL':
+            sheet_staff = list(staff_dict.values())
+            sheet_staff.sort(key=lambda x: (x.get('estamento', '') or x.get('role', ''), x.get('name', '')))
+        elif sheet_title == 'LAB. URGENCIA':
             sheet_staff = [s for s in staff_dict.values() if any('URGENCIA' in sh.upper() for sh in s.get('sheets', [])) or 'urgencia' in s.get('section', '').lower()]
+            sheet_staff.sort(key=lambda x: (x.get('section', ''), x.get('name', '')))
         elif sheet_title == 'PROFESIONALES RUTINA':
             sheet_staff = [s for s in staff_dict.values() if any('PROFESIONAL' in sh.upper() for sh in s.get('sheets', [])) or (s.get('role') == 'Profesional' and 'urgencia' not in s.get('section', '').lower())]
+            sheet_staff.sort(key=lambda x: (x.get('section', ''), x.get('name', '')))
         elif sheet_title == 'TENS RUTINA':
             sheet_staff = [s for s in staff_dict.values() if any('TENS RUTINA' in sh.upper() for sh in s.get('sheets', [])) or (s.get('role') == 'TENS' and 'urgencia' not in s.get('section', '').lower())]
+            sheet_staff.sort(key=lambda x: (x.get('section', ''), x.get('name', '')))
         elif sheet_title == 'AUXILIARES':
             sheet_staff = [s for s in staff_dict.values() if any('AUXILIAR' in sh.upper() for sh in s.get('sheets', [])) or s.get('role') == 'Auxiliar']
+            sheet_staff.sort(key=lambda x: (x.get('section', ''), x.get('name', '')))
         else: # TDM
             sheet_staff = [s for s in staff_dict.values() if any('TOMA DE MUESTRA' in sh.upper() for sh in s.get('sheets', []))]
-
-        sheet_staff.sort(key=lambda x: (x.get('section', ''), x.get('name', '')))
+            sheet_staff.sort(key=lambda x: (x.get('section', ''), x.get('name', '')))
 
         for m in range(1, 13):
             days_in_month = calendar.monthrange(year, m)[1]
@@ -158,8 +165,11 @@ def generate_hospital_excel(year=2027, output_path=None):
             # Staff Rows
             last_section = None
             for st in sheet_staff:
-                sec = st.get('section') or st.get('role')
-                if sec and sec != last_section and sheet_title in ['PROFESIONALES RUTINA', 'LAB. URGENCIA']:
+                if sheet_title == 'CALENDARIO GENERAL':
+                    sec = st.get('estamento') or st.get('role')
+                else:
+                    sec = st.get('section') or st.get('role')
+                if sec and sec != last_section and sheet_title in ['CALENDARIO GENERAL', 'PROFESIONALES RUTINA', 'LAB. URGENCIA']:
                     last_section = sec
                     sec_cell = ws.cell(row=current_row, column=1, value=sec.upper())
                     sec_cell.font = Font(name='Arial', size=9, bold=True, color='1E293B')
