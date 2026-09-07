@@ -37,7 +37,7 @@
 
   <!-- Top Hospital Header -->
   <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50 border-b border-slate-800">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-[1640px] mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
         
         <!-- Hospital Branding -->
@@ -56,11 +56,11 @@
 
         <!-- Year Toggle (2026 Histórico vs 2027 Nuevo) -->
         <div class="flex items-center bg-slate-800 p-1 rounded-xl border border-slate-700 shadow-inner">
-          <button id="btn-year-2026" onclick="setYear(2026)" class="px-4 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center space-x-1.5 bg-slate-700 text-slate-300 hover:text-white">
+          <button id="btn-year-2026" onclick="setYear(2026)" class="px-4 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center space-x-1.5 bg-sky-500 text-white shadow-sm">
             <i data-lucide="archive" class="w-3.5 h-3.5"></i>
             <span>2026 (Histórico)</span>
           </button>
-          <button id="btn-year-2027" onclick="setYear(2027)" class="px-4 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center space-x-1.5 bg-sky-500 text-white shadow-sm">
+          <button id="btn-year-2027" onclick="setYear(2027)" class="px-4 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center space-x-1.5 bg-slate-700 text-slate-300 hover:text-white">
             <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
             <span>2027 (Planificación)</span>
           </button>
@@ -96,6 +96,10 @@
                 <i data-lucide="copy" class="w-3.5 h-3.5"></i>
                 <span>Importar Plantilla 2026 a 2027</span>
               </button>
+              <button onclick="clearPlanning2027()" class="w-full text-left px-4 py-2 text-xs text-rose-600 hover:bg-rose-50 flex items-center space-x-2">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                <span>Vaciar Planificación 2027</span>
+              </button>
             </div>
           </div>
         </div>
@@ -106,7 +110,7 @@
 
   <!-- Secondary Navigation Bar: Functional Sheets -->
   <nav class="bg-white border-b border-slate-200 shadow-sm sticky top-16 z-40">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-[1640px] mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between overflow-x-auto py-2.5">
         
         <!-- Functional Tabs -->
@@ -143,7 +147,7 @@
         </div>
 
         <!-- Quick Stats Alert / Quota Monitor -->
-        <div id="quota-warning-badge" class="hidden sm:flex items-center space-x-2 bg-amber-50 border border-amber-200 text-amber-800 px-3 py-1 rounded-lg text-xs">
+        <div id="quota-warning-badge" class="hidden 2xl:flex items-center space-x-2 bg-amber-50 border border-amber-200 text-amber-800 px-3 py-1.5 rounded-lg text-xs shrink-0 whitespace-nowrap">
           <i data-lucide="alert-circle" class="w-3.5 h-3.5 text-amber-600"></i>
           <span class="font-semibold">Regla TENS:</span>
           <span>Máximo 4-5 ausencias/día</span>
@@ -154,7 +158,7 @@
   </nav>
 
   <!-- Controls Bar: Month Picker & Search Filter -->
-  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-2 w-full">
+  <section class="max-w-[1640px] mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-2 w-full">
     <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
       
       <!-- Month Navigation Buttons -->
@@ -189,7 +193,7 @@
   </section>
 
   <!-- Interactive Legend Bar -->
-  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 w-full">
+  <section class="max-w-[1640px] mx-auto px-4 sm:px-6 lg:px-8 py-2 w-full">
     <div class="flex items-center justify-between bg-slate-100/80 px-3 py-2 rounded-lg border border-slate-200 text-xs overflow-x-auto gap-3">
       <span class="font-bold text-slate-500 uppercase tracking-wider text-[10px]">Leyenda:</span>
       <div class="flex items-center space-x-3 flex-wrap gap-y-1">
@@ -229,6 +233,10 @@
           <span class="w-3.5 h-3.5 rounded bg-orange-500 inline-block shadow-sm"></span>
           <span class="font-medium text-slate-700">Fin de Semana</span>
         </div>
+        <div class="flex items-center space-x-1.5 text-amber-900 bg-amber-100/90 px-2 py-0.5 rounded border border-amber-300 text-[11px] font-semibold shrink-0">
+          <i data-lucide="alert-circle" class="w-3 h-3 text-amber-700"></i>
+          <span>Regla TENS: Máx 4-5 ausencias/día</span>
+        </div>
       </div>
       <div class="text-slate-400 text-[11px] hidden lg:block italic">
         * Haz clic en cualquier día para asignar o editar
@@ -237,8 +245,30 @@
   </section>
 
   <!-- Main Workspace Area -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 w-full flex-grow">
+  <main class="max-w-[1640px] mx-auto px-4 sm:px-6 lg:px-8 py-2 w-full flex-grow">
     
+    <!-- Planning Mode Guidance Banner (displayed dynamically when year is 2027) -->
+    <div id="banner-planificacion-2027" class="hidden mb-3 p-3 bg-gradient-to-r from-sky-50 to-indigo-50 border border-sky-200 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs shadow-xs animate-fade-in">
+      <div class="flex items-center space-x-2.5">
+        <span class="p-2 bg-sky-600 text-white rounded-lg shadow-xs shrink-0">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+        </span>
+        <div>
+          <span class="font-bold text-sky-950">Modo Planificación 2027:</span>
+          <span class="text-sky-800 ml-1">
+            Esta planilla está lista para programar el nuevo año. Haz clic en cualquier casilla para asignar turnos/ausencias. Para consultar el historial existente, pulsa
+            <button onclick="setYear(2026)" class="underline font-bold text-sky-900 hover:text-sky-700">2026 (Histórico)</button>.
+          </span>
+        </div>
+      </div>
+      <div class="flex items-center space-x-2 shrink-0">
+        <button onclick="clone2026to2027()" class="px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-lg shadow-xs transition flex items-center space-x-1.5">
+          <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+          <span>Importar Plantilla Base 2026</span>
+        </button>
+      </div>
+    </div>
+
     <!-- 1. Matrix View Container (Urgencia, Rutina Profesionales, TENS, Auxiliares) -->
     <div id="view-matrix" class="table-matrix-wrapper bg-white">
       <table class="table-matrix" id="shift-matrix-table">
@@ -389,7 +419,7 @@
 
   <!-- Footer -->
   <footer class="bg-slate-900 text-slate-400 text-xs py-4 border-t border-slate-800 mt-auto">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
+    <div class="max-w-[1640px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
       <div class="flex items-center space-x-2">
         <span class="font-bold text-slate-200">Hospital Regional de Talca</span>
         <span>•</span>

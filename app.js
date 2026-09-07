@@ -6,13 +6,13 @@
 const DATA_VERSION = '2.2';
 
 let state = {
-  currentYear: 2027,
+  currentYear: 2026,
   currentMonth: 1,
   activeTab: 'LAB. URGENCIA',
   searchQuery: '',
   roleFilter: 'ALL',
   selectedCell: null,
-  selectedTDMDate: '2027-01-04',
+  selectedTDMDate: '2026-01-02',
   staff: {},
   turns2026: [],
   tdm2026: [],
@@ -45,6 +45,7 @@ const TDM_STATIONS = [
 document.addEventListener('DOMContentLoaded', () => {
   loadInitialData();
   setupMonthButtons();
+  setYear(state.currentYear);
   initLucide();
   renderApp();
 });
@@ -112,13 +113,25 @@ function setYear(year) {
   state.currentYear = year;
   rebuildTurnsMap();
 
-  document.getElementById('btn-year-2026').className = year === 2026 
-    ? 'px-4 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center space-x-1.5 bg-sky-500 text-white shadow-sm'
-    : 'px-4 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center space-x-1.5 bg-slate-700 text-slate-300 hover:text-white';
+  const btn2026 = document.getElementById('btn-year-2026');
+  if (btn2026) {
+    btn2026.className = year === 2026 
+      ? 'px-4 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center space-x-1.5 bg-sky-500 text-white shadow-sm'
+      : 'px-4 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center space-x-1.5 bg-slate-700 text-slate-300 hover:text-white';
+  }
   
-  document.getElementById('btn-year-2027').className = year === 2027
-    ? 'px-4 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center space-x-1.5 bg-sky-500 text-white shadow-sm'
-    : 'px-4 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center space-x-1.5 bg-slate-700 text-slate-300 hover:text-white';
+  const btn2027 = document.getElementById('btn-year-2027');
+  if (btn2027) {
+    btn2027.className = year === 2027
+      ? 'px-4 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center space-x-1.5 bg-sky-500 text-white shadow-sm'
+      : 'px-4 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center space-x-1.5 bg-slate-700 text-slate-300 hover:text-white';
+  }
+
+  const banner2027 = document.getElementById('banner-planificacion-2027');
+  if (banner2027) {
+    if (year === 2027) banner2027.classList.remove('hidden');
+    else banner2027.classList.add('hidden');
+  }
 
   const statsYearLabel = document.getElementById('stats-year-label');
   if (statsYearLabel) statsYearLabel.innerText = String(year);
@@ -282,7 +295,7 @@ function renderMatrixView() {
       const groupRow = document.createElement('tr');
       groupRow.className = 'bg-slate-100/90 font-bold text-slate-700 text-xs tracking-wider uppercase';
       groupRow.innerHTML = `
-        <td class="sticky-col-body bg-slate-200/90 font-extrabold text-slate-800 py-1.5 px-3 border-r border-slate-300" colspan="2">
+        <td class="sticky-col-group bg-slate-200/90 font-extrabold text-slate-800 py-1.5 px-3 border-r border-slate-300" colspan="2">
           ${currentGroup}
         </td>
         <td colspan="${daysInMonth}" class="bg-slate-100/70 border-b border-slate-200"></td>
@@ -1014,13 +1027,52 @@ function saveChangesToStorage() {
 }
 
 function clone2026to2027() {
-  if (!confirm('¿Deseas inicializar la plantilla 2027 con la dotación actualizada de funcionarios para comenzar la nueva planificación?')) return;
+  const confirmed = confirm(
+    '¿Deseas importar la plantilla de turnos operativos base (Largo, Noche, Horarios) y puestos de TDM de 2026 hacia el año 2027?\n\n' +
+    'Los permisos y ausentismos (vacaciones, licencias) quedarán libres para la nueva programación 2027.'
+  );
+  if (!confirmed) return;
+
+  const clonedTurns = [];
+  for (let i = 0; i < state.turns2026.length; i++) {
+    const t = state.turns2026[i];
+    if (t.event_type === 'TURNO') {
+      const targetDate = t.date.replace('2026-', '2027-');
+      clonedTurns.push({
+        ...t,
+        date: targetDate,
+        color_tag: null
+      });
+    }
+  }
+
+  const clonedTdm = [];
+  for (let i = 0; i < state.tdm2026.length; i++) {
+    const a = state.tdm2026[i];
+    clonedTdm.push({
+      ...a,
+      date: a.date.replace('2026-', '2027-')
+    });
+  }
+
+  state.turns2027 = clonedTurns;
+  state.tdm2027 = clonedTdm;
+  rebuildTurnsMap();
+  saveChangesToStorage();
+  setYear(2027);
+  renderApp();
+  alert(`¡Plantilla 2027 inicializada con éxito! Se importaron ${clonedTurns.length} turnos operativos base y ${clonedTdm.length} puestos de Toma de Muestra.`);
+}
+
+function clearPlanning2027() {
+  if (!confirm('¿Deseas restablecer la planificación 2027 a una plantilla completamente vacía?')) return;
   state.turns2027 = [];
   state.tdm2027 = [];
   rebuildTurnsMap();
   saveChangesToStorage();
   setYear(2027);
-  alert('¡Plantilla 2027 lista para comenzar a programar turnos y ausentismos!');
+  renderApp();
+  alert('Planificación 2027 restablecida con éxito.');
 }
 
 function exportJSONBackup() {
