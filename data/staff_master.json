@@ -94,7 +94,7 @@
   "daniela_castillo": {
     "id": "daniela_castillo",
     "name": "Daniela Castillo",
-    "rut": "18.981.532-8",
+    "rut": "17.171.464-8",
     "role": "Profesional",
     "section": "Urgencia",
     "sheets": [
@@ -120,7 +120,7 @@
   "olivia_belen_rosales": {
     "id": "olivia_belen_rosales",
     "name": "Olivia Belen Rosales",
-    "rut": "17.171.464-8",
+    "rut": "18.981.532-8",
     "role": "Profesional",
     "section": "Urgencia",
     "sheets": [
@@ -499,7 +499,7 @@
   "muriel_correa": {
     "id": "muriel_correa",
     "name": "Muriel Correa",
-    "rut": "",
+    "rut": "18.029.084-2",
     "role": "TENS",
     "section": "Urgencia",
     "sheets": [
@@ -507,9 +507,7 @@
       "TENS RUTINA",
       "TOMA DE MUESTRA"
     ],
-    "missing_fields": [
-      "RUT pendiente"
-    ],
+    "missing_fields": [],
     "is_intern": false,
     "is_replacement": false
   },
@@ -544,7 +542,7 @@
       "RUT pendiente"
     ],
     "is_intern": false,
-    "is_replacement": false
+    "is_replacement": true
   },
   "makarena_zurita_o_interna_tm": {
     "id": "makarena_zurita_o_interna_tm",
@@ -590,7 +588,7 @@
   "francisca_campos_sepulveda": {
     "id": "francisca_campos_sepulveda",
     "name": "Francisca Campos Sepulveda",
-    "rut": "19.473.128-0",
+    "rut": "18.780.225-3",
     "role": "TENS",
     "section": "Urgencia",
     "sheets": [
@@ -633,7 +631,7 @@
   "merlam_espinoza": {
     "id": "merlam_espinoza",
     "name": "Merlam Espinoza",
-    "rut": "",
+    "rut": "16.270.882-1",
     "role": "TENS",
     "section": "Urgencia",
     "sheets": [
@@ -641,16 +639,14 @@
       "TENS RUTINA",
       "TOMA DE MUESTRA"
     ],
-    "missing_fields": [
-      "RUT pendiente"
-    ],
+    "missing_fields": [],
     "is_intern": false,
     "is_replacement": false
   },
   "nicol_riquelme_galvez": {
     "id": "nicol_riquelme_galvez",
     "name": "Nicol Riquelme Galvez",
-    "rut": "",
+    "rut": "19.473.178-7",
     "role": "TENS",
     "section": "Urgencia",
     "sheets": [
@@ -658,9 +654,7 @@
       "TENS RUTINA",
       "TOMA DE MUESTRA"
     ],
-    "missing_fields": [
-      "RUT pendiente"
-    ],
+    "missing_fields": [],
     "is_intern": false,
     "is_replacement": false
   },
@@ -706,7 +700,7 @@
   "elizabel_sanchez": {
     "id": "elizabel_sanchez",
     "name": "Elizabel Sanchez",
-    "rut": "",
+    "rut": "17.184.367-7",
     "role": "TENS",
     "section": "Urgencia",
     "sheets": [
@@ -714,9 +708,7 @@
       "TENS RUTINA",
       "TOMA DE MUESTRA"
     ],
-    "missing_fields": [
-      "RUT pendiente"
-    ],
+    "missing_fields": [],
     "is_intern": false,
     "is_replacement": false
   },
@@ -759,19 +751,17 @@
     "is_intern": true,
     "is_replacement": false
   },
-  "reemplazo": {
-    "id": "reemplazo",
-    "name": "Reemplazo",
+  "turno_reemplazo_urgencia": {
+    "id": "turno_reemplazo_urgencia",
+    "name": "Turno Reemplazo (Urgencia)",
     "rut": "",
     "role": "TENS",
     "section": "Urgencia",
     "sheets": [
-      "LAB. URGENCIA"
+      "LAB. URGENCIA",
+      "AUXILIARES "
     ],
-    "missing_fields": [
-      "RUT pendiente",
-      "Segundo apellido pendiente"
-    ],
+    "missing_fields": [],
     "is_intern": false,
     "is_replacement": true
   },
@@ -831,32 +821,28 @@
   "ruth_jara_lara": {
     "id": "ruth_jara_lara",
     "name": "Ruth Jara Lara",
-    "rut": "",
+    "rut": "16.731.595-K",
     "role": "TENS",
     "section": "Rutina TENS",
     "sheets": [
       "TENS RUTINA",
       "TOMA DE MUESTRA"
     ],
-    "missing_fields": [
-      "RUT pendiente"
-    ],
+    "missing_fields": [],
     "is_intern": false,
     "is_replacement": false
   },
   "ingrid_silva_valdivia": {
     "id": "ingrid_silva_valdivia",
     "name": "Ingrid Silva Valdivia",
-    "rut": "",
+    "rut": "15.138.825-6",
     "role": "TENS",
     "section": "Rutina TENS",
     "sheets": [
       "TENS RUTINA",
       "TOMA DE MUESTRA"
     ],
-    "missing_fields": [
-      "RUT pendiente"
-    ],
+    "missing_fields": [],
     "is_intern": false,
     "is_replacement": false
   },
@@ -879,7 +865,7 @@
   "patricia_morales_rojas": {
     "id": "patricia_morales_rojas",
     "name": "Patricia Morales Rojas",
-    "rut": "",
+    "rut": "11.480.276-K",
     "role": "TENS",
     "section": "Rutina TENS",
     "sheets": [
@@ -887,105 +873,78 @@
       "PROFESIONALES RUTINA",
       "TOMA DE MUESTRA"
     ],
-    "missing_fields": [
-      "RUT pendiente"
-    ],
+    "missing_fields": [],
     "is_intern": false,
     "is_replacement": false
   },
   "susana_quintana": {
     "id": "susana_quintana",
     "name": "Susana Quintana",
-    "rut": "",
+    "rut": "14.018.629-5",
     "role": "TENS",
     "section": "Rutina TENS",
     "sheets": [
       "TENS RUTINA"
     ],
-    "missing_fields": [
-      "RUT pendiente"
-    ],
+    "missing_fields": [],
     "is_intern": false,
     "is_replacement": false
   },
   "jimena_gonzalez": {
     "id": "jimena_gonzalez",
     "name": "Jimena Gonzalez",
-    "rut": "",
+    "rut": "19.043.840-6",
     "role": "TENS",
     "section": "Funciones Administrativas",
     "sheets": [
       "TENS RUTINA",
       "TOMA DE MUESTRA"
     ],
-    "missing_fields": [
-      "RUT pendiente"
-    ],
+    "missing_fields": [],
     "is_intern": false,
     "is_replacement": false
-  },
-  "reemplazos": {
-    "id": "reemplazos",
-    "name": "Reemplazos",
-    "rut": "",
-    "role": "TENS",
-    "section": "Funciones Administrativas",
-    "sheets": [
-      "TENS RUTINA"
-    ],
-    "missing_fields": [
-      "RUT pendiente",
-      "Segundo apellido pendiente"
-    ],
-    "is_intern": false,
-    "is_replacement": true
   },
   "valeria_montes": {
     "id": "valeria_montes",
     "name": "Valeria Montes",
-    "rut": "",
+    "rut": "17.932.887-9",
     "role": "TENS",
     "section": "Funciones Administrativas",
     "sheets": [
       "TENS RUTINA"
     ],
-    "missing_fields": [
-      "RUT pendiente"
-    ],
+    "missing_fields": [],
     "is_intern": false,
     "is_replacement": false
   },
   "maria_riquelme": {
     "id": "maria_riquelme",
     "name": "María Riquelme",
-    "rut": "",
+    "rut": "13.721.914-K",
     "role": "TENS",
     "section": "Funciones Administrativas",
     "sheets": [
       "TENS RUTINA",
       "TOMA DE MUESTRA"
     ],
-    "missing_fields": [
-      "RUT pendiente"
-    ],
+    "missing_fields": [],
     "is_intern": false,
     "is_replacement": false
   },
-  "camila_reyes_vivero": {
-    "id": "camila_reyes_vivero",
-    "name": "Camila Reyes Vivero",
+  "camila_walker": {
+    "id": "camila_walker",
+    "name": "Camila Walker",
     "rut": "",
     "role": "TENS",
     "section": "Funciones Administrativas",
     "sheets": [
-      "TENS RUTINA",
-      "PROFESIONALES RUTINA"
+      "TENS RUTINA"
     ],
     "missing_fields": [
       "RUT pendiente"
     ],
     "is_intern": false,
-    "is_replacement": false
+    "is_replacement": true
   },
   "consuelo_cerda_wehinger": {
     "id": "consuelo_cerda_wehinger",
@@ -1016,7 +975,7 @@
   "romina_diaz_espinoza": {
     "id": "romina_diaz_espinoza",
     "name": "Romina Diaz Espinoza",
-    "rut": "16.452.193-1",
+    "rut": "17.175.729-0",
     "role": "Profesional",
     "section": "Hematología",
     "sheets": [
@@ -1029,7 +988,7 @@
   "marcela_salgado_carreno": {
     "id": "marcela_salgado_carreno",
     "name": "Marcela Salgado Carreño",
-    "rut": "15.598.712-1",
+    "rut": "16.999.036-0",
     "role": "Profesional",
     "section": "Hematología",
     "sheets": [
@@ -1042,7 +1001,7 @@
   "miryam_espina_herrera": {
     "id": "miryam_espina_herrera",
     "name": "Miryam Espina Herrera",
-    "rut": "11.643.219-5",
+    "rut": "17.934.959-1",
     "role": "Profesional",
     "section": "Hematología",
     "sheets": [
@@ -1055,7 +1014,7 @@
   "alejandra_vorphal_vasquez": {
     "id": "alejandra_vorphal_vasquez",
     "name": "Alejandra Vorphal Vasquez",
-    "rut": "15.597.023-5",
+    "rut": "13.914.143-1",
     "role": "Profesional",
     "section": "Inmunoquímica",
     "sheets": [
@@ -1093,35 +1052,31 @@
     "is_intern": false,
     "is_replacement": false
   },
-  "loreto_diaz_rios": {
-    "id": "loreto_diaz_rios",
-    "name": "Loreto Diaz Rios",
-    "rut": "",
+  "camila_reyes_vivero": {
+    "id": "camila_reyes_vivero",
+    "name": "Camila Reyes Vivero",
+    "rut": "17.186.419-4",
     "role": "Profesional",
     "section": "Inmunoquímica",
     "sheets": [
       "PROFESIONALES RUTINA"
     ],
-    "missing_fields": [
-      "RUT pendiente"
-    ],
+    "missing_fields": [],
     "is_intern": false,
     "is_replacement": false
   },
-  "lara_tamara": {
-    "id": "lara_tamara",
-    "name": "Lara Tamara",
-    "rut": "",
+  "loreto_diaz_rios": {
+    "id": "loreto_diaz_rios",
+    "name": "Loreto Diaz Rios",
+    "rut": "16.899.801-5",
     "role": "Profesional",
     "section": "Inmunoquímica",
     "sheets": [
       "PROFESIONALES RUTINA"
     ],
-    "missing_fields": [
-      "RUT pendiente"
-    ],
+    "missing_fields": [],
     "is_intern": false,
-    "is_replacement": true
+    "is_replacement": false
   },
   "daniel_calderon_calderon": {
     "id": "daniel_calderon_calderon",
@@ -1153,22 +1108,20 @@
   "diego_rojas_verdugo": {
     "id": "diego_rojas_verdugo",
     "name": "Diego Rojas Verdugo",
-    "rut": "",
+    "rut": "18.572.806-4",
     "role": "Profesional",
     "section": "Microbiología",
     "sheets": [
       "PROFESIONALES RUTINA"
     ],
-    "missing_fields": [
-      "RUT pendiente"
-    ],
+    "missing_fields": [],
     "is_intern": false,
     "is_replacement": false
   },
   "nicole_hernandez_norambuena": {
     "id": "nicole_hernandez_norambuena",
     "name": "Nicole Hernandez Norambuena",
-    "rut": "17.824.912-6",
+    "rut": "17.172.257-8",
     "role": "Profesional",
     "section": "Microbiología",
     "sheets": [
@@ -1181,15 +1134,13 @@
   "francisco_sepulveda": {
     "id": "francisco_sepulveda",
     "name": "Francisco Sepulveda",
-    "rut": "",
+    "rut": "17.685.105-8",
     "role": "Profesional",
     "section": "Microbiología",
     "sheets": [
       "PROFESIONALES RUTINA"
     ],
-    "missing_fields": [
-      "RUT pendiente"
-    ],
+    "missing_fields": [],
     "is_intern": false,
     "is_replacement": false
   },
@@ -1238,7 +1189,7 @@
   "carolina_diaz_ponce": {
     "id": "carolina_diaz_ponce",
     "name": "Carolina Diaz Ponce",
-    "rut": "15.599.121-6",
+    "rut": "13.574.848-K",
     "role": "Profesional",
     "section": "Administrativa",
     "sheets": [
@@ -1251,7 +1202,7 @@
   "arlette_garrido_mino": {
     "id": "arlette_garrido_mino",
     "name": "Arlette Garrido Miño",
-    "rut": "16.275.312-6",
+    "rut": "13.723.175-1",
     "role": "Profesional",
     "section": "Administrativa",
     "sheets": [
@@ -1307,104 +1258,83 @@
     "is_intern": false,
     "is_replacement": false
   },
-  "tm_constanza": {
-    "id": "tm_constanza",
-    "name": "Tm Constanza",
-    "rut": "",
-    "role": "TENS",
+  "susana_sepulveda": {
+    "id": "susana_sepulveda",
+    "name": "Susana Sepulveda",
+    "rut": "10.892.073-4",
+    "role": "Auxiliar",
     "section": "Auxiliares",
     "sheets": [
-      "TOMA DE MUESTRA"
+      "AUXILIARES "
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "salomon_conejera": {
+    "id": "salomon_conejera",
+    "name": "Salomon Conejera",
+    "rut": "10.105.861-1",
+    "role": "Auxiliar",
+    "section": "Auxiliares",
+    "sheets": [
+      "AUXILIARES "
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "esteban_canales": {
+    "id": "esteban_canales",
+    "name": "Esteban Canales",
+    "rut": "",
+    "role": "Auxiliar",
+    "section": "Auxiliares",
+    "sheets": [
+      "AUXILIARES "
     ],
     "missing_fields": [
       "RUT pendiente"
     ],
     "is_intern": false,
-    "is_replacement": false
+    "is_replacement": true
   },
-  "tm_susana": {
-    "id": "tm_susana",
-    "name": "Tm Susana",
-    "rut": "",
-    "role": "TENS",
+  "pamela_alvarez_valdes": {
+    "id": "pamela_alvarez_valdes",
+    "name": "Pamela Alvarez Valdes",
+    "rut": "11.893.938-7",
+    "role": "Auxiliar",
     "section": "Auxiliares",
     "sheets": [
-      "TOMA DE MUESTRA"
+      "AUXILIARES "
+    ],
+    "missing_fields": [],
+    "is_intern": false,
+    "is_replacement": false
+  },
+  "maria_elizabeth": {
+    "id": "maria_elizabeth",
+    "name": "Maria Elizabeth",
+    "rut": "",
+    "role": "Auxiliar",
+    "section": "Auxiliares",
+    "sheets": [
+      "AUXILIARES "
     ],
     "missing_fields": [
       "RUT pendiente"
     ],
     "is_intern": false,
-    "is_replacement": false
+    "is_replacement": true
   },
-  "constanza_tm": {
-    "id": "constanza_tm",
-    "name": "Constanza Tm",
+  "cecilia_medel": {
+    "id": "cecilia_medel",
+    "name": "Cecilia Medel",
     "rut": "",
-    "role": "TENS",
+    "role": "Auxiliar",
     "section": "Auxiliares",
     "sheets": [
-      "TOMA DE MUESTRA"
-    ],
-    "missing_fields": [
-      "RUT pendiente"
-    ],
-    "is_intern": false,
-    "is_replacement": false
-  },
-  "nicol_riquelme_capacitacion_recepcion": {
-    "id": "nicol_riquelme_capacitacion_recepcion",
-    "name": "Nicol Riquelme Capacitación Recepcion",
-    "rut": "",
-    "role": "TENS",
-    "section": "Auxiliares",
-    "sheets": [
-      "TOMA DE MUESTRA"
-    ],
-    "missing_fields": [
-      "RUT pendiente"
-    ],
-    "is_intern": false,
-    "is_replacement": false
-  },
-  "laura_perez_recepcion_de_pacientes": {
-    "id": "laura_perez_recepcion_de_pacientes",
-    "name": "Laura Perez Recepción De Pacientes",
-    "rut": "",
-    "role": "TENS",
-    "section": "Auxiliares",
-    "sheets": [
-      "TOMA DE MUESTRA"
-    ],
-    "missing_fields": [
-      "RUT pendiente"
-    ],
-    "is_intern": false,
-    "is_replacement": false
-  },
-  "esmeralda_abarza_recepcion_de_pacientes": {
-    "id": "esmeralda_abarza_recepcion_de_pacientes",
-    "name": "Esmeralda Abarza Recepcion De Pacientes",
-    "rut": "",
-    "role": "TENS",
-    "section": "Auxiliares",
-    "sheets": [
-      "TOMA DE MUESTRA"
-    ],
-    "missing_fields": [
-      "RUT pendiente"
-    ],
-    "is_intern": false,
-    "is_replacement": false
-  },
-  "elizabel_sanchez_capacitacion_recepcion": {
-    "id": "elizabel_sanchez_capacitacion_recepcion",
-    "name": "Elizabel Sanchez Capacitación Recepción",
-    "rut": "",
-    "role": "TENS",
-    "section": "Auxiliares",
-    "sheets": [
-      "TOMA DE MUESTRA"
+      "AUXILIARES "
     ],
     "missing_fields": [
       "RUT pendiente"
@@ -1417,7 +1347,7 @@
     "name": "Maria Jose Peñailillo",
     "rut": "",
     "role": "TENS",
-    "section": "Auxiliares",
+    "section": "Toma de Muestras",
     "sheets": [
       "TOMA DE MUESTRA"
     ],

@@ -1,7 +1,9 @@
-﻿/**
+/**
  * Sistema de Gestión de Turnos y Calendario - Laboratorio Clínico HRT
  * Hospital Regional de Talca - Versión 2027
  */
+
+const DATA_VERSION = '2.2';
 
 let state = {
   currentYear: 2027,
@@ -16,7 +18,9 @@ let state = {
   tdm2026: [],
   turns2027: [],
   tdm2027: [],
-  holidays: {}
+  holidays: {},
+  _turnsMap: null,
+  _turnsMapYear: null
 };
 
 const MONTH_NAMES = [
@@ -32,7 +36,7 @@ const TDM_STATIONS = [
   { id: 'box_0800_2', name: '08:00 - Box 2 (Punción Ambulatoria)', defaultSlot: '08:00:00', icon: 'needle' },
   { id: 'box_0800_3', name: '08:00 - Box 3 (Punción Ambulatoria)', defaultSlot: '08:00:00', icon: 'needle' },
   { id: 'box_0800_4', name: '08:00 - Box 4 (Punción Ambulatoria)', defaultSlot: '08:00:00', icon: 'needle' },
-  { id: 'box_0830_1', name: '08:30 - Box Refuerzo Punta', defaultSlot: '08:30:00', icon: 'zap' },
+  { id: 'box_0830_1', name: '08:30 - Box Refuerzo Punta (SOS)', defaultSlot: '08:30:00', icon: 'zap' },
   { id: 'recepcion', name: 'Recepción de Muestras (CDT)', defaultSlot: 'RECEPCIÓN', icon: 'inbox' },
   { id: 'orientador', name: 'Orientador y Apoyo en Sala', defaultSlot: 'ORIENTADOR', icon: 'compass' },
   { id: 'urgencia_apoyo', name: 'Refuerzo Urgencia (07:00 a 08:00)', defaultSlot: 'URGENCIA (7-8)', icon: 'alert-triangle' }
@@ -51,7 +55,24 @@ function initLucide() {
   }
 }
 
+function rebuildTurnsMap() {
+  const records = state.currentYear === 2026 ? state.turns2026 : state.turns2027;
+  state._turnsMap = {};
+  for (let i = 0; i < records.length; i++) {
+    const r = records[i];
+    state._turnsMap[r.staff_id + '_' + r.date] = r;
+  }
+  state._turnsMapYear = state.currentYear;
+}
+
 function loadInitialData() {
+  // Clear any outdated cache from prior buggy builds
+  const savedVersion = localStorage.getItem('hrt_data_version');
+  if (savedVersion !== DATA_VERSION) {
+    localStorage.removeItem('hrt_staff_directory');
+    localStorage.setItem('hrt_data_version', DATA_VERSION);
+  }
+
   if (window.TURNOS_INITIAL_DATA) {
     state.staff = JSON.parse(JSON.stringify(window.TURNOS_INITIAL_DATA.staff || {}));
     state.turns2026 = window.TURNOS_INITIAL_DATA.turns_2026 || [];
@@ -61,7 +82,13 @@ function loadInitialData() {
 
   const savedStaff = localStorage.getItem('hrt_staff_directory');
   if (savedStaff) {
-    try { state.staff = JSON.parse(savedStaff); } catch(e) {}
+    try {
+      const parsed = JSON.parse(savedStaff);
+      // Ensure no fake duplicate keys from older cache persist
+      if (!parsed.tm_constanza && !parsed.reemplazos) {
+        state.staff = parsed;
+      }
+    } catch(e) {}
   }
 
   const savedTurns2027 = localStorage.getItem('hrt_turns_2027');
@@ -74,6 +101,8 @@ function loadInitialData() {
     try { state.tdm2027 = JSON.parse(savedTDM2027); } catch(e) {}
   }
 
+  rebuildTurnsMap();
+
   state.selectedTDMDate = `${state.currentYear}-${String(state.currentMonth).padStart(2, '0')}-04`;
   const tdmInput = document.getElementById('tdm-date-input');
   if (tdmInput) tdmInput.value = state.selectedTDMDate;
@@ -81,6 +110,8 @@ function loadInitialData() {
 
 function setYear(year) {
   state.currentYear = year;
+  rebuildTurnsMap();
+
   document.getElementById('btn-year-2026').className = year === 2026 
     ? 'px-4 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center space-x-1.5 bg-sky-500 text-white shadow-sm'
     : 'px-4 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center space-x-1.5 bg-slate-700 text-slate-300 hover:text-white';
@@ -147,19 +178,22 @@ function nextMonth() {
 }
 
 function switchTab(tabId) {
-  state.activeTab = tabId;
+  const normTab = tabId.trim();
+  state.activeTab = normTab;
+
   document.querySelectorAll('.tab-btn').forEach(btn => {
-    if (btn.dataset.tab === tabId) {
+    const btnTab = (btn.dataset.tab || '').trim();
+    if (btnTab === normTab) {
       btn.className = 'tab-btn active px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 whitespace-nowrap bg-sky-100 text-sky-800 border border-sky-300 shadow-xs';
     } else {
       btn.className = 'tab-btn px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 whitespace-nowrap text-slate-600 hover:bg-slate-100';
     }
   });
 
-  document.getElementById('view-matrix').classList.toggle('hidden', tabId === 'TOMA DE MUESTRA' || tabId === 'DIRECTORIO' || tabId === 'METRICAS');
-  document.getElementById('view-tdm').classList.toggle('hidden', tabId !== 'TOMA DE MUESTRA');
-  document.getElementById('view-directorio').classList.toggle('hidden', tabId !== 'DIRECTORIO');
-  document.getElementById('view-metricas').classList.toggle('hidden', tabId !== 'METRICAS');
+  document.getElementById('view-matrix').classList.toggle('hidden', normTab === 'TOMA DE MUESTRA' || normTab === 'DIRECTORIO' || normTab === 'METRICAS');
+  document.getElementById('view-tdm').classList.toggle('hidden', normTab !== 'TOMA DE MUESTRA');
+  document.getElementById('view-directorio').classList.toggle('hidden', normTab !== 'DIRECTORIO');
+  document.getElementById('view-metricas').classList.toggle('hidden', normTab !== 'METRICAS');
 
   renderApp();
 }
@@ -364,14 +398,18 @@ function getStaffForSheet(sheetName) {
     list = list.filter(m => m.role === state.roleFilter);
   }
 
-  if (sheetName === 'LAB. URGENCIA') {
-    list = list.filter(m => m.sheets.includes('LAB. URGENCIA') || m.section.toLowerCase().includes('urgencia'));
-  } else if (sheetName === 'PROFESIONALES RUTINA') {
-    list = list.filter(m => m.sheets.includes('PROFESIONALES RUTINA') || (m.role === 'Profesional' && !m.section.toLowerCase().includes('urgencia')));
-  } else if (sheetName === 'TENS RUTINA') {
-    list = list.filter(m => m.sheets.includes('TENS RUTINA') || (m.role === 'TENS' && !m.section.toLowerCase().includes('urgencia')));
-  } else if (sheetName === 'AUXILIARES ') {
-    list = list.filter(m => m.sheets.includes('AUXILIARES') || m.role === 'Auxiliar');
+  const sNorm = (sheetName || '').trim().toUpperCase();
+
+  if (sNorm === 'LAB. URGENCIA') {
+    list = list.filter(m => (m.sheets || []).some(s => s.toUpperCase().includes('URGENCIA')) || (m.section && m.section.toLowerCase().includes('urgencia')));
+  } else if (sNorm === 'PROFESIONALES RUTINA') {
+    list = list.filter(m => (m.sheets || []).some(s => s.toUpperCase().includes('PROFESIONAL')) || (m.role === 'Profesional' && !m.section.toLowerCase().includes('urgencia')));
+  } else if (sNorm === 'TENS RUTINA') {
+    list = list.filter(m => (m.sheets || []).some(s => s.toUpperCase().includes('TENS RUTINA')) || (m.role === 'TENS' && !m.section.toLowerCase().includes('urgencia')));
+  } else if (sNorm === 'AUXILIARES') {
+    list = list.filter(m => (m.sheets || []).some(s => s.toUpperCase().includes('AUXILIAR')) || m.role === 'Auxiliar');
+  } else if (sNorm === 'TOMA DE MUESTRA') {
+    list = list.filter(m => (m.sheets || []).some(s => s.toUpperCase().includes('TOMA DE MUESTRA')));
   }
 
   list.sort((a, b) => {
@@ -383,8 +421,32 @@ function getStaffForSheet(sheetName) {
 }
 
 function getShiftEvent(staffId, dateStr) {
-  const records = state.currentYear === 2026 ? state.turns2026 : state.turns2027;
-  return records.find(r => r.staff_id === staffId && r.date === dateStr);
+  if (!state._turnsMap || state._turnsMapYear !== state.currentYear) {
+    rebuildTurnsMap();
+  }
+  return state._turnsMap[staffId + '_' + dateStr] || null;
+}
+
+function checkStaffConflict(staffId, dateStr) {
+  const shift = getShiftEvent(staffId, dateStr);
+  if (shift) {
+    if (shift.event_type === 'VACACIONES') return 'Vacaciones (FL)';
+    if (shift.event_type === 'LICENCIA_MEDICA') return 'Licencia Médica (LM)';
+    if (shift.event_type === 'ADMINISTRATIVO') return 'Día Administrativo (DA)';
+    if (shift.code === 'N') return 'Turno Noche Activo';
+    if (shift.event_type === 'SIN_GOCE_SUELDO') return 'Permiso Sin Goce';
+  }
+
+  // Clinical Rule: Check previous day for night shift (Saliente Turno Noche)
+  const d = new Date(dateStr + 'T00:00:00');
+  d.setDate(d.getDate() - 1);
+  const prevDateStr = d.toISOString().split('T')[0];
+  const prevShift = getShiftEvent(staffId, prevDateStr);
+  if (prevShift && prevShift.code === 'N') {
+    return 'Saliente de Turno Noche (08:00 AM)';
+  }
+
+  return null;
 }
 
 function renderTDMView() {
@@ -401,11 +463,8 @@ function renderTDMView() {
   stationsGrid.innerHTML = '';
 
   TDM_STATIONS.forEach(station => {
-    const assigned = currentAssignments.filter(a => 
-      (a.station_id === station.id) || 
-      (a.time_slot && a.time_slot.includes(station.defaultSlot)) ||
-      (!a.station_id && station.id.includes('0800') && (a.code === 'X' || a.code === 'x'))
-    );
+    // Exact 1-to-1 station assignment matching (eliminates 4x multiplication bug)
+    const assigned = currentAssignments.filter(a => a.station_id === station.id);
 
     const card = document.createElement('div');
     card.className = 'bg-slate-50 rounded-xl border border-slate-200 p-4 shadow-xs hover:border-emerald-300 transition flex flex-col justify-between';
@@ -466,17 +525,6 @@ function renderTDMView() {
   renderTDMMonthlyTable();
 }
 
-function checkStaffConflict(staffId, dateStr) {
-  const shift = getShiftEvent(staffId, dateStr);
-  if (!shift) return null;
-  if (shift.event_type === 'VACACIONES') return 'Vacaciones (FL)';
-  if (shift.event_type === 'LICENCIA_MEDICA') return 'Licencia Médica';
-  if (shift.event_type === 'ADMINISTRATIVO') return 'Día Administrativo';
-  if (shift.code === 'N') return 'Turno Noche';
-  if (shift.event_type === 'SIN_GOCE_SUELDO') return 'Permiso Sin Goce';
-  return null;
-}
-
 function getStaffDropdownOptions(dateStr) {
   const staffList = Object.values(state.staff).sort((a, b) => a.name.localeCompare(b.name));
   return staffList.map(s => {
@@ -522,10 +570,20 @@ function addTDMAssignment(stationId, dateStr) {
 
   const targetList = state.currentYear === 2026 ? state.tdm2026 : state.tdm2027;
 
-  const exists = targetList.some(a => a.staff_id === staffId && a.date === dateStr && a.station_id === stationId);
-  if (exists) {
-    alert(`${member.name} ya está asignado(a) a esta estación en este día.`);
+  // Prevent duplicate assignment across any station on same date
+  const existingSameDay = targetList.find(a => a.staff_id === staffId && a.date === dateStr);
+  if (existingSameDay) {
+    const stName = TDM_STATIONS.find(s => s.id === existingSameDay.station_id)?.name || 'otro puesto';
+    alert(`Aviso: ${member.name} ya se encuentra asignado(a) a ${stName} en la fecha ${dateStr}.`);
     return;
+  }
+
+  // Conflict confirmation prompt
+  const conflict = checkStaffConflict(staffId, dateStr);
+  if (conflict) {
+    if (!confirm(`⚠️ Advertencia de Turno / Ausentismo:\n${member.name} registra "${conflict}" el día ${dateStr}.\n\n¿Deseas confirmar la asignación a Toma de Muestras de todos modos?`)) {
+      return;
+    }
   }
 
   const station = TDM_STATIONS.find(s => s.id === stationId);
@@ -538,6 +596,7 @@ function addTDMAssignment(stationId, dateStr) {
     staff_name: member.name,
     role: member.role,
     section: member.section,
+    sheet: 'TOMA DE MUESTRA',
     station_id: stationId,
     time_slot: station ? station.defaultSlot : '08:00:00',
     code: 'X'
@@ -550,7 +609,7 @@ function addTDMAssignment(stationId, dateStr) {
 
 function removeTDMAssignment(staffId, dateStr, stationId) {
   const targetList = state.currentYear === 2026 ? state.tdm2026 : state.tdm2027;
-  const idx = targetList.findIndex(a => a.staff_id === staffId && a.date === dateStr);
+  const idx = targetList.findIndex(a => a.staff_id === staffId && a.date === dateStr && (stationId ? a.station_id === stationId : true));
   if (idx !== -1) {
     targetList.splice(idx, 1);
     saveChangesToStorage();
@@ -570,11 +629,11 @@ function renderTDMMonthlyTable() {
   const monthAssignments = (state.currentYear === 2026 ? state.tdm2026 : state.tdm2027)
     .filter(a => a.date.startsWith(`${year}-${String(month).padStart(2, '0')}`));
 
-  const tdmStaffIds = [...new Set(monthAssignments.map(a => a.staff_id))];
-  const tdmStaff = tdmStaffIds.map(id => state.staff[id]).filter(Boolean);
+  // All 22 official TDM qualified staff
+  const tdmStaff = getStaffForSheet('TOMA DE MUESTRA');
 
   if (tdmStaff.length === 0) {
-    wrapper.innerHTML = `<div class="p-6 text-center text-xs text-slate-400">No hay designaciones de toma de muestra registradas para ${MONTH_NAMES[month-1]} ${year}.</div>`;
+    wrapper.innerHTML = `<div class="p-6 text-center text-xs text-slate-400">No hay funcionarios designados a toma de muestra registrados para ${MONTH_NAMES[month-1]} ${year}.</div>`;
     return;
   }
 
@@ -597,7 +656,7 @@ function renderTDMMonthlyTable() {
     html += `
       <tr class="${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50'}">
         <td class="sticky-col-body font-semibold text-slate-900 border-r border-slate-200">
-          ${st.name}
+          <div class="truncate cursor-pointer hover:text-sky-600" onclick="openStaffModal('${st.id}')">${st.name}</div>
         </td>
         <td class="sticky-col-body-2 text-slate-500 font-mono text-[11px] border-r border-slate-200">
           ${st.role}
@@ -607,9 +666,22 @@ function renderTDMMonthlyTable() {
       const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
       const ass = monthAssignments.find(a => a.staff_id === st.id && a.date === dateStr);
       if (ass) {
-        html += `<td class="cell-shift event-tdm-assigned" title="${st.name}: Asignado a Toma de Muestras (${ass.time_slot || ''})">X</td>`;
+        html += `<td class="cell-shift event-tdm-assigned" title="${st.name}: Asignado(a) a Toma de Muestras (${ass.time_slot || ''})">X</td>`;
       } else {
-        html += `<td class="cell-shift text-slate-300">-</td>`;
+        // Show base shift or absence badge if present so coordinator has full context
+        const baseEv = getShiftEvent(st.id, dateStr);
+        if (baseEv && (baseEv.code || baseEv.event_type)) {
+          let codeLabel = baseEv.code || (baseEv.event_type === 'VACACIONES' ? 'FL' : (baseEv.event_type === 'ADMINISTRATIVO' ? 'DA' : ''));
+          let cls = 'cell-shift text-[10px] font-bold ';
+          if (baseEv.event_type === 'VACACIONES') cls += 'event-vacaciones';
+          else if (baseEv.event_type === 'ADMINISTRATIVO') cls += 'event-administrativo';
+          else if (baseEv.code === 'N') cls += 'event-noche';
+          else if (baseEv.code === 'L') cls += 'event-largo';
+          else cls += 'bg-slate-100 text-slate-600';
+          html += `<td class="${cls}" title="${st.name}: ${baseEv.event_type || baseEv.code}">${codeLabel}</td>`;
+        } else {
+          html += `<td class="cell-shift text-slate-300">-</td>`;
+        }
       }
     }
     html += `</tr>`;
@@ -821,6 +893,7 @@ function clearCurrentDayShift() {
   if (idx !== -1) {
     targetList.splice(idx, 1);
   }
+  rebuildTurnsMap();
   closeShiftModal();
   saveChangesToStorage();
   renderApp();
@@ -853,6 +926,7 @@ function saveShiftModal() {
     });
   }
 
+  rebuildTurnsMap();
   closeShiftModal();
   saveChangesToStorage();
   renderApp();
@@ -940,9 +1014,10 @@ function saveChangesToStorage() {
 }
 
 function clone2026to2027() {
-  if (!confirm('¿Deseas importar la plantilla de funcionarios de 2026 como base inicial para 2027?')) return;
+  if (!confirm('¿Deseas inicializar la plantilla 2027 con la dotación actualizada de funcionarios para comenzar la nueva planificación?')) return;
   state.turns2027 = [];
   state.tdm2027 = [];
+  rebuildTurnsMap();
   saveChangesToStorage();
   setYear(2027);
   alert('¡Plantilla 2027 lista para comenzar a programar turnos y ausentismos!');
@@ -977,6 +1052,7 @@ function importJSONBackup(event) {
       if (data.staff) state.staff = data.staff;
       if (data.turns_2027) state.turns2027 = data.turns_2027;
       if (data.tdm_2027) state.tdm2027 = data.tdm_2027;
+      rebuildTurnsMap();
       saveChangesToStorage();
       renderApp();
       alert('¡Copia de seguridad restaurada correctamente!');
@@ -995,7 +1071,7 @@ function exportToExcel() {
 
   const wb = XLSX.utils.book_new();
   const year = state.currentYear;
-  const sheets = ['LAB. URGENCIA', 'PROFESIONALES RUTINA', 'TENS RUTINA', 'AUXILIARES ', 'TOMA DE MUESTRA'];
+  const sheets = ['LAB. URGENCIA', 'PROFESIONALES RUTINA', 'TENS RUTINA', 'AUXILIARES', 'TOMA DE MUESTRA'];
 
   sheets.forEach(sheetName => {
     const wsData = [];
@@ -1042,6 +1118,28 @@ function exportToExcel() {
     const ws = XLSX.utils.aoa_to_sheet(wsData);
     XLSX.utils.book_append_sheet(wb, ws, sheetName.slice(0, 31));
   });
+
+  // Add Dotación & Personal Audit Sheet
+  const dotData = [];
+  dotData.push(['HOSPITAL REGIONAL DE TALCA - LABORATORIO CLÍNICO']);
+  dotData.push([`DOTACIÓN OFICIAL Y ESTADO DE DATOS - AÑO ${year}`]);
+  dotData.push([]);
+  dotData.push(['FUNCIONARIO', 'RUT', 'ESTAMENTO', 'SECCIÓN', 'PESTAÑAS EN PLANILLA', 'ESTADO']);
+  Object.values(state.staff)
+    .sort((a, b) => (a.role || '').localeCompare(b.role || '') || a.name.localeCompare(b.name))
+    .forEach(s => {
+      const status = (s.missing_fields && s.missing_fields.length > 0) ? ('Pendiente: ' + s.missing_fields.join(', ')) : 'Completo';
+      dotData.push([
+        s.name,
+        s.rut || 'PENDIENTE',
+        s.role || '',
+        s.section || '',
+        (s.sheets || []).join(', '),
+        status
+      ]);
+    });
+  const wsDot = XLSX.utils.aoa_to_sheet(dotData);
+  XLSX.utils.book_append_sheet(wb, wsDot, 'DOTACIÓN Y PERSONAL');
 
   XLSX.writeFile(wb, `TURNOS_LABORATORIO_HRT_${year}.xlsx`);
 }
