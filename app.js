@@ -883,6 +883,12 @@ function openShiftModal(staffId, dateStr, currentCode, currentEventType) {
   document.getElementById('modal-shift-subtitle').innerText = `Fecha: ${dateStr} (${member.section || member.role})`;
   document.getElementById('modal-custom-code').value = currentCode || '';
 
+  const histNotice = document.getElementById('modal-historical-notice');
+  if (histNotice) {
+    if (state.currentYear === 2026) histNotice.classList.remove('hidden');
+    else histNotice.classList.add('hidden');
+  }
+
   document.getElementById('modal-shift-picker').classList.remove('hidden');
   initLucide();
 }
