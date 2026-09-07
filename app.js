@@ -660,7 +660,7 @@ function renderMatrixView() {
           cellTitle += ' | Comisión de Servicio';
           if (!cellText) cellText = '*';
         } else if (evType === 'LICENCIA_MEDICA') {
-          cellClass += ' bg-orange-400 text-white';
+          cellClass += ' event-licencia bg-orange-500 text-white';
           cellTitle += ' | Licencia Médica';
           if (!cellText) cellText = 'LM';
         } else if (evType === 'SIN_GOCE_SUELDO') {

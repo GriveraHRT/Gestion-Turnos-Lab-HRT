@@ -406,11 +406,23 @@ def register_person(raw_name, rut_hint="", role_hint="", section_hint="", sheet=
                 
     return staff_db[pid]
 
+# Staff members with confirmed long-term medical leaves (Licencia Médica) in 2026
+# (maternity prenatal/postnatal, prolonged illness/surgical leave) whose absences were marked with red fill.
+KNOWN_LM_STAFF = {
+    'Camila Reyes Vivero',      # Licencia maternal/prolongada Junio a Octubre 2026 (94 días)
+    'Consuelo Cerda Wehinger',  # Licencia médica prolongada Enero a Septiembre 2026 (221 días)
+    'Katalina Barrera',         # Licencia médica prolongada Abril a Noviembre 2026 (195 días)
+    'Sergio Rojo',              # Licencia médica prolongada Marzo a Junio 2026 (106 días)
+    'Valeria Montes',           # Licencia médica (sección LICENCIAS en TENS Rutina, 250 días)
+    'Patricia Morales Rojas',   # Licencia médica (sección LICENCIAS en TENS Rutina, 96 días)
+    'Elizabel Sanchez'          # Licencia médica (sección LICENCIAS en TENS Rutina, 71 días)
+}
+
 wb = openpyxl.load_workbook("TURNOS 2026.xlsx", data_only=True)
 months_es = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE']
 
 COLOR_MAP = {
-    'FFFF0000': 'VACACIONES',         # Red (Feriado legal)
+    'FFFF0000': 'VACACIONES',         # Red (Feriado legal / Licencia)
     'FFFFFF00': 'ADMINISTRATIVO',     # Yellow (Dias administrativos)
     'FF00B0F0': 'PERMISO_TARDE',      # Cyan
     'FFFF00FF': 'DEVOLUCION_TIEMPO',  # Magenta (Horas extras / devolucion)
@@ -429,6 +441,7 @@ for sheetname in wb.sheetnames:
     current_month = None
     day_cols = {}
     current_section = ""
+    in_licencias_section = False
     current_role = "Profesional" if "PROFESIONAL" in sheetname.upper() else ("TENS" if "TENS" in sheetname.upper() else ("Auxiliar" if "AUXILIAR" in sheetname.upper() else "TENS"))
     
     for r in range(1, ws.max_row + 1):
@@ -444,6 +457,7 @@ for sheetname in wb.sheetnames:
             if f"TURNOS {m_name}" in full_row_str or f"{m_name} 2026" in full_row_str or full_row_str.strip() == m_name:
                 current_month = m_idx + 1
                 day_cols = {}
+                in_licencias_section = False
                 month_detected = True
                 break
         if month_detected:
@@ -452,6 +466,11 @@ for sheetname in wb.sheetnames:
         # Section detection
         if any(s in c2.upper() for s in ['HEMATOLOG', 'INMUNOQU', 'MICROBIOLOG', 'URGENCIA Y BIOLOG', 'ADMINISTRATIVA']):
             current_section = c2.title()
+            in_licencias_section = False
+            continue
+
+        if 'LICENCIAS' in c1.upper() or 'LICENCIAS' in c2.upper():
+            in_licencias_section = True
             continue
             
         if "PROFESIONALES" in c1.upper() or "PROFESIONALES" in c2.upper():
@@ -499,7 +518,12 @@ for sheetname in wb.sheetnames:
                 if val or (color and color in ['VACACIONES', 'ADMINISTRATIVO', 'PERMISO_TARDE', 'DEVOLUCION_TIEMPO', 'COMISION_SERVICIO', 'SIN_GOCE_SUELDO']):
                     date_str = f"2026-{current_month:02d}-{day_num:02d}"
                     event_type = "TURNO"
-                    if color == 'VACACIONES': event_type = "VACACIONES"
+                    if color == 'VACACIONES':
+                        if in_licencias_section or staff_obj['name'] in KNOWN_LM_STAFF:
+                            event_type = "LICENCIA_MEDICA"
+                            color = "LICENCIA_MEDICA"
+                        else:
+                            event_type = "VACACIONES"
                     elif color == 'ADMINISTRATIVO': event_type = "ADMINISTRATIVO"
                     elif color == 'DEVOLUCION_TIEMPO': event_type = "DEVOLUCION_TIEMPO"
                     elif color == 'COMISION_SERVICIO': event_type = "COMISION_SERVICIO"

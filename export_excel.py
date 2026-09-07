@@ -220,7 +220,7 @@ def generate_hospital_excel(year=2027, output_path=None):
                         if ev:
                             code = ev.get('code', '')
                             ev_type = ev.get('event_type', '')
-                            cell.value = code or ('FL' if ev_type == 'VACACIONES' else ('DA' if ev_type == 'ADMINISTRATIVO' else ''))
+                            cell.value = code or ('FL' if ev_type == 'VACACIONES' else ('DA' if ev_type == 'ADMINISTRATIVO' else ('LM' if ev_type == 'LICENCIA_MEDICA' else '')))
 
                             if ev_type == 'VACACIONES':
                                 cell.fill = color_fills['VACACIONES']
