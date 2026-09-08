@@ -6,7 +6,14 @@ def test_data_bundle():
     with open('data/staff_master.json', encoding='utf-8') as f:
         db = json.load(f)
     
-    assert len(db) == 98, f"Expected 98 staff, got {len(db)}"
+    assert len(db) == 100, f"Expected 100 staff, got {len(db)}"
+    assert db['patricia_morales_rojas']['section'] == 'AH'
+    assert db['patricia_morales_morales']['section'] == 'APA'
+    assert db['teresa_fuentes_munoz']['section'] == 'APA'
+    assert db['teresa_fuentes_munoz']['rut'] == '20.367.852-5'
+    assert db['patricia_morales_morales']['rut'] == '16.555.264-4'
+    assert db['patricia_morales_rojas']['rut'] == '11.480.276-K'
+    assert len([s for s in db.values() if s.get('missing_fields')]) == 4
     
     # Requirement 3 validation:
     # 1. Diego Rojas Verdugo -> ATE
@@ -172,10 +179,109 @@ def test_shift_engine_simulation():
 
     print("Shift engine simulations: PASSED!")
 
+def test_morales_distinction():
+    print("Testing distinction between Patricia Morales Morales and Patricia Morales Rojas...")
+    with open('data/staff_master.json', encoding='utf-8') as f:
+        db = json.load(f)
+
+    # 1. Verification of Patricia Morales Morales (TENS, APA, TDM)
+    pmm = db.get('patricia_morales_morales')
+    assert pmm is not None, "patricia_morales_morales must exist in staff master"
+    assert pmm['name'] == 'Patricia Morales Morales'
+    assert pmm['rut'] == '16.555.264-4'
+    assert pmm['role'] == 'TENS'
+    assert pmm['estamento'] == 'TENS'
+    assert pmm['section'] == 'APA'
+    assert 'TENS RUTINA' in pmm['sheets']
+    assert 'TOMA DE MUESTRA' in pmm['sheets']
+
+    # 2. Verification of Patricia Morales Rojas (Profesional TM Hematología, AH)
+    pmr = db.get('patricia_morales_rojas')
+    assert pmr is not None, "patricia_morales_rojas must exist in staff master"
+    assert pmr['name'] == 'Patricia Morales Rojas'
+    assert pmr['rut'] == '11.480.276-K'
+    assert pmr['role'] == 'Profesional'
+    assert pmr['estamento'] == 'Tecnólogo Médico'
+    assert pmr['section'] == 'AH'
+    assert 'PROFESIONALES RUTINA' in pmr['sheets']
+    assert 'TOMA DE MUESTRA' not in pmr['sheets']
+
+    # 3. TDM assignments verification
+    with open('data/tdm_2026.json', encoding='utf-8') as f:
+        tdm = json.load(f)
+    pmm_tdm = [t for t in tdm if t.get('staff_id') == 'patricia_morales_morales']
+    pmr_tdm = [t for t in tdm if t.get('staff_id') == 'patricia_morales_rojas']
+    assert len(pmm_tdm) > 0, "Patricia Morales Morales must have assignments in Toma de Muestra"
+    assert len(pmr_tdm) == 0, "Patricia Morales Rojas must NOT have assignments in Toma de Muestra"
+
+    # 4. Verification in styles.css for sticky column widths (expanded to 300px / 410px)
+    with open('styles.css', encoding='utf-8') as f:
+        css = f.read()
+    assert 'min-width: 300px;' in css
+    assert 'left: 300px;' in css
+    assert 'min-width: 410px;' in css
+
+    # 5. Verification in app.js
+    with open('app.js', encoding='utf-8') as f:
+        js = f.read()
+    assert "DATA_VERSION = '3.5'" in js
+    assert "Patricia Morales Rojas" in js
+    assert "Patricia Morales Morales" in js
+    assert "s.section = 'AH'" in js
+    assert "s.section = 'APA'" in js
+    assert "SECTION_HUMAN_SEARCH" in js
+    assert "getMemberSearchTokens" in js
+    assert "secBadge" in js
+    assert "tdmBadge" in js
+    assert "🩸 TDM" in js
+
+    # 6. Verification of search discriminability (multi-token frequency & section search)
+    import subprocess
+    node_test = """
+    global.window = global;
+    global.document = { addEventListener: () => {}, getElementById: () => null };
+    global.localStorage = { getItem: () => null, setItem: () => {}, removeItem: () => {} };
+    const fs = require('fs');
+    eval(fs.readFileSync('data/data_bundle.js', 'utf8'));
+    eval(fs.readFileSync('app.js', 'utf8'));
+    const staff = window.TURNOS_INITIAL_DATA.staff;
+    
+    // Query 1: morales morales
+    const resMM = Object.values(staff).filter(m => matchesSearch(m, 'morales morales'));
+    if (!resMM.some(m => m.id === 'patricia_morales_morales') || resMM.some(m => m.id === 'patricia_morales_rojas')) {
+      console.error('FAIL: morales morales search did not isolate PMM', resMM.map(m => m.name));
+      process.exit(1);
+    }
+    // Query 2: morales rojas
+    const resMR = Object.values(staff).filter(m => matchesSearch(m, 'morales rojas'));
+    if (!resMR.some(m => m.id === 'patricia_morales_rojas') || resMR.some(m => m.id === 'patricia_morales_morales')) {
+      console.error('FAIL: morales rojas search did not isolate PMR', resMR.map(m => m.name));
+      process.exit(1);
+    }
+    // Query 3: hematologia
+    const resHem = Object.values(staff).filter(m => matchesSearch(m, 'hematologia'));
+    if (!resHem.some(m => m.id === 'patricia_morales_rojas') || resHem.some(m => m.id === 'patricia_morales_morales')) {
+      console.error('FAIL: hematologia search did not include PMR exclusively over PMM', resHem.map(m => m.name));
+      process.exit(1);
+    }
+    // Query 4: toma de muestra
+    const resTDM = Object.values(staff).filter(m => matchesSearch(m, 'toma de muestra'));
+    if (!resTDM.some(m => m.id === 'patricia_morales_morales') || resTDM.some(m => m.id === 'patricia_morales_rojas')) {
+      console.error('FAIL: toma de muestra search did not include PMM exclusively over PMR', resTDM.map(m => m.name));
+      process.exit(1);
+    }
+    console.log('Search discrimination tests in Node.js passed!');
+    """
+    res = subprocess.run(['node', '-e', node_test], capture_output=True, text=True)
+    assert res.returncode == 0, f"Node search test failed: {res.stderr}\n{res.stdout}"
+
+    print("Patricia Morales distinction tests: PASSED!")
+
 if __name__ == '__main__':
     test_data_bundle()
     test_html_elements()
     test_js_logic()
     test_shift_engine_simulation()
+    test_morales_distinction()
     print("\nALL VERIFICATION TESTS COMPLETED SUCCESSFULLY!")
 

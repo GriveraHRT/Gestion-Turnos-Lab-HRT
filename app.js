@@ -3,7 +3,7 @@
  * Hospital Regional de Talca - Versión 2027
  */
 
-const DATA_VERSION = '3.2';
+const DATA_VERSION = '3.5';
 
 const ESTAMENTO_ORDER = {
   'Tecnólogo Médico': 1,
@@ -174,6 +174,31 @@ function migrateStaffSections(staffObj) {
   Object.values(staffObj).forEach(s => {
     if (s.name === 'Diego Rojas Verdugo') {
       s.section = 'ATE';
+      s.role = 'Profesional';
+      s.estamento = 'Tecnólogo Médico';
+      return;
+    }
+    if (s.id === 'patricia_morales_rojas' || s.name === 'Patricia Morales Rojas') {
+      s.section = 'AH';
+      s.role = 'Profesional';
+      s.estamento = 'Tecnólogo Médico';
+      if (!s.sheets) s.sheets = [];
+      if (!s.sheets.includes('PROFESIONALES RUTINA')) s.sheets.push('PROFESIONALES RUTINA');
+      return;
+    }
+    if (s.id === 'patricia_morales_morales' || s.name === 'Patricia Morales Morales') {
+      s.section = 'APA';
+      s.role = 'TENS';
+      s.estamento = 'TENS';
+      if (!s.sheets) s.sheets = [];
+      if (!s.sheets.includes('TENS RUTINA')) s.sheets.push('TENS RUTINA');
+      if (!s.sheets.includes('TOMA DE MUESTRA')) s.sheets.push('TOMA DE MUESTRA');
+      return;
+    }
+    if (s.name === 'Teresa Fuentes Muñoz') {
+      s.section = 'APA';
+      s.role = 'TENS';
+      s.estamento = 'TENS';
       return;
     }
     const secUpper = (s.section || '').toUpperCase();
@@ -194,6 +219,10 @@ function loadInitialData() {
   const savedVersion = localStorage.getItem('hrt_data_version');
   if (savedVersion !== DATA_VERSION) {
     localStorage.removeItem('hrt_staff_directory');
+    localStorage.removeItem('hrt_turns_2026');
+    localStorage.removeItem('hrt_tdm_2026');
+    localStorage.removeItem('hrt_turns_2027');
+    localStorage.removeItem('hrt_tdm_2027');
     localStorage.setItem('hrt_data_version', DATA_VERSION);
   }
 
@@ -465,6 +494,69 @@ function changeGrouping(value) {
   renderApp();
 }
 
+const SECTION_HUMAN_SEARCH = {
+  'ALU': 'urgencias laboratorio urgencia',
+  'AH': 'hematologia hematología',
+  'AIC': 'quimica química inmunoquimica inmunoquímica',
+  'AMB': 'microbiologia microbiología',
+  'APA': 'tens anatomia patologica anatomía patológica',
+  'ADM': 'administrativa administracion administración',
+  'ATE': 'toma examenes exámenes',
+  'AUXILIARES': 'auxiliares auxiliar'
+};
+
+function getMemberSearchTokens(member) {
+  const tokens = normalizeText(member.name).split(/\s+/).filter(Boolean);
+
+  // Include unique words from official_name not present in name
+  if (member.official_name) {
+    const offTokens = normalizeText(member.official_name).split(/\s+/).filter(Boolean);
+    const existing = new Set(tokens);
+    for (const ot of offTokens) {
+      if (!existing.has(ot)) tokens.push(ot);
+    }
+  }
+
+  // Section code and descriptive human names (e.g. Hematología, Urgencias)
+  if (member.section) {
+    tokens.push(normalizeText(member.section));
+    const sHuman = SECTION_HUMAN_SEARCH[member.section.toUpperCase()];
+    if (sHuman) {
+      tokens.push(...normalizeText(sHuman).split(/\s+/).filter(Boolean));
+    }
+  }
+
+  // Sheets and Toma de Muestras / TDM keywords
+  if (member.sheets && Array.isArray(member.sheets)) {
+    member.sheets.forEach(sh => {
+      const shNorm = normalizeText(sh);
+      tokens.push(...shNorm.split(/\s+/).filter(Boolean));
+      if (shNorm.includes('toma de muestra')) {
+        tokens.push('tdm');
+      }
+    });
+  }
+
+  // Estamento, role and abbreviations (TM, BQ, AUX)
+  const est = member.estamento || member.role || '';
+  if (est) {
+    tokens.push(...normalizeText(est).split(/\s+/).filter(Boolean));
+    if (est === 'Tecnólogo Médico' || est === 'Profesional') tokens.push('tm');
+    else if (est === 'Bioquímico') tokens.push('bq');
+    else if (est === 'Auxiliar') tokens.push('aux');
+  }
+
+  if (member.role) {
+    tokens.push(...normalizeText(member.role).split(/\s+/).filter(Boolean));
+  }
+
+  if (member.jornada) {
+    tokens.push(...normalizeText(member.jornada).split(/\s+/).filter(Boolean));
+  }
+
+  return tokens;
+}
+
 function matchesSearch(member, rawQuery) {
   if (!rawQuery) return true;
   const qNorm = normalizeText(rawQuery);
@@ -475,33 +567,35 @@ function matchesSearch(member, rawQuery) {
     return true;
   }
 
-  const qWords = qNorm.split(/\s+/).filter(Boolean);
   const qRut = normalizeRut(rawQuery);
-
   // If query is numeric or unpunctuated RUT with K, match directly against normalized RUT
   if (qRut.length >= 2 && /^[\dK]+$/.test(qRut)) {
     if (member.rut && normalizeRut(member.rut).includes(qRut)) return true;
   }
 
-  let estAbbr = '';
-  const est = member.estamento || member.role || '';
-  if (est === 'Tecnólogo Médico' || est === 'Profesional') estAbbr = 'tm';
-  else if (est === 'Bioquímico') estAbbr = 'bq';
-  else if (est === 'Auxiliar') estAbbr = 'aux';
+  const qWords = qNorm.split(/\s+/).filter(Boolean);
+  if (qWords.length === 0) return true;
 
-  // Tokenized multi-word search (supports "Rivera Guillermo", "TM Urgencia", etc.)
-  const searchable = [
-    normalizeText(member.name),
-    member.official_name ? normalizeText(member.official_name) : '',
-    member.rut ? normalizeRut(member.rut) : '',
-    member.section ? normalizeText(member.section) : '',
-    normalizeText(est),
-    estAbbr,
-    member.role ? normalizeText(member.role) : '',
-    member.jornada ? normalizeText(member.jornada) : ''
-  ].join(' ');
+  // Track required occurrences of each word in the query (e.g. "morales morales" requires 2 "morales")
+  const qWordCounts = {};
+  for (const w of qWords) {
+    qWordCounts[w] = (qWordCounts[w] || 0) + 1;
+  }
 
-  return qWords.every(word => searchable.includes(word));
+  const tokens = getMemberSearchTokens(member);
+  for (const [word, reqCount] of Object.entries(qWordCounts)) {
+    let actualCount = 0;
+    for (const t of tokens) {
+      if (t.includes(word)) {
+        actualCount++;
+      }
+    }
+    if (actualCount < reqCount) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 function matchesPreset(member, preset) {
@@ -656,24 +750,58 @@ function renderMatrixView() {
     }
 
     const rutDisplay = member.rut || '<span class="text-amber-600 font-medium italic text-[10px]">Sin RUT</span>';
-    const subInfo = [member.estamento || member.role, member.jornada, member.section].filter(Boolean).join(' • ');
+    
+    // Explicit section badge mapping
+    const secCode = (member.section || '').toUpperCase();
+    let secBadge = '';
+    if (secCode === 'AH') {
+      secBadge = `<span class="px-1 py-0.2 rounded text-[9px] font-extrabold bg-purple-100 text-purple-800 border border-purple-200" title="AH • Hematología">AH</span>`;
+    } else if (secCode === 'APA') {
+      secBadge = `<span class="px-1 py-0.2 rounded text-[9px] font-extrabold bg-cyan-100 text-cyan-800 border border-cyan-200" title="APA • TENS">APA</span>`;
+    } else if (secCode === 'ALU') {
+      secBadge = `<span class="px-1 py-0.2 rounded text-[9px] font-extrabold bg-rose-100 text-rose-800 border border-rose-200" title="ALU • Urgencias">ALU</span>`;
+    } else if (secCode === 'AIC') {
+      secBadge = `<span class="px-1 py-0.2 rounded text-[9px] font-extrabold bg-blue-100 text-blue-800 border border-blue-200" title="AIC • Química">AIC</span>`;
+    } else if (secCode === 'AMB') {
+      secBadge = `<span class="px-1 py-0.2 rounded text-[9px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-200" title="AMB • Microbiología">AMB</span>`;
+    } else if (secCode === 'ATE') {
+      secBadge = `<span class="px-1 py-0.2 rounded text-[9px] font-extrabold bg-teal-100 text-teal-800 border border-teal-200" title="ATE • Toma Exámenes">ATE</span>`;
+    } else if (secCode === 'ADM') {
+      secBadge = `<span class="px-1 py-0.2 rounded text-[9px] font-extrabold bg-amber-100 text-amber-800 border border-amber-200" title="ADM • Administrativa">ADM</span>`;
+    } else if (secCode) {
+      secBadge = `<span class="px-1 py-0.2 rounded text-[9px] font-bold bg-slate-100 text-slate-700 border border-slate-200">${secCode}</span>`;
+    }
+
+    let tdmBadge = '';
+    if ((member.sheets || []).some(s => s.toUpperCase().includes('TOMA DE MUESTRA'))) {
+      tdmBadge = `<span class="px-1 py-0.2 rounded text-[9px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300" title="Habilitada(o) en Toma de Muestras (TDM)">🩸 TDM</span>`;
+    }
+
+    const estLabel = member.estamento || member.role || 'Funcionario';
+    const subTitle = [estLabel, member.jornada || 'Diurno', secCode ? `Sección ${secCode}` : '', tdmBadge ? 'Toma de Muestras' : ''].filter(Boolean).join(' • ');
 
     let rowHtml = `
-      <td class="sticky-col-body font-semibold text-slate-900 border-r border-slate-200">
+      <td class="sticky-col-body font-semibold text-slate-900 border-r border-slate-200 py-1.5 px-2.5">
         <div class="flex items-center justify-between">
-          <div class="truncate text-xs cursor-pointer hover:text-sky-600" onclick="openStaffModal('${member.id}')" title="Editar funcionario">
+          <div class="truncate text-xs font-bold cursor-pointer hover:text-sky-600" onclick="openStaffModal('${member.id}')" title="${member.name} (${subTitle}) - Ver ficha">
             ${member.name} ${nameBadges}
           </div>
-          <div class="flex items-center space-x-1 shrink-0 ml-2">
-            <button onclick="event.stopPropagation(); openShiftScheduleModal('${member.id}')" class="row-quick-range-btn px-1.5 py-0.5 rounded-md bg-sky-50 text-sky-800 hover:bg-sky-100 text-[11px] font-bold border border-sky-300 shadow-2xs" title="Asignar esquemas de turno o rotación para ${member.name}">
+        </div>
+        <div class="flex items-center justify-between mt-0.5">
+          <div class="flex items-center space-x-1 text-[10px] text-slate-500 font-normal leading-tight truncate flex-1 min-w-0 mr-1" title="${subTitle}">
+            <span class="truncate">${estLabel}</span>
+            ${secBadge}
+            ${tdmBadge}
+          </div>
+          <div class="flex items-center space-x-1 shrink-0">
+            <button onclick="event.stopPropagation(); openShiftScheduleModal('${member.id}')" class="row-quick-range-btn px-1.5 py-0.5 rounded-md bg-sky-50 text-sky-800 hover:bg-sky-100 text-[10px] font-bold border border-sky-300 shadow-2xs" title="Asignar esquemas de turno o rotación para ${member.name}">
               ⚡ Turno
             </button>
-            <button onclick="event.stopPropagation(); openRangeModalForStaff('${member.id}')" class="row-quick-range-btn px-1.5 py-0.5 rounded-md bg-teal-50 text-teal-800 hover:bg-teal-100 text-[11px] font-bold border border-teal-300 shadow-2xs" title="Programar ausencia o vacaciones para ${member.name}">
+            <button onclick="event.stopPropagation(); openRangeModalForStaff('${member.id}')" class="row-quick-range-btn px-1.5 py-0.5 rounded-md bg-teal-50 text-teal-800 hover:bg-teal-100 text-[10px] font-bold border border-teal-300 shadow-2xs" title="Programar ausencia o vacaciones para ${member.name}">
               🌴 Ausencia
             </button>
           </div>
         </div>
-        <div class="text-[10px] text-slate-400 font-normal leading-tight truncate">${subInfo}</div>
       </td>
       <td class="sticky-col-body-2 font-mono text-[11px] text-slate-600 border-r border-slate-200">
         ${rutDisplay}
@@ -931,7 +1059,9 @@ function getStaffDropdownOptions(dateStr) {
   const staffList = Object.values(state.staff).sort((a, b) => a.name.localeCompare(b.name));
   return staffList.map(s => {
     const conflict = checkStaffConflict(s.id, dateStr);
-    const tag = conflict ? ` [⚠️ ${conflict}]` : ` (${s.role})`;
+    const secTag = s.section ? `[${s.section}] ` : '';
+    const estTag = s.estamento || s.role || 'Funcionario';
+    const tag = conflict ? ` [⚠️ ${conflict}]` : ` (${secTag}${estTag})`;
     return `<option value="${s.id}">${s.name}${tag}</option>`;
   }).join('');
 }
@@ -1057,11 +1187,11 @@ function renderTDMMonthlyTable() {
   tdmStaff.forEach((st, idx) => {
     html += `
       <tr class="${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50'}">
-        <td class="sticky-col-body font-semibold text-slate-900 border-r border-slate-200">
-          <div class="truncate cursor-pointer hover:text-sky-600" onclick="openStaffModal('${st.id}')">${st.name}</div>
+        <td class="sticky-col-body font-semibold text-slate-900 border-r border-slate-200 py-1.5 px-2.5">
+          <div class="truncate text-xs font-bold cursor-pointer hover:text-sky-600" onclick="openStaffModal('${st.id}')" title="${st.name} (${st.estamento || st.role} • ${st.section}) - Ver ficha">${st.name}</div>
         </td>
         <td class="sticky-col-body-2 text-slate-500 font-mono text-[11px] border-r border-slate-200">
-          ${st.role}
+          ${st.estamento || st.role}
         </td>
     `;
     for (let d = 1; d <= daysInMonth; d++) {
@@ -1218,15 +1348,9 @@ function renderDirectorioView() {
   `;
 
   let filteredStaff = staffList.filter(member => {
-    // Search query: name, official_name, rut
+    // Search query: smart multi-token search with section, estamento, and official name
     if (directorioFilters.search) {
-      const q = normalizeText(directorioFilters.search);
-      const qRut = normalizeRut(directorioFilters.search);
-      const mName = normalizeText(member.name);
-      const mOff = normalizeText(member.official_name || '');
-      const mRut = normalizeRut(member.rut || '');
-      const matchesSearch = mName.includes(q) || mOff.includes(q) || (qRut.length > 2 && mRut.includes(qRut));
-      if (!matchesSearch) return false;
+      if (!matchesSearch(member, directorioFilters.search)) return false;
     }
 
     // Section filter
@@ -1553,9 +1677,10 @@ function openRangeModal() {
   if (staffSelectCont && staffSelect) {
     staffSelectCont.classList.remove('hidden');
     const sorted = Object.values(state.staff).sort((a, b) => a.name.localeCompare(b.name));
-    staffSelect.innerHTML = sorted.map(s => `
-      <option value="${s.id}">${s.name} (${s.estamento || s.role} - ${s.jornada || 'Diurno'})</option>
-    `).join('');
+    staffSelect.innerHTML = sorted.map(s => {
+      const secTag = s.section ? `[${s.section}] ` : '';
+      return `<option value="${s.id}">${s.name} ${secTag}(${s.estamento || s.role} • ${s.jornada || 'Diurno'})</option>`;
+    }).join('');
 
     const firstStaffId = sorted[0]?.id;
     state.rangeModalState = {
@@ -2100,6 +2225,7 @@ function exportToExcel() {
     }
 
     const ws = XLSX.utils.aoa_to_sheet(wsData);
+    ws['!cols'] = [{ wch: 32 }, { wch: 16 }, { wch: 18 }, { wch: 12 }, { wch: 15 }];
     XLSX.utils.book_append_sheet(wb, ws, sheetName.slice(0, 31));
   });
 
@@ -2128,6 +2254,7 @@ function exportToExcel() {
       ]);
     });
   const wsDot = XLSX.utils.aoa_to_sheet(dotData);
+  wsDot['!cols'] = [{ wch: 35 }, { wch: 18 }, { wch: 18 }, { wch: 25 }, { wch: 35 }, { wch: 25 }];
   XLSX.utils.book_append_sheet(wb, wsDot, 'DOTACIÓN Y PERSONAL');
 
   XLSX.writeFile(wb, `TURNOS_LABORATORIO_HRT_${year}.xlsx`);

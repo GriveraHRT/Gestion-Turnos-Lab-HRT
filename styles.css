@@ -73,8 +73,8 @@ body {
   z-index: 40;
   background-color: #0f172a;
   color: white;
-  min-width: 250px;
-  width: 250px;
+  min-width: 300px;
+  width: 300px;
   text-align: left !important;
   padding: 0.5rem 0.75rem !important;
 }
@@ -82,7 +82,7 @@ body {
 .sticky-col-header-2 {
   position: sticky;
   top: 0;
-  left: 250px;
+  left: 300px;
   z-index: 40;
   background-color: #1e293b;
   color: white;
@@ -97,22 +97,22 @@ body {
   left: 0;
   z-index: 20;
   background-color: #ffffff;
-  min-width: 250px;
-  width: 250px;
+  min-width: 300px;
+  width: 300px;
   text-align: left !important;
-  padding: 0.4rem 0.75rem !important;
+  padding: 0.35rem 0.6rem !important;
   box-shadow: 2px 0 4px -2px rgba(0,0,0,0.1);
 }
 
 .sticky-col-body-2 {
   position: sticky;
-  left: 250px;
+  left: 300px;
   z-index: 20;
   background-color: #f8fafc;
   min-width: 110px;
   width: 110px;
   text-align: left !important;
-  padding: 0.4rem 0.75rem !important;
+  padding: 0.35rem 0.6rem !important;
   box-shadow: 2px 0 4px -2px rgba(0,0,0,0.1);
 }
 
@@ -132,7 +132,7 @@ body {
 }
 
 .sticky-row-header th.sticky-col-header-2 {
-  left: 250px;
+  left: 300px;
   z-index: 45;
   background-color: #1e293b;
 }
@@ -142,8 +142,8 @@ body {
   position: sticky;
   left: 0;
   z-index: 21;
-  min-width: 360px;
-  width: 360px;
+  min-width: 410px;
+  width: 410px;
   text-align: left !important;
   box-shadow: 2px 0 4px -2px rgba(0,0,0,0.1);
 }
@@ -292,8 +292,8 @@ tr:hover .row-quick-range-btn {
   position: sticky;
   left: 0;
   z-index: 22;
-  min-width: 360px;
-  width: 360px;
+  min-width: 410px;
+  width: 410px;
   text-align: left !important;
   padding: 0.6rem 0.85rem !important;
   box-shadow: 2px 0 4px -2px rgba(0,0,0,0.12);

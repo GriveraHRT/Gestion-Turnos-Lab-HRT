@@ -42,21 +42,50 @@ if os.path.exists(dot_path):
 
 print(f"Loaded {len(dot_records)} official dotation records.")
 
-# Known verified RUTs dictionary (including verified staff from Dotación and official hospital records)
+# 1b. Load Nómina de usuarios del laboratorio
+nomina_records = {}
+nomina_records_by_norm = {}
+nomina_path = 'nómina de usuarios.xlsx'
+
+if os.path.exists(nomina_path):
+    wb_nom = openpyxl.load_workbook(nomina_path, data_only=True)
+    ws_nom = wb_nom.active
+    for r in range(1, ws_nom.max_row + 1):
+        rut_raw = str(ws_nom.cell(row=r, column=1).value or '').strip()
+        name_raw = str(ws_nom.cell(row=r, column=2).value or '').strip()
+        if rut_raw and name_raw:
+            c_rut = rut_raw.replace('.', '').replace('-', '').upper()
+            body, dv = c_rut[:-1], c_rut[-1]
+            try:
+                formatted_rut = f"{int(body):,}".replace(',', '.') + f"-{dv}"
+            except:
+                formatted_rut = f"{body}-{dv}"
+            rec = {
+                'rut': formatted_rut,
+                'clean_rut': c_rut,
+                'name': name_raw,
+                'norm_name': norm(name_raw),
+                'words': set(norm(name_raw).split())
+            }
+            nomina_records[c_rut] = rec
+            nomina_records_by_norm[norm(name_raw)] = rec
+    print(f"Loaded {len(nomina_records)} official laboratory user records from nómina.")
+
+# Known verified RUTs dictionary (consolidated from nómina de usuarios.xlsx and official hospital records)
 KNOWN_RUTS = {
-    'Guillermo Rivera': '18.892.014-4',
+    'Guillermo Rivera': '18.892.683-5',
     'Jorge Moraga': '17.795.876-K',
     'Tiara Araya': '18.982.762-8',
     'Erica Santelices': '19.805.795-9',
     'Gabriela Chandia': '18.893.934-1',
     'Jorge Perez': '17.884.899-2',
-    'Ociel Beltran': '20.367.852-5',
+    'Ociel Beltran': '18.543.174-6',
     'Sergio Bravo Caroca': '12.869.248-7',
     'Daniela Castillo': '17.171.464-8',
-    'Javier Malpica': '18.905.196-4',
+    'Javier Malpica': '25.649.865-0',
     'Olivia Belen Rosales': '18.981.532-8',
     'Leticia Oliva Albornoz': '17.825.088-4',
-    'Valentino Becerra': '18.543.174-6',
+    'Valentino Becerra': '18.905.196-4',
     'Susana Santos': '18.474.372-8',
     'Nicolas Blanco': '20.305.562-5',
     'Jeanette San Martín': '18.474.938-6',
@@ -65,8 +94,8 @@ KNOWN_RUTS = {
     'Juan Cerpa Castillo': '17.481.858-4',
     'Romina Diaz Espinoza': '17.175.729-0',
     'Marcela Salgado Carreño': '16.999.036-0',
-    'Miryam Espina Herrera': '17.934.959-1',
-    'Carolina Arancibia Jara': '13.305.532-K',
+    'Miryam Espina Herrera': '17.934.959-0',
+    'Carolina Arancibia Jara': '13.305.532-0',
     'Alejandra Vorphal Vasquez': '13.914.143-1',
     'Daniel Calderon Calderon': '16.325.454-9',
     'Melissa Canales Mejias': '18.891.582-5',
@@ -81,20 +110,20 @@ KNOWN_RUTS = {
     'Rosa Bernal Muñoz': '13.372.467-2',
     'Jimena Caceres Valdes': '10.237.028-7',
     'Consuelo Alarcon': '17.684.739-5',
-    'Guillermo Acuña Gonzalez': '18.571.660-3',
+    'Guillermo Acuña Gonzalez': '18.571.660-0',
     'Constanza Gomez Sepulveda': '19.172.843-2',
     'Carolina Valenzuela Ramirez': '16.729.277-1',
     'Lucia Peña': '11.147.047-2',
     'Ana Toledo Ramos': '13.205.345-6',
     'Rossana Albornoz Arenas': '14.295.792-2',
-    'Sergio Rojo': '15.596.799-4',
+    'Sergio Rojo': '17.845.030-1',
     'Loreto Ramirez': '16.270.558-K',
     'Deisy Moreno': '16.453.944-K',
     'Barbara Gutierrez Gomez': '17.497.764-K',
-    'Elieser Valdebenito': '17.845.030-1',
+    'Elieser Valdebenito': '17.824.539-2',
     'Barbara Cepeda Martinez': '18.225.862-8',
     'Michelle Miño': '19.473.563-4',
-    'Carolina Campos': '19.696.154-2',
+    'Carolina Campos': '15.596.799-4',
     'Esmeralda Abarza': '20.070.227-1',
     'Francisca Campos Sepulveda': '18.780.225-3',
     'Muriel Correa': '18.029.084-2',
@@ -104,6 +133,22 @@ KNOWN_RUTS = {
     'Ruth Jara Lara': '16.731.595-K',
     'Ingrid Silva Valdivia': '15.138.825-6',
     'Patricia Morales Rojas': '11.480.276-K',
+    'Patricia Morales Morales': '16.555.264-4',
+    'Teresa Fuentes Muñoz': '20.367.852-5',
+    'Camila Gonzalez': '19.334.863-7',
+    'Yessenia Caceres': '15.672.442-4',
+    'Anahis Albornoz': '21.160.619-3',
+    'Rodrigo Cantero': '10.142.362-K',
+    'Tamara Lara': '20.373.670-3',
+    'Barbara Alcantara': '17.493.915-2',
+    'Ignacio Brunel': '20.915.942-2',
+    'Laura Perez': '19.857.576-3',
+    'Camila Walker': '18.891.843-3',
+    'Daniel Schulz': '16.895.825-0',
+    'Katalina Barrera': '19.808.040-3',
+    'Constanza Riquelme': '20.641.306-9',
+    'Camila Gutierrez': '18.815.927-3',
+    'Maria Jose Peñailillo': '16.731.033-8',
     'Susana Quintana': '14.018.629-5',
     'Jimena Gonzalez': '19.043.840-6',
     'Valeria Montes': '17.932.887-9',
@@ -183,11 +228,15 @@ CANON_MAP = {
     'ORIENTADOR MARY RIQUELME': 'María Riquelme',
     'MERLAM': 'Merlam Espinoza',
     'MERLAM ESPINOZA': 'Merlam Espinoza',
-    'PATRICIA': 'Patricia Morales Rojas',
-    'PATRICIA MORALES': 'Patricia Morales Rojas',
-    'PATRICIA MORALES ': 'Patricia Morales Rojas',
+    'PATRICIA': 'Patricia Morales Morales',
+    'PATRICIA MORALES': 'Patricia Morales Morales',
+    'PATRICIA MORALES ': 'Patricia Morales Morales',
+    'PATRICIA ANDREA MORALES MORALES': 'Patricia Morales Morales',
     'MORALES ROJAS PATRICIA': 'Patricia Morales Rojas',
-    'TENS PATRICIA MORALES': 'Patricia Morales Rojas',
+    'PATRICIA MORALES ROJAS': 'Patricia Morales Rojas',
+    'TENS PATRICIA MORALES': 'Patricia Morales Morales',
+    'TERESA FUENTES': 'Teresa Fuentes Muñoz',
+    'TERESA FUENTES MUÑOZ': 'Teresa Fuentes Muñoz',
     'ROSA BERNAL MUÑOZ': 'Rosa Bernal Muñoz',
     'ROSITA BERNAL': 'Rosa Bernal Muñoz',
     'ROSITA BERNAL (SOS)': 'Rosa Bernal Muñoz',
@@ -372,8 +421,10 @@ def register_person(raw_name, rut_hint="", role_hint="", section_hint="", sheet=
                 role = 'TENS'
             elif any(s in sheet for s in ['AUXILIAR']):
                 role = 'Auxiliar'
-            elif canon_name in ['Maria Jose Peñailillo', 'Constanza Riquelme', 'Susana Santos']:
+            elif canon_name in ['Maria Jose Peñailillo', 'Constanza Riquelme', 'Susana Santos', 'Patricia Morales Rojas']:
                 role = 'Profesional'
+            elif canon_name in ['Patricia Morales Morales', 'Teresa Fuentes Muñoz']:
+                role = 'TENS'
             else:
                 role = 'TENS'
                 
@@ -414,7 +465,7 @@ KNOWN_LM_STAFF = {
     'Katalina Barrera',         # Licencia médica prolongada Abril a Noviembre 2026 (195 días)
     'Sergio Rojo',              # Licencia médica prolongada Marzo a Junio 2026 (106 días)
     'Valeria Montes',           # Licencia médica (sección LICENCIAS en TENS Rutina, 250 días)
-    'Patricia Morales Rojas',   # Licencia médica (sección LICENCIAS en TENS Rutina, 96 días)
+    'Patricia Morales Morales', # Licencia médica (sección LICENCIAS en TENS Rutina, 96 días)
     'Elizabel Sanchez'          # Licencia médica (sección LICENCIAS en TENS Rutina, 71 días)
 }
 
@@ -601,6 +652,9 @@ for date_str, items in tdm_raw_by_day.items():
             'code': 'X'
         })
 
+# Register verified staff from Nómina de Usuarios not present in 2026 raw shifts
+register_person('Teresa Fuentes Muñoz', rut_hint='20.367.852-5', role_hint='TENS', section_hint='APA', sheet='CALENDARIO GENERAL')
+
 # Enrich staff with estamento and jornada
 BQ_NAMES = {'Alejandra Vorphal Vasquez', 'Camila Reyes Vivero', 'Rodrigo Benavente Contreras', 'Daniel Schulz', 'Camila Gutierrez', 'Carolina Arancibia Jara'}
 
@@ -614,9 +668,36 @@ for pid, s in staff_db.items():
     role = s.get('role', '')
     sec = s.get('section', '')
     is_intern = s.get('is_intern', False)
-    clean_rut = s.get('rut', '').replace('.', '')
-    dot_rec = dot_records.get(clean_rut)
+    clean_rut = s.get('rut', '').replace('.', '').replace('-', '').upper()
+    dot_rec = dot_records.get(s.get('rut', '')) or dot_records.get(clean_rut)
     p = dot_rec['planta'] if dot_rec else ''
+
+    # Look up official name in nómina de usuarios
+    off_name = None
+    if clean_rut in nomina_records:
+        off_name = nomina_records[clean_rut]['name']
+    else:
+        norm_s = norm(name)
+        if norm_s in nomina_records_by_norm:
+            off_name = nomina_records_by_norm[norm_s]['name']
+        else:
+            s_words = set(norm_s.split())
+            for n_rec in nomina_records.values():
+                if s_words.issubset(n_rec['words']):
+                    off_name = n_rec['name']
+                    break
+    if off_name:
+        s['official_name'] = off_name
+    elif dot_rec:
+        s['official_name'] = dot_rec['name']
+    else:
+        s['official_name'] = name
+
+    # Clean up missing_fields if RUT or full name is resolved
+    if s.get('rut') and 'RUT pendiente' in s.get('missing_fields', []):
+        s['missing_fields'].remove('RUT pendiente')
+    if s.get('official_name') and len(s['official_name'].split()) >= 3 and 'Segundo apellido pendiente' in s.get('missing_fields', []):
+        s['missing_fields'].remove('Segundo apellido pendiente')
 
     if is_intern or 'Intern' in name:
         estamento = 'Interno TM'
@@ -628,7 +709,7 @@ for pid, s in staff_db.items():
         estamento = 'Administrativo'
     elif name in ['Patricia Morales Rojas', 'Maria Jose Peñailillo', 'Guillermo Rivera']:
         estamento = 'Tecnólogo Médico'
-    elif role == 'TENS' or 'TENS' in sec or 'TECNICO DE NIVEL SUPERIOR' in p or 'AUXILIAR PARAMEDICO' in p:
+    elif name in ['Patricia Morales Morales', 'Teresa Fuentes Muñoz'] or role == 'TENS' or 'TENS' in sec or 'TECNICO DE NIVEL SUPERIOR' in p or 'AUXILIAR PARAMEDICO' in p:
         estamento = 'TENS'
     elif role == 'Profesional' or 'TECNOLOGO' in p:
         estamento = 'Tecnólogo Médico'
@@ -666,6 +747,10 @@ for pid, s in staff_db.items():
     def map_section(name, raw_sec, sheets, est, rol):
         if name == 'Diego Rojas Verdugo':
             return 'ATE'
+        if name == 'Patricia Morales Rojas':
+            return 'AH'
+        if name in ['Patricia Morales Morales', 'Teresa Fuentes Muñoz']:
+            return 'APA'
         sec_upper = (raw_sec or '').upper()
         sheet_str = ' '.join(sheets or []).upper()
         if 'URGENCIA' in sec_upper or 'URGENCIA' in sheet_str:

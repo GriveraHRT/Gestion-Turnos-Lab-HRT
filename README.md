@@ -52,7 +52,8 @@ Se cruzó exhaustivamente la base de datos de la planilla con la **Dotación Ofi
 - **Nicol Riquelme Gálvez** (TENS): RUT `19.473.178-7`
 - **Ruth Jara Lara** (TENS): RUT `16.731.595-K`
 - **Ingrid Silva Valdivia** (TENS): RUT `15.138.825-6`
-- **Patricia Morales Rojas** (TM): RUT `11.480.276-K`
+- **Patricia Morales Morales** (TENS): RUT `16.555.264-4` (*Patricia Andrea Morales Morales*, TENS Rutina y Toma de Muestras - APA)
+- **Patricia Morales Rojas** (TM): RUT `11.480.276-K` (*Patricia Ester Aida Morales Rojas*, TM Hematología - AH)
 - **Susana Quintana** (TENS): RUT `14.018.629-5`
 - **Jimena González** (Administrativo): RUT `19.043.840-6`
 - **Camila Reyes Vivero** (Bioquímico): RUT `17.186.419-4`
@@ -174,10 +175,11 @@ Proyecto Turnos/
 │   └── lucide.min.js              # Iconografía médica e institucional offline
 ├── data/
 │   ├── data_bundle.js             # Base de datos empaquetada para carga offline inmediata
-│   ├── staff_master.json          # Directorio depurado de los 98 funcionarios del laboratorio
+│   ├── staff_master.json          # Directorio depurado de los 100 funcionarios del laboratorio (nómina oficial)
 │   ├── turns_2026.json            # 7.801 registros históricos de turnos de 2026 (incluye Auxiliares)
 │   ├── tdm_2026.json              # 1.015 asignaciones de Toma de Muestras mapeadas a puestos
 │   └── holidays_chile.json        # Feriados nacionales oficiales de Chile 2026 y 2027
+├── nómina de usuarios.xlsx        # Nómina oficial de usuarios y RUTs del laboratorio clínico
 ├── TURNOS 2026.xlsx               # Planilla original descargada desde Google Drive
 ├── TURNOS_LABORATORIO_HRT_2026.xlsx # Excel generado histórico 2026 completo
 └── TURNOS_LABORATORIO_HRT_2027.xlsx # Excel generado plantilla 2027 institucional
