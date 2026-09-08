@@ -104,13 +104,13 @@ def generate_hospital_excel(year=2027, output_path=None):
             sheet_staff = list(staff_dict.values())
             sheet_staff.sort(key=lambda x: (ESTAMENTO_ORDER.get(x.get('estamento') or x.get('role', ''), 99), x.get('name', '')))
         elif sheet_title == 'LAB. URGENCIA':
-            sheet_staff = [s for s in staff_dict.values() if any('URGENCIA' in sh.upper() for sh in s.get('sheets', [])) or 'urgencia' in s.get('section', '').lower()]
+            sheet_staff = [s for s in staff_dict.values() if any('URGENCIA' in sh.upper() for sh in s.get('sheets', [])) or 'urgencia' in s.get('section', '').lower() or s.get('section') == 'ALU']
             sheet_staff.sort(key=lambda x: (x.get('section', ''), x.get('name', '')))
         elif sheet_title == 'PROFESIONALES RUTINA':
-            sheet_staff = [s for s in staff_dict.values() if any('PROFESIONAL' in sh.upper() for sh in s.get('sheets', [])) or (s.get('role') == 'Profesional' and 'urgencia' not in s.get('section', '').lower())]
+            sheet_staff = [s for s in staff_dict.values() if any('PROFESIONAL' in sh.upper() for sh in s.get('sheets', [])) or (s.get('role') == 'Profesional' and s.get('section') != 'ALU' and 'urgencia' not in s.get('section', '').lower())]
             sheet_staff.sort(key=lambda x: (x.get('section', ''), x.get('name', '')))
         elif sheet_title == 'TENS RUTINA':
-            sheet_staff = [s for s in staff_dict.values() if any('TENS RUTINA' in sh.upper() for sh in s.get('sheets', [])) or (s.get('role') == 'TENS' and 'urgencia' not in s.get('section', '').lower())]
+            sheet_staff = [s for s in staff_dict.values() if any('TENS RUTINA' in sh.upper() for sh in s.get('sheets', [])) or (s.get('role') == 'TENS' and s.get('section') != 'ALU' and 'urgencia' not in s.get('section', '').lower())]
             sheet_staff.sort(key=lambda x: (x.get('section', ''), x.get('name', '')))
         elif sheet_title == 'AUXILIARES':
             sheet_staff = [s for s in staff_dict.values() if any('AUXILIAR' in sh.upper() for sh in s.get('sheets', [])) or s.get('role') == 'Auxiliar']

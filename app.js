@@ -3,7 +3,7 @@
  * Hospital Regional de Talca - Versión 2027
  */
 
-const DATA_VERSION = '3.1';
+const DATA_VERSION = '3.2';
 
 const ESTAMENTO_ORDER = {
   'Tecnólogo Médico': 1,
@@ -155,13 +155,38 @@ function initLucide() {
 }
 
 function rebuildTurnsMap() {
-  const records = state.currentYear === 2026 ? state.turns2026 : state.turns2027;
   state._turnsMap = {};
-  for (let i = 0; i < records.length; i++) {
-    const r = records[i];
+  const list2026 = state.turns2026 || [];
+  for (let i = 0; i < list2026.length; i++) {
+    const r = list2026[i];
+    state._turnsMap[r.staff_id + '_' + r.date] = r;
+  }
+  const list2027 = state.turns2027 || [];
+  for (let i = 0; i < list2027.length; i++) {
+    const r = list2027[i];
     state._turnsMap[r.staff_id + '_' + r.date] = r;
   }
   state._turnsMapYear = state.currentYear;
+}
+
+function migrateStaffSections(staffObj) {
+  if (!staffObj) return;
+  Object.values(staffObj).forEach(s => {
+    if (s.name === 'Diego Rojas Verdugo') {
+      s.section = 'ATE';
+      return;
+    }
+    const secUpper = (s.section || '').toUpperCase();
+    const sheetsStr = (s.sheets || []).join(' ').toUpperCase();
+    if (secUpper.includes('URGENCIA') || sheetsStr.includes('URGENCIA')) s.section = 'ALU';
+    else if (secUpper.includes('HEMATOLOG')) s.section = 'AH';
+    else if (secUpper.includes('INMUNOQU') || secUpper.includes('QUIMIC')) s.section = 'AIC';
+    else if (secUpper.includes('MICROBIOLOG')) s.section = 'AMB';
+    else if (secUpper.includes('ADMINISTRA') || secUpper.includes('FUNCIONES') || s.role === 'Administrativo' || s.estamento === 'Administrativo') s.section = 'ADM';
+    else if (secUpper.includes('TENS') || sheetsStr.includes('TENS') || s.estamento === 'TENS') s.section = 'APA';
+    else if (secUpper.includes('TOMA DE MUESTRA') || sheetsStr.includes('TOMA DE MUESTRA') || s.name === 'Maria Jose Peñailillo') s.section = 'ATE';
+    else if (secUpper.includes('AUXILIAR') || sheetsStr.includes('AUXILIAR') || s.estamento === 'Auxiliar') s.section = 'Auxiliares';
+  });
 }
 
 function loadInitialData() {
@@ -189,6 +214,9 @@ function loadInitialData() {
       }
     } catch(e) {}
   }
+
+  // Ensure sections always conform to official area codes (ALU, AH, AIC, AMB, APA, ADM, ATE)
+  migrateStaffSections(state.staff);
 
   const savedTurns2026 = localStorage.getItem('hrt_turns_2026');
   if (savedTurns2026) {
@@ -311,11 +339,30 @@ function switchTab(tabId) {
     }
   });
 
-  const isMatrix = (normTab === 'CALENDARIO GENERAL' || normTab === 'LAB. URGENCIA' || normTab === 'PROFESIONALES RUTINA' || normTab === 'TENS RUTINA' || normTab === 'AUXILIARES');
+  const isGeneralCalendar = (normTab === 'CALENDARIO GENERAL');
+  const isMatrix = (isGeneralCalendar || normTab === 'LAB. URGENCIA' || normTab === 'PROFESIONALES RUTINA' || normTab === 'TENS RUTINA' || normTab === 'AUXILIARES');
 
+  const controlsBar = document.getElementById('section-controls-bar');
+  const calendarSearch = document.getElementById('calendar-search-container');
   const generalControls = document.getElementById('general-calendar-controls');
+  const sectionLegend = document.getElementById('section-legend');
+
+  if (controlsBar) {
+    // Only show controls bar for Calendario General or Toma de Muestra (needs month picker)
+    controlsBar.classList.toggle('hidden', normTab !== 'CALENDARIO GENERAL' && normTab !== 'TOMA DE MUESTRA');
+  }
+
+  if (calendarSearch) {
+    // Search by funcionario/RUT is ONLY useful and visible on Calendario General as requested
+    calendarSearch.classList.toggle('hidden', normTab !== 'CALENDARIO GENERAL');
+  }
+
   if (generalControls) {
     generalControls.classList.toggle('hidden', normTab !== 'CALENDARIO GENERAL');
+  }
+
+  if (sectionLegend) {
+    sectionLegend.classList.toggle('hidden', normTab !== 'CALENDARIO GENERAL');
   }
 
   document.getElementById('view-matrix').classList.toggle('hidden', !isMatrix);
@@ -466,16 +513,16 @@ function matchesPreset(member, preset) {
   const sheets = (member.sheets || []).map(s => s.toLowerCase());
 
   if (preset === 'URGENCIAS') {
-    return jor === 'Turno' || sec.includes('urgencia') || sheets.some(s => s.includes('urgencia')) || hasUrgencyShiftInCurrentMonth(member.id);
+    return jor === 'Turno' || sec === 'alu' || sec.includes('urgencia') || sheets.some(s => s.includes('urgencia')) || hasUrgencyShiftInCurrentMonth(member.id);
   }
   if (preset === 'RUTINA') {
-    return jor === 'Diurno' || sheets.some(s => s.includes('rutina')) || (!sec.includes('urgencia') && jor !== 'Turno');
+    return jor === 'Diurno' || sheets.some(s => s.includes('rutina')) || (sec !== 'alu' && !sec.includes('urgencia') && jor !== 'Turno');
   }
   if (preset === 'TENS') {
-    return est === 'TENS' || member.role === 'TENS' || sheets.some(s => s.includes('tens'));
+    return est === 'TENS' || sec === 'apa' || member.role === 'TENS' || sheets.some(s => s.includes('tens'));
   }
   if (preset === 'AUXILIARES') {
-    return est === 'Auxiliar' || member.role === 'Auxiliar' || sheets.some(s => s.includes('auxiliar'));
+    return est === 'Auxiliar' || member.role === 'Auxiliar' || sec === 'auxiliares' || sheets.some(s => s.includes('auxiliar'));
   }
   if (preset === 'PROFESIONALES') {
     return est === 'Tecnólogo Médico' || est === 'Bioquímico' || est === 'Interno TM' || member.role === 'Profesional' || sheets.some(s => s.includes('profesional'));
@@ -617,9 +664,14 @@ function renderMatrixView() {
           <div class="truncate text-xs cursor-pointer hover:text-sky-600" onclick="openStaffModal('${member.id}')" title="Editar funcionario">
             ${member.name} ${nameBadges}
           </div>
-          <button onclick="event.stopPropagation(); openRangeModalForStaff('${member.id}')" class="row-quick-range-btn px-2 py-0.5 rounded-md bg-teal-50 text-teal-800 hover:bg-teal-100 text-[11px] font-bold border border-teal-300 shadow-2xs shrink-0 ml-2" title="Programar ausencia o vacaciones para ${member.name}">
-            🌴 Ausencia
-          </button>
+          <div class="flex items-center space-x-1 shrink-0 ml-2">
+            <button onclick="event.stopPropagation(); openShiftScheduleModal('${member.id}')" class="row-quick-range-btn px-1.5 py-0.5 rounded-md bg-sky-50 text-sky-800 hover:bg-sky-100 text-[11px] font-bold border border-sky-300 shadow-2xs" title="Asignar esquemas de turno o rotación para ${member.name}">
+              ⚡ Turno
+            </button>
+            <button onclick="event.stopPropagation(); openRangeModalForStaff('${member.id}')" class="row-quick-range-btn px-1.5 py-0.5 rounded-md bg-teal-50 text-teal-800 hover:bg-teal-100 text-[11px] font-bold border border-teal-300 shadow-2xs" title="Programar ausencia o vacaciones para ${member.name}">
+              🌴 Ausencia
+            </button>
+          </div>
         </div>
         <div class="text-[10px] text-slate-400 font-normal leading-tight truncate">${subInfo}</div>
       </td>
@@ -676,6 +728,9 @@ function renderMatrixView() {
         } else if (cellText === 'N') {
           cellClass += ' event-noche';
           cellTitle += ' | Turno Noche (20:00 a 08:00)';
+        } else if (cellText === 'D') {
+          cellClass += ' event-diurno';
+          cellTitle += ' | Jornada Diurna (08:00 a 17:00)';
         } else {
           cellClass += ' bg-slate-100 text-slate-800 font-bold';
           cellTitle += ` | Turno: ${cellText}`;
@@ -1038,6 +1093,100 @@ function renderTDMMonthlyTable() {
   wrapper.innerHTML = html;
 }
 
+let directorioFilters = {
+  search: '',
+  section: 'ALL',
+  estado: 'ALL',
+  jornada: 'ALL',
+  estamento: 'ALL'
+};
+
+function applyDirectorioFilters() {
+  const searchInput = document.getElementById('directorio-filter-search');
+  directorioFilters.search = searchInput ? searchInput.value.trim() : '';
+  
+  const clearBtn = document.getElementById('directorio-clear-search');
+  if (clearBtn) {
+    if (directorioFilters.search.length > 0) clearBtn.classList.remove('hidden');
+    else clearBtn.classList.add('hidden');
+  }
+
+  const secSelect = document.getElementById('directorio-filter-section');
+  if (secSelect) directorioFilters.section = secSelect.value;
+
+  const estSelect = document.getElementById('directorio-filter-estado');
+  if (estSelect) directorioFilters.estado = estSelect.value;
+
+  const jorSelect = document.getElementById('directorio-filter-jornada');
+  if (jorSelect) directorioFilters.jornada = jorSelect.value;
+
+  const staSelect = document.getElementById('directorio-filter-estamento');
+  if (staSelect) directorioFilters.estamento = staSelect.value;
+
+  renderDirectorioView();
+}
+
+function clearDirectorioSearch() {
+  const searchInput = document.getElementById('directorio-filter-search');
+  if (searchInput) searchInput.value = '';
+  applyDirectorioFilters();
+}
+
+function resetDirectorioFilters() {
+  directorioFilters = {
+    search: '',
+    section: 'ALL',
+    estado: 'ALL',
+    jornada: 'ALL',
+    estamento: 'ALL'
+  };
+  const searchInput = document.getElementById('directorio-filter-search');
+  if (searchInput) searchInput.value = '';
+  const secSelect = document.getElementById('directorio-filter-section');
+  if (secSelect) secSelect.value = 'ALL';
+  const estSelect = document.getElementById('directorio-filter-estado');
+  if (estSelect) estSelect.value = 'ALL';
+  const jorSelect = document.getElementById('directorio-filter-jornada');
+  if (jorSelect) jorSelect.value = 'ALL';
+  const staSelect = document.getElementById('directorio-filter-estamento');
+  if (staSelect) staSelect.value = 'ALL';
+
+  applyDirectorioFilters();
+}
+
+function setDirectorioQuickFilter(filterKey, filterValue) {
+  if (filterKey === 'RESET') {
+    resetDirectorioFilters();
+    return;
+  }
+  if (filterKey === 'estado') {
+    directorioFilters.estado = filterValue;
+    const el = document.getElementById('directorio-filter-estado');
+    if (el) el.value = filterValue;
+  } else if (filterKey === 'estamento') {
+    directorioFilters.estamento = filterValue;
+    const el = document.getElementById('directorio-filter-estamento');
+    if (el) el.value = filterValue;
+  }
+  applyDirectorioFilters();
+}
+
+function getSectionBadge(sec) {
+  const code = (sec || '').toUpperCase().trim();
+  const map = {
+    'ALU': { label: 'ALU • Urgencias', class: 'bg-rose-100 text-rose-800 border-rose-200' },
+    'AH': { label: 'AH • Hematología', class: 'bg-purple-100 text-purple-800 border-purple-200' },
+    'AIC': { label: 'AIC • Química', class: 'bg-blue-100 text-blue-800 border-blue-200' },
+    'AMB': { label: 'AMB • Microbiología', class: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
+    'APA': { label: 'APA • TENS', class: 'bg-cyan-100 text-cyan-800 border-cyan-200' },
+    'ADM': { label: 'ADM • Administrativa', class: 'bg-amber-100 text-amber-800 border-amber-200' },
+    'ATE': { label: 'ATE • Toma Exámenes', class: 'bg-teal-100 text-teal-800 border-teal-200' },
+    'AUXILIARES': { label: 'Auxiliares', class: 'bg-slate-100 text-slate-800 border-slate-200' }
+  };
+  const item = map[code] || { label: sec || '-', class: 'bg-slate-100 text-slate-700 border-slate-200' };
+  return `<span class="px-2 py-0.5 rounded text-[11px] font-bold border ${item.class}">${item.label}</span>`;
+}
+
 function renderDirectorioView() {
   const tbody = document.getElementById('directorio-table-body');
   const statsCards = document.getElementById('directorio-stats-cards');
@@ -1047,33 +1196,111 @@ function renderDirectorioView() {
   const total = staffList.length;
   const tms = staffList.filter(s => s.estamento === 'Tecnólogo Médico' || s.estamento === 'Bioquímico' || s.role === 'Profesional').length;
   const tens = staffList.filter(s => s.estamento === 'TENS' || s.role === 'TENS').length;
-  const auxiliares = staffList.filter(s => s.estamento === 'Auxiliar' || s.role === 'Auxiliar').length;
   const missingData = staffList.filter(s => s.missing_fields && s.missing_fields.length > 0).length;
 
   statsCards.innerHTML = `
-    <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs">
+    <div onclick="setDirectorioQuickFilter('RESET')" class="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs cursor-pointer hover:border-slate-400 transition" title="Clic para ver todos">
       <div class="text-[11px] font-semibold text-slate-500">Dotación Total</div>
       <div class="text-xl font-bold text-slate-800">${total}</div>
     </div>
-    <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs">
+    <div onclick="setDirectorioQuickFilter('estamento', 'TM_BQ')" class="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs cursor-pointer hover:border-blue-400 transition" title="Clic para filtrar TM y Bioquímicos">
       <div class="text-[11px] font-semibold text-blue-600">TM y Bioquímicos</div>
       <div class="text-xl font-bold text-blue-900">${tms}</div>
     </div>
-    <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs">
+    <div onclick="setDirectorioQuickFilter('estamento', 'TENS')" class="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs cursor-pointer hover:border-cyan-400 transition" title="Clic para filtrar TENS">
       <div class="text-[11px] font-semibold text-cyan-600">TENS</div>
       <div class="text-xl font-bold text-cyan-900">${tens}</div>
     </div>
-    <div class="bg-white p-3 rounded-xl border border-amber-200 bg-amber-50/50 shadow-2xs">
+    <div onclick="setDirectorioQuickFilter('estado', 'PENDIENTE')" class="bg-white p-3 rounded-xl border border-amber-200 bg-amber-50/50 shadow-2xs cursor-pointer hover:border-amber-400 transition" title="Clic para ver pendientes">
       <div class="text-[11px] font-semibold text-amber-700">RUT / Datos Pendientes</div>
       <div class="text-xl font-bold text-amber-900">${missingData}</div>
     </div>
   `;
 
+  let filteredStaff = staffList.filter(member => {
+    // Search query: name, official_name, rut
+    if (directorioFilters.search) {
+      const q = normalizeText(directorioFilters.search);
+      const qRut = normalizeRut(directorioFilters.search);
+      const mName = normalizeText(member.name);
+      const mOff = normalizeText(member.official_name || '');
+      const mRut = normalizeRut(member.rut || '');
+      const matchesSearch = mName.includes(q) || mOff.includes(q) || (qRut.length > 2 && mRut.includes(qRut));
+      if (!matchesSearch) return false;
+    }
+
+    // Section filter
+    if (directorioFilters.section !== 'ALL') {
+      const sec = member.section || '';
+      if (sec !== directorioFilters.section) return false;
+    }
+
+    // Estado filter
+    if (directorioFilters.estado === 'COMPLETO') {
+      if (member.missing_fields && member.missing_fields.length > 0) return false;
+    } else if (directorioFilters.estado === 'PENDIENTE') {
+      if (!member.missing_fields || member.missing_fields.length === 0) return false;
+    }
+
+    // Jornada filter
+    if (directorioFilters.jornada !== 'ALL') {
+      const jor = member.jornada || 'Diurno';
+      if (jor !== directorioFilters.jornada) return false;
+    }
+
+    // Estamento filter (supports TM + BQ unified group)
+    if (directorioFilters.estamento !== 'ALL') {
+      const est = member.estamento || member.role || '';
+      if (directorioFilters.estamento === 'TM_BQ') {
+        if (est !== 'Tecnólogo Médico' && est !== 'Bioquímico' && member.role !== 'Profesional') return false;
+      } else if (est !== directorioFilters.estamento) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+
+  const countEl = document.getElementById('directorio-results-count');
+  if (countEl) {
+    countEl.innerHTML = `Mostrando <strong>${filteredStaff.length}</strong> de <strong>${total}</strong> funcionarios`;
+  }
+
+  // Render active tags
+  const tagsEl = document.getElementById('directorio-active-tags');
+  if (tagsEl) {
+    let tagsHtml = '';
+    if (directorioFilters.section !== 'ALL') {
+      tagsHtml += `<span class="bg-sky-100 text-sky-800 text-[10px] font-bold px-2 py-0.5 rounded-full">Sección: ${directorioFilters.section}</span>`;
+    }
+    if (directorioFilters.estado !== 'ALL') {
+      tagsHtml += `<span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full">Estado: ${directorioFilters.estado}</span>`;
+    }
+    if (directorioFilters.jornada !== 'ALL') {
+      tagsHtml += `<span class="bg-indigo-100 text-indigo-800 text-[10px] font-bold px-2 py-0.5 rounded-full">Jornada: ${directorioFilters.jornada}</span>`;
+    }
+    if (directorioFilters.estamento !== 'ALL') {
+      const estLabel = directorioFilters.estamento === 'TM_BQ' ? 'TM y Bioquímicos' : directorioFilters.estamento;
+      tagsHtml += `<span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full">Estamento: ${estLabel}</span>`;
+    }
+    tagsEl.innerHTML = tagsHtml;
+  }
+
   tbody.innerHTML = '';
-  staffList.sort((a, b) => a.name.localeCompare(b.name)).forEach(member => {
-    let statusBadge = `<span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-800">Completo</span>`;
+  if (filteredStaff.length === 0) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td colspan="7" class="px-4 py-8 text-center text-slate-400 font-medium">
+      No se encontraron funcionarios que coincidan con los filtros seleccionados.
+      <button onclick="resetDirectorioFilters()" class="ml-2 text-sky-600 font-bold underline">Limpiar filtros</button>
+    </td>`;
+    tbody.appendChild(tr);
+    return;
+  }
+
+  filteredStaff.sort((a, b) => a.name.localeCompare(b.name)).forEach(member => {
+    let statusBadge = `<span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-800 whitespace-nowrap">Completo</span>`;
     if (member.missing_fields && member.missing_fields.length > 0) {
-      statusBadge = `<span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-100 text-amber-800">⚠️ ${member.missing_fields.join(', ')}</span>`;
+      statusBadge = `<span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-100 text-amber-800 whitespace-nowrap">⚠️ ${member.missing_fields.join(', ')}</span>`;
     }
 
     const tr = document.createElement('tr');
@@ -1086,27 +1313,34 @@ function renderDirectorioView() {
       <td class="px-4 py-3 font-mono text-slate-600">
         ${member.rut || '<span class="text-amber-600 font-bold">FALTA RUT</span>'}
       </td>
-      <td class="px-4 py-3">
+      <td class="px-4 py-3 whitespace-nowrap">
         <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-sky-50 text-sky-800 border border-sky-200">${member.estamento || member.role}</span>
       </td>
-      <td class="px-4 py-3">
-        <span class="px-2 py-0.5 rounded text-[11px] font-semibold ${member.jornada === 'Turno' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700'}">${member.jornada || 'Diurno'}</span>
+      <td class="px-4 py-3 whitespace-nowrap">
+        <span class="px-2 py-0.5 rounded text-[11px] font-semibold ${member.jornada === 'Turno' ? 'bg-amber-100 text-amber-800 font-bold' : 'bg-slate-100 text-slate-700'}">${member.jornada || 'Diurno'}</span>
       </td>
-      <td class="px-4 py-3 text-slate-600">
-        ${member.section || '-'}
+      <td class="px-4 py-3 whitespace-nowrap">
+        ${getSectionBadge(member.section)}
       </td>
       <td class="px-4 py-3">
         ${statusBadge}
       </td>
-      <td class="px-4 py-3 text-right">
-        <button onclick="openStaffModal('${member.id}')" class="text-sky-600 hover:text-sky-800 font-bold text-xs flex items-center justify-end space-x-1 ml-auto">
-          <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-          <span>Editar</span>
-        </button>
+      <td class="px-4 py-3 text-right whitespace-nowrap">
+        <div class="flex items-center justify-end space-x-1.5">
+          <button onclick="openShiftScheduleModal('${member.id}')" class="px-2 py-1 rounded bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 text-xs font-bold transition flex items-center space-x-1" title="Gestionar turnos y rotaciones">
+            <i data-lucide="calendar-sync" class="w-3.5 h-3.5"></i>
+            <span>Turno</span>
+          </button>
+          <button onclick="openStaffModal('${member.id}')" class="px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center space-x-1" title="Editar ficha funcionario">
+            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+            <span>Editar</span>
+          </button>
+        </div>
       </td>
     `;
     tbody.appendChild(tr);
   });
+  initLucide();
 }
 
 function renderMetricasView() {
@@ -1610,11 +1844,17 @@ function openStaffModal(staffId) {
   document.getElementById('staff-edit-rut').value = member.rut || '';
   document.getElementById('staff-edit-estamento').value = member.estamento || (member.role === 'Profesional' ? 'Tecnólogo Médico' : member.role || 'Tecnólogo Médico');
   document.getElementById('staff-edit-jornada').value = member.jornada || 'Diurno';
-  document.getElementById('staff-edit-section').value = member.section || '';
+  document.getElementById('staff-edit-section').value = member.section || 'ALU';
   document.getElementById('modal-staff-title').innerText = `Editar Funcionario: ${member.name}`;
 
   document.getElementById('modal-staff-editor').classList.remove('hidden');
   initLucide();
+}
+
+function openShiftScheduleFromStaffModal() {
+  const staffId = document.getElementById('staff-edit-id').value;
+  closeStaffModal();
+  openShiftScheduleModal(staffId);
 }
 
 function openNewStaffModal() {
@@ -1624,7 +1864,7 @@ function openNewStaffModal() {
   document.getElementById('staff-edit-rut').value = '';
   document.getElementById('staff-edit-estamento').value = 'Tecnólogo Médico';
   document.getElementById('staff-edit-jornada').value = 'Diurno';
-  document.getElementById('staff-edit-section').value = 'Rutina';
+  document.getElementById('staff-edit-section').value = 'ALU';
   document.getElementById('modal-staff-title').innerText = 'Nuevo Funcionario';
 
   document.getElementById('modal-staff-editor').classList.remove('hidden');
@@ -1891,4 +2131,786 @@ function exportToExcel() {
   XLSX.utils.book_append_sheet(wb, wsDot, 'DOTACIÓN Y PERSONAL');
 
   XLSX.writeFile(wb, `TURNOS_LABORATORIO_HRT_${year}.xlsx`);
+}
+
+// ============================================================================
+// GESTOR DE ESQUEMAS DE TURNO Y ROTACIONES (4TO TURNO, DIURNO, INTERCAMBIO)
+// ============================================================================
+
+let scheduleModalState = {
+  activeTab: 'PATTERN',
+  staffId: null
+};
+
+function openShiftScheduleModal(staffId) {
+  scheduleModalState.staffId = staffId || null;
+  populateScheduleStaffDropdowns(staffId);
+
+  const year = state.currentYear;
+  const month = state.currentMonth;
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const defaultStart = `${year}-${String(month).padStart(2, '0')}-01`;
+  const defaultEnd = `${year}-12-31`;
+
+  const pStart = document.getElementById('sched-pattern-start');
+  const pEnd = document.getElementById('sched-pattern-end');
+  if (pStart) pStart.value = defaultStart;
+  if (pEnd) pEnd.value = defaultEnd;
+
+  const dStart = document.getElementById('sched-diurno-start');
+  const dEnd = document.getElementById('sched-diurno-end');
+  if (dStart) dStart.value = defaultStart;
+  if (dEnd) dEnd.value = defaultEnd;
+
+  const sStart = document.getElementById('sched-swap-start');
+  const sEnd = document.getElementById('sched-swap-end');
+  if (sStart) sStart.value = defaultStart;
+  if (sEnd) sEnd.value = `${year}-${String(month).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
+
+  switchScheduleTab(scheduleModalState.activeTab || 'PATTERN');
+  updateSchedulePreview();
+  updateDiurnoPreview();
+  updateSwapPreview();
+
+  document.getElementById('modal-shift-schedule').classList.remove('hidden');
+  initLucide();
+}
+
+function closeShiftScheduleModal() {
+  document.getElementById('modal-shift-schedule').classList.add('hidden');
+}
+
+function switchScheduleTab(tabId) {
+  scheduleModalState.activeTab = tabId;
+
+  const tabs = ['PATTERN', 'DIURNO', 'SWAP'];
+  tabs.forEach(t => {
+    const btn = document.getElementById(`tab-sched-${t.toLowerCase()}`);
+    const content = document.getElementById(`sched-tab-content-${t.toLowerCase()}`);
+    if (t === tabId) {
+      if (btn) btn.className = 'px-3 py-2 text-xs font-bold border-b-2 border-sky-600 text-sky-700 flex items-center space-x-1.5 transition whitespace-nowrap';
+      if (content) content.classList.remove('hidden');
+    } else {
+      if (btn) btn.className = 'px-3 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 border-b-2 border-transparent flex items-center space-x-1.5 transition whitespace-nowrap';
+      if (content) content.classList.add('hidden');
+    }
+  });
+
+  const submitLabel = document.getElementById('btn-submit-schedule-label');
+  if (submitLabel) {
+    if (tabId === 'PATTERN') {
+      submitLabel.innerText = '⚡ Aplicar Esquema 4to Turno';
+      updateSchedulePreview();
+    } else if (tabId === 'DIURNO') {
+      submitLabel.innerText = '☀️ Pasar a Jornada Diurna';
+      updateDiurnoPreview();
+    } else if (tabId === 'SWAP') {
+      submitLabel.innerText = '🔄 Intercambiar Rotación';
+      updateSwapPreview();
+    }
+  }
+  initLucide();
+}
+
+function populateScheduleStaffDropdowns(preselectedId) {
+  const staffList = Object.values(state.staff).sort((a, b) => a.name.localeCompare(b.name));
+  
+  const pSelect = document.getElementById('sched-pattern-staff');
+  const dSelect = document.getElementById('sched-diurno-staff');
+  const sSelect1 = document.getElementById('sched-swap-staff-1');
+  const sSelect2 = document.getElementById('sched-swap-staff-2');
+
+  const populate = (sel) => {
+    if (!sel) return;
+    sel.innerHTML = '';
+    staffList.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s.id;
+      const tag = s.section ? `[${s.section}]` : '';
+      const jor = s.jornada === 'Turno' ? '⏰ Turno' : '☀️ Diurno';
+      opt.text = `${s.name} ${tag} (${s.estamento || s.role} • ${jor})`;
+      sel.appendChild(opt);
+    });
+  };
+
+  populate(pSelect);
+  populate(dSelect);
+  populate(sSelect1);
+  populate(sSelect2);
+
+  if (preselectedId) {
+    if (pSelect) pSelect.value = preselectedId;
+    if (dSelect) dSelect.value = preselectedId;
+    if (sSelect1) sSelect1.value = preselectedId;
+  }
+  if (sSelect2 && staffList.length > 1) {
+    const other = staffList.find(s => s.id !== (preselectedId || staffList[0].id));
+    if (other) sSelect2.value = other.id;
+  }
+}
+
+function setPatternQuickRange(rangeType) {
+  const startInput = document.getElementById('sched-pattern-start');
+  const endInput = document.getElementById('sched-pattern-end');
+  if (!startInput || !endInput) return;
+
+  const startVal = startInput.value || `${state.currentYear}-01-01`;
+  const [y, m, d] = startVal.split('-').map(Number);
+  const startDate = new Date(y, m - 1, d);
+
+  let endDate;
+  if (rangeType === 'MONTH') {
+    endDate = new Date(y, m, 0);
+  } else if (rangeType === '3MONTHS') {
+    endDate = new Date(y, m - 1 + 3, 0);
+  } else if (rangeType === '6MONTHS') {
+    endDate = new Date(y, m - 1 + 6, 0);
+  } else if (rangeType === 'YEAR') {
+    endDate = new Date(y, 11, 31);
+  }
+  if (endDate) {
+    endInput.value = formatDateToISO(endDate);
+    updateSchedulePreview();
+  }
+}
+
+function updateSchedulePreview() {
+  const startInput = document.getElementById('sched-pattern-start');
+  const endInput = document.getElementById('sched-pattern-end');
+  const summaryEl = document.getElementById('sched-preview-summary');
+  const pillsEl = document.getElementById('sched-preview-pills');
+  const cycleRadios = document.getElementsByName('sched-cycle-start');
+
+  if (!startInput || !endInput || !summaryEl || !pillsEl) return;
+
+  const startStr = startInput.value;
+  const endStr = endInput.value;
+
+  if (!startStr || !endStr || startStr > endStr) {
+    summaryEl.innerText = 'Rango inválido (Inicio debe ser menor o igual a Término)';
+    pillsEl.innerHTML = '';
+    return;
+  }
+
+  let cycleChoice = 'L';
+  for (const r of cycleRadios) {
+    if (r.checked) {
+      cycleChoice = r.value;
+      break;
+    }
+  }
+
+  const cycleMap = {
+    'L': ['L', 'N', null, null],
+    'N': ['N', null, null, 'L'],
+    'X1': [null, null, 'L', 'N'],
+    'X2': [null, 'L', 'N', null]
+  };
+  const cycle = cycleMap[cycleChoice] || cycleMap['L'];
+
+  const sDate = parseISODate(startStr);
+  const eDate = parseISODate(endStr);
+  const diffDays = Math.round((eDate - sDate) / 86400000) + 1;
+
+  let countL = 0;
+  let countN = 0;
+  let countLibre = 0;
+
+  const previewItems = [];
+  const maxPreview = Math.min(diffDays, 12);
+
+  for (let i = 0; i < diffDays; i++) {
+    const cur = new Date(sDate.getTime() + i * 86400000);
+    const code = cycle[i % 4];
+    if (code === 'L') countL++;
+    else if (code === 'N') countN++;
+    else countLibre++;
+
+    if (i < maxPreview) {
+      const dayNum = cur.getDate();
+      const mNum = cur.getMonth() + 1;
+      previewItems.push({
+        dateLabel: `${dayNum}/${mNum}`,
+        code: code
+      });
+    }
+  }
+
+  summaryEl.innerHTML = `<strong>${diffDays} días:</strong> <span class="text-orange-700">${countL} Largos</span>, <span class="text-slate-800">${countN} Noches</span>, <span class="text-emerald-700">${countLibre} Libres</span>`;
+
+  let pillsHtml = previewItems.map(item => {
+    if (item.code === 'L') {
+      return `<div class="shrink-0 px-2 py-1 rounded bg-orange-100 border border-orange-300 text-orange-950 font-bold text-center">
+        <div class="text-[9px] text-orange-700 font-medium">${item.dateLabel}</div>
+        <div>☀️ Largo</div>
+      </div>`;
+    } else if (item.code === 'N') {
+      return `<div class="shrink-0 px-2 py-1 rounded bg-slate-800 border border-slate-900 text-white font-bold text-center">
+        <div class="text-[9px] text-slate-300 font-medium">${item.dateLabel}</div>
+        <div>🌙 Noche</div>
+      </div>`;
+    } else {
+      return `<div class="shrink-0 px-2 py-1 rounded bg-emerald-50 border border-emerald-200 text-emerald-800 font-semibold text-center">
+        <div class="text-[9px] text-emerald-600 font-medium">${item.dateLabel}</div>
+        <div>🏖️ Libre</div>
+      </div>`;
+    }
+  }).join('');
+
+  if (diffDays > maxPreview) {
+    pillsHtml += `<div class="shrink-0 px-2 py-1 text-slate-400 font-bold self-center">+${diffDays - maxPreview} días más...</div>`;
+  }
+
+  pillsEl.innerHTML = pillsHtml;
+}
+
+function setDiurnoQuickRange(rangeType) {
+  const startInput = document.getElementById('sched-diurno-start');
+  const endInput = document.getElementById('sched-diurno-end');
+  if (!startInput || !endInput) return;
+
+  const startVal = startInput.value || `${state.currentYear}-01-01`;
+  const [y, m, d] = startVal.split('-').map(Number);
+  const startDate = new Date(y, m - 1, d);
+
+  let endDate;
+  if (rangeType === 'MONTH') {
+    endDate = new Date(y, m, 0);
+  } else if (rangeType === '3MONTHS') {
+    endDate = new Date(y, m - 1 + 3, 0);
+  } else if (rangeType === '6MONTHS') {
+    endDate = new Date(y, m - 1 + 6, 0);
+  } else if (rangeType === 'YEAR') {
+    endDate = new Date(y, 11, 31);
+  }
+  if (endDate) {
+    endInput.value = formatDateToISO(endDate);
+    updateDiurnoPreview();
+  }
+}
+
+function updateDiurnoPreview() {
+  const staffSelect = document.getElementById('sched-diurno-staff');
+  const startInput = document.getElementById('sched-diurno-start');
+  const endInput = document.getElementById('sched-diurno-end');
+  const fillCheck = document.getElementById('sched-diurno-fill');
+  const omitHolidaysCheck = document.getElementById('sched-diurno-omit-holidays');
+  const preserveCheck = document.getElementById('sched-diurno-preserve-absences');
+  const summaryEl = document.getElementById('sched-diurno-preview-summary');
+  const pillsEl = document.getElementById('sched-diurno-preview-pills');
+
+  if (!startInput || !endInput || !summaryEl || !pillsEl) return;
+
+  const startStr = startInput.value;
+  const endStr = endInput.value;
+  const staffId = staffSelect ? staffSelect.value : null;
+
+  if (!startStr || !endStr || startStr > endStr) {
+    summaryEl.innerText = 'Rango inválido (Inicio debe ser menor o igual a Término)';
+    pillsEl.innerHTML = '';
+    return;
+  }
+
+  const fillDiurno = fillCheck ? fillCheck.checked : true;
+  const omitHolidays = omitHolidaysCheck ? omitHolidaysCheck.checked : true;
+  const preserveAbsences = preserveCheck ? preserveCheck.checked : true;
+
+  const sDate = parseISODate(startStr);
+  const eDate = parseISODate(endStr);
+  const diffDays = Math.round((eDate - sDate) / 86400000) + 1;
+
+  let countBusinessDays = 0;
+  let countWeekends = 0;
+  let countHolidays = 0;
+  let countAbsences = 0;
+
+  const previewItems = [];
+  const maxPreview = Math.min(diffDays, 14);
+
+  for (let i = 0; i < diffDays; i++) {
+    const cur = new Date(sDate.getTime() + i * 86400000);
+    const dStr = formatDateToISO(cur);
+    const curYear = cur.getFullYear();
+    const dayOfWeek = cur.getDay(); // 0 = Sun, 6 = Sat
+    const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+    const isHoliday = omitHolidays && (state.holidays && (state.holidays[curYear]?.some(h => h.date === dStr) || state.holidays[dStr]));
+
+    const existing = staffId ? getShiftEvent(staffId, dStr) : null;
+    const isAbsence = existing && ['VACACIONES', 'ADMINISTRATIVO', 'LICENCIA_MEDICA', 'DEVOLUCION_TIEMPO', 'COMISION_SERVICIO', 'SIN_GOCE_SUELDO'].includes(existing.event_type);
+
+    if (preserveAbsences && isAbsence) {
+      countAbsences++;
+      if (i < maxPreview) {
+        previewItems.push({
+          dateLabel: `${cur.getDate()}/${cur.getMonth() + 1}`,
+          type: 'ABSENCE',
+          label: existing.code || 'Ausencia',
+          desc: existing.event_type
+        });
+      }
+    } else if (isWeekend) {
+      countWeekends++;
+      if (i < maxPreview) {
+        previewItems.push({
+          dateLabel: `${cur.getDate()}/${cur.getMonth() + 1}`,
+          type: 'WEEKEND',
+          label: 'Libre',
+          desc: 'Fin de Semana'
+        });
+      }
+    } else if (isHoliday) {
+      countHolidays++;
+      if (i < maxPreview) {
+        previewItems.push({
+          dateLabel: `${cur.getDate()}/${cur.getMonth() + 1}`,
+          type: 'HOLIDAY',
+          label: 'Feriado',
+          desc: 'Feriado Legal'
+        });
+      }
+    } else {
+      countBusinessDays++;
+      if (i < maxPreview) {
+        previewItems.push({
+          dateLabel: `${cur.getDate()}/${cur.getMonth() + 1}`,
+          type: fillDiurno ? 'DIURNO' : 'BLANK',
+          label: fillDiurno ? 'D' : 'Hábil',
+          desc: '08:00 a 17:00'
+        });
+      }
+    }
+  }
+
+  summaryEl.innerHTML = `<strong>${diffDays} días:</strong> <span class="text-sky-700 font-bold">${countBusinessDays} días diurnos</span>, <span class="text-emerald-700">${countWeekends} fines de semana</span>${countHolidays > 0 ? `, <span class="text-rose-600">${countHolidays} feriados</span>` : ''}${countAbsences > 0 ? `, <span class="text-amber-700">${countAbsences} ausencias preservadas</span>` : ''}`;
+
+  let pillsHtml = previewItems.map(item => {
+    if (item.type === 'DIURNO') {
+      return `<div class="shrink-0 px-2 py-1 rounded bg-sky-100 border border-sky-300 text-sky-950 font-bold text-center">
+        <div class="text-[9px] text-sky-700 font-medium">${item.dateLabel}</div>
+        <div>☀️ Diurno 'D'</div>
+      </div>`;
+    } else if (item.type === 'ABSENCE') {
+      return `<div class="shrink-0 px-2 py-1 rounded bg-amber-100 border border-amber-300 text-amber-950 font-bold text-center">
+        <div class="text-[9px] text-amber-700 font-medium">${item.dateLabel}</div>
+        <div>🌴 ${item.label}</div>
+      </div>`;
+    } else if (item.type === 'HOLIDAY') {
+      return `<div class="shrink-0 px-2 py-1 rounded bg-rose-100 border border-rose-300 text-rose-950 font-bold text-center">
+        <div class="text-[9px] text-rose-700 font-medium">${item.dateLabel}</div>
+        <div>🔴 Feriado</div>
+      </div>`;
+    } else if (item.type === 'WEEKEND') {
+      return `<div class="shrink-0 px-2 py-1 rounded bg-slate-100 border border-slate-200 text-slate-700 font-semibold text-center">
+        <div class="text-[9px] text-slate-500 font-medium">${item.dateLabel}</div>
+        <div>🏖️ Libre</div>
+      </div>`;
+    } else {
+      return `<div class="shrink-0 px-2 py-1 rounded bg-slate-50 border border-slate-200 text-slate-600 font-medium text-center">
+        <div class="text-[9px] text-slate-400">${item.dateLabel}</div>
+        <div>Hábil</div>
+      </div>`;
+    }
+  }).join('');
+
+  if (diffDays > maxPreview) {
+    pillsHtml += `<div class="shrink-0 px-2 py-1 text-slate-400 font-bold self-center">+${diffDays - maxPreview} días más...</div>`;
+  }
+
+  pillsEl.innerHTML = pillsHtml;
+}
+
+function updateSwapPreview() {
+  const staff1Id = document.getElementById('sched-swap-staff-1')?.value;
+  const staff2Id = document.getElementById('sched-swap-staff-2')?.value;
+  const startStr = document.getElementById('sched-swap-start')?.value;
+  const endStr = document.getElementById('sched-swap-end')?.value;
+  const summaryEl = document.getElementById('sched-swap-summary-text');
+  if (!summaryEl) return;
+
+  if (!staff1Id || !staff2Id || staff1Id === staff2Id) {
+    summaryEl.innerHTML = '<span class="text-rose-600 font-bold">Debes seleccionar dos funcionarios distintos para el intercambio.</span>';
+    return;
+  }
+  if (!startStr || !endStr || startStr > endStr) {
+    summaryEl.innerHTML = '<span class="text-rose-600 font-bold">Rango de fechas inválido.</span>';
+    return;
+  }
+
+  const s1 = state.staff[staff1Id];
+  const s2 = state.staff[staff2Id];
+  if (!s1 || !s2) return;
+
+  const sDate = parseISODate(startStr);
+  const eDate = parseISODate(endStr);
+  const diffDays = Math.round((eDate - sDate) / 86400000) + 1;
+
+  let s1L = 0, s1N = 0;
+  let s2L = 0, s2N = 0;
+
+  for (let i = 0; i < diffDays; i++) {
+    const cur = new Date(sDate.getTime() + i * 86400000);
+    const dStr = formatDateToISO(cur);
+    const r1 = getShiftEvent(staff1Id, dStr);
+    const r2 = getShiftEvent(staff2Id, dStr);
+    if (r1?.code === 'L') s1L++;
+    if (r1?.code === 'N') s1N++;
+    if (r2?.code === 'L') s2L++;
+    if (r2?.code === 'N') s2N++;
+  }
+
+  summaryEl.innerHTML = `
+    <div class="space-y-1.5">
+      <div>Intercambio durante <strong>${diffDays} días</strong> (del ${startStr} al ${endStr}):</div>
+      <div class="bg-white p-2.5 rounded-lg border border-slate-200 grid grid-cols-2 gap-2 text-xs">
+        <div>
+          <span class="font-bold text-slate-800">${s1.name}:</span>
+          <div class="text-[11px] text-slate-600">Tiene actualmente: <strong>${s1L}</strong> Largos, <strong>${s1N}</strong> Noches.</div>
+          <div class="text-[11px] text-sky-700 font-semibold">➔ Asumirá los turnos de ${s2.name}</div>
+        </div>
+        <div>
+          <span class="font-bold text-slate-800">${s2.name}:</span>
+          <div class="text-[11px] text-slate-600">Tiene actualmente: <strong>${s2L}</strong> Largos, <strong>${s2N}</strong> Noches.</div>
+          <div class="text-[11px] text-sky-700 font-semibold">➔ Asumirá los turnos de ${s1.name}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function executeShiftScheduleAction() {
+  const tab = scheduleModalState.activeTab;
+  if (tab === 'PATTERN') {
+    applyPatternSchedule();
+  } else if (tab === 'DIURNO') {
+    applyDiurnoSchedule();
+  } else if (tab === 'SWAP') {
+    applySwapSchedule();
+  }
+}
+
+function applyPatternSchedule() {
+  const staffSelect = document.getElementById('sched-pattern-staff');
+  const startInput = document.getElementById('sched-pattern-start');
+  const endInput = document.getElementById('sched-pattern-end');
+  const preserveCheck = document.getElementById('sched-preserve-absences');
+  const updateJornadaCheck = document.getElementById('sched-update-jornada-turno');
+
+  const staffId = staffSelect ? staffSelect.value : null;
+  const startStr = startInput ? startInput.value : '';
+  const endStr = endInput ? endInput.value : '';
+  const preserveAbsences = preserveCheck ? preserveCheck.checked : true;
+  const updateJornada = updateJornadaCheck ? updateJornadaCheck.checked : true;
+
+  if (!staffId || !state.staff[staffId]) {
+    alert('Por favor selecciona un funcionario.');
+    return;
+  }
+  if (!startStr || !endStr || startStr > endStr) {
+    alert('Por favor especifica un rango de fechas válido.');
+    return;
+  }
+
+  const member = state.staff[staffId];
+
+  let cycleChoice = 'L';
+  const cycleRadios = document.getElementsByName('sched-cycle-start');
+  for (const r of cycleRadios) {
+    if (r.checked) {
+      cycleChoice = r.value;
+      break;
+    }
+  }
+
+  const cycleMap = {
+    'L': ['L', 'N', null, null],
+    'N': ['N', null, null, 'L'],
+    'X1': [null, null, 'L', 'N'],
+    'X2': [null, 'L', 'N', null]
+  };
+  const cycle = cycleMap[cycleChoice] || cycleMap['L'];
+
+  const sDate = parseISODate(startStr);
+  const eDate = parseISODate(endStr);
+  const diffDays = Math.round((eDate - sDate) / 86400000) + 1;
+
+  let assignedCount = 0;
+
+  for (let i = 0; i < diffDays; i++) {
+    const cur = new Date(sDate.getTime() + i * 86400000);
+    const dateStr = formatDateToISO(cur);
+    const curYear = cur.getFullYear();
+    const curMonth = cur.getMonth() + 1;
+    const curDay = cur.getDate();
+
+    const targetList = (curYear === 2026) ? state.turns2026 : state.turns2027;
+    const existing = getShiftEvent(staffId, dateStr);
+
+    const isAbsence = existing && ['VACACIONES', 'ADMINISTRATIVO', 'LICENCIA_MEDICA', 'DEVOLUCION_TIEMPO', 'COMISION_SERVICIO', 'SIN_GOCE_SUELDO'].includes(existing.event_type);
+
+    if (preserveAbsences && isAbsence) {
+      continue;
+    }
+
+    const patternCode = cycle[i % 4];
+
+    // Remove any existing record for this staff and date
+    const idx = targetList.findIndex(t => t.staff_id === staffId && t.date === dateStr);
+    if (idx !== -1) {
+      targetList.splice(idx, 1);
+    }
+
+    if (patternCode === 'L' || patternCode === 'N') {
+      targetList.push({
+        date: dateStr,
+        month: curMonth,
+        day: curDay,
+        staff_id: staffId,
+        staff_name: member.name,
+        role: member.role || 'Profesional',
+        section: member.section || 'ALU',
+        sheet: 'LAB. URGENCIA',
+        code: patternCode,
+        event_type: 'TURNO',
+        time_slot: '',
+        color_tag: null
+      });
+      assignedCount++;
+    }
+  }
+
+  if (updateJornada) {
+    member.jornada = 'Turno';
+    localStorage.setItem('hrt_staff_directory', JSON.stringify(state.staff));
+  }
+
+  localStorage.setItem('hrt_turns_2026', JSON.stringify(state.turns2026));
+  localStorage.setItem('hrt_turns_2027', JSON.stringify(state.turns2027));
+
+  rebuildTurnsMap();
+  renderApp();
+  closeShiftScheduleModal();
+
+  alert(`¡Esquema de 4to Turno asignado con éxito a ${member.name}!\nPeríodo: ${startStr} al ${endStr}\nSe programaron ${assignedCount} turnos operativos (Largos y Noches).`);
+}
+
+function applyDiurnoSchedule() {
+  const staffSelect = document.getElementById('sched-diurno-staff');
+  const startInput = document.getElementById('sched-diurno-start');
+  const endInput = document.getElementById('sched-diurno-end');
+  const fillCheck = document.getElementById('sched-diurno-fill');
+  const omitHolidaysCheck = document.getElementById('sched-diurno-omit-holidays');
+  const preserveCheck = document.getElementById('sched-diurno-preserve-absences');
+  const updateJornadaCheck = document.getElementById('sched-update-jornada-diurno');
+
+  const staffId = staffSelect ? staffSelect.value : null;
+  const startStr = startInput ? startInput.value : '';
+  const endStr = endInput ? endInput.value : '';
+  const fillDiurno = fillCheck ? fillCheck.checked : true;
+  const omitHolidays = omitHolidaysCheck ? omitHolidaysCheck.checked : true;
+  const preserveAbsences = preserveCheck ? preserveCheck.checked : true;
+  const updateJornada = updateJornadaCheck ? updateJornadaCheck.checked : true;
+
+  if (!staffId || !state.staff[staffId]) {
+    alert('Por favor selecciona un funcionario.');
+    return;
+  }
+  if (!startStr || !endStr || startStr > endStr) {
+    alert('Por favor especifica un rango de fechas válido.');
+    return;
+  }
+
+  const member = state.staff[staffId];
+  const sDate = parseISODate(startStr);
+  const eDate = parseISODate(endStr);
+  const diffDays = Math.round((eDate - sDate) / 86400000) + 1;
+
+  let removedCount = 0;
+  let assignedDiurnoCount = 0;
+
+  for (let i = 0; i < diffDays; i++) {
+    const cur = new Date(sDate.getTime() + i * 86400000);
+    const dateStr = formatDateToISO(cur);
+    const curYear = cur.getFullYear();
+    const curMonth = cur.getMonth() + 1;
+    const curDay = cur.getDate();
+    const dayOfWeek = cur.getDay(); // 0 = Sun, 6 = Sat
+    const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+    const isHoliday = omitHolidays && (state.holidays && (state.holidays[curYear]?.some(h => h.date === dateStr) || state.holidays[dateStr]));
+
+    const targetList = (curYear === 2026) ? state.turns2026 : state.turns2027;
+    const existing = getShiftEvent(staffId, dateStr);
+
+    const isAbsence = existing && ['VACACIONES', 'ADMINISTRATIVO', 'LICENCIA_MEDICA', 'DEVOLUCION_TIEMPO', 'COMISION_SERVICIO', 'SIN_GOCE_SUELDO'].includes(existing.event_type);
+
+    if (preserveAbsences && isAbsence) {
+      continue;
+    }
+
+    // Remove any existing operational turn for this date
+    const idx = targetList.findIndex(t => t.staff_id === staffId && t.date === dateStr);
+    if (idx !== -1) {
+      targetList.splice(idx, 1);
+      removedCount++;
+    }
+
+    // Fill Monday to Friday with normal daytime shift 'D'
+    if (fillDiurno && !isWeekend && !isHoliday) {
+      targetList.push({
+        date: dateStr,
+        month: curMonth,
+        day: curDay,
+        staff_id: staffId,
+        staff_name: member.name,
+        role: member.role || 'Profesional',
+        section: member.section || 'ALU',
+        sheet: member.section === 'ALU' ? 'LAB. URGENCIA' : (member.estamento === 'TENS' ? 'TENS RUTINA' : 'PROFESIONALES RUTINA'),
+        code: 'D',
+        event_type: 'TURNO',
+        time_slot: '08:00-17:00',
+        color_tag: null
+      });
+      assignedDiurnoCount++;
+    }
+  }
+
+  if (updateJornada) {
+    member.jornada = 'Diurno';
+    localStorage.setItem('hrt_staff_directory', JSON.stringify(state.staff));
+  }
+
+  localStorage.setItem('hrt_turns_2026', JSON.stringify(state.turns2026));
+  localStorage.setItem('hrt_turns_2027', JSON.stringify(state.turns2027));
+
+  rebuildTurnsMap();
+  renderApp();
+  closeShiftScheduleModal();
+
+  alert(`¡Traspaso a Jornada Diurna completado para ${member.name}!\nPeríodo: ${startStr} al ${endStr}\nSe eliminaron ${removedCount} turnos rotativos previos y se programaron ${assignedDiurnoCount} turnos ordinarios ('D') de lunes a viernes (fines de semana y feriados libres).`);
+}
+
+function applySwapSchedule() {
+  const staff1Select = document.getElementById('sched-swap-staff-1');
+  const staff2Select = document.getElementById('sched-swap-staff-2');
+  const startInput = document.getElementById('sched-swap-start');
+  const endInput = document.getElementById('sched-swap-end');
+  const includeAbsencesCheck = document.getElementById('sched-swap-include-absences');
+
+  const staff1Id = staff1Select ? staff1Select.value : null;
+  const staff2Id = staff2Select ? staff2Select.value : null;
+  const startStr = startInput ? startInput.value : '';
+  const endStr = endInput ? endInput.value : '';
+  const swapAbsences = includeAbsencesCheck ? includeAbsencesCheck.checked : false;
+
+  if (!staff1Id || !staff2Id || staff1Id === staff2Id) {
+    alert('Debes seleccionar dos funcionarios diferentes para intercambiar.');
+    return;
+  }
+  if (!startStr || !endStr || startStr > endStr) {
+    alert('Por favor especifica un rango de fechas válido.');
+    return;
+  }
+
+  const s1 = state.staff[staff1Id];
+  const s2 = state.staff[staff2Id];
+
+  const sDate = parseISODate(startStr);
+  const eDate = parseISODate(endStr);
+  const diffDays = Math.round((eDate - sDate) / 86400000) + 1;
+
+  let swappedDays = 0;
+
+  for (let i = 0; i < diffDays; i++) {
+    const cur = new Date(sDate.getTime() + i * 86400000);
+    const dateStr = formatDateToISO(cur);
+    const curYear = cur.getFullYear();
+    const curMonth = cur.getMonth() + 1;
+    const curDay = cur.getDate();
+
+    const targetList = (curYear === 2026) ? state.turns2026 : state.turns2027;
+
+    const r1 = getShiftEvent(staff1Id, dateStr);
+    const r2 = getShiftEvent(staff2Id, dateStr);
+
+    const isAbsence1 = r1 && ['VACACIONES', 'ADMINISTRATIVO', 'LICENCIA_MEDICA', 'DEVOLUCION_TIEMPO', 'COMISION_SERVICIO', 'SIN_GOCE_SUELDO'].includes(r1.event_type);
+    const isAbsence2 = r2 && ['VACACIONES', 'ADMINISTRATIVO', 'LICENCIA_MEDICA', 'DEVOLUCION_TIEMPO', 'COMISION_SERVICIO', 'SIN_GOCE_SUELDO'].includes(r2.event_type);
+
+    if (!swapAbsences) {
+      const opCode1 = (r1 && !isAbsence1) ? r1.code : null;
+      const opCode2 = (r2 && !isAbsence2) ? r2.code : null;
+
+      // Update staff 1 (receives operational shift from staff 2):
+      if (!isAbsence1) {
+        const idx1 = targetList.findIndex(t => t.staff_id === staff1Id && t.date === dateStr);
+        if (idx1 !== -1) targetList.splice(idx1, 1);
+        if (opCode2) {
+          targetList.push({
+            date: dateStr,
+            month: curMonth,
+            day: curDay,
+            staff_id: staff1Id,
+            staff_name: s1.name,
+            role: s1.role || 'Profesional',
+            section: s1.section || 'ALU',
+            sheet: (r2 && r2.sheet) || (s1.section === 'ALU' ? 'LAB. URGENCIA' : 'PROFESIONALES RUTINA'),
+            code: opCode2,
+            event_type: 'TURNO',
+            time_slot: (r2 && r2.time_slot) || '',
+            color_tag: null
+          });
+        }
+      }
+
+      // Update staff 2 (receives operational shift from staff 1):
+      if (!isAbsence2) {
+        const idx2 = targetList.findIndex(t => t.staff_id === staff2Id && t.date === dateStr);
+        if (idx2 !== -1) targetList.splice(idx2, 1);
+        if (opCode1) {
+          targetList.push({
+            date: dateStr,
+            month: curMonth,
+            day: curDay,
+            staff_id: staff2Id,
+            staff_name: s2.name,
+            role: s2.role || 'Profesional',
+            section: s2.section || 'ALU',
+            sheet: (r1 && r1.sheet) || (s2.section === 'ALU' ? 'LAB. URGENCIA' : 'PROFESIONALES RUTINA'),
+            code: opCode1,
+            event_type: 'TURNO',
+            time_slot: (r1 && r1.time_slot) || '',
+            color_tag: null
+          });
+        }
+      }
+    } else {
+      const idx1 = targetList.findIndex(t => t.staff_id === staff1Id && t.date === dateStr);
+      const clone1 = idx1 !== -1 ? { ...targetList[idx1] } : null;
+      if (idx1 !== -1) targetList.splice(idx1, 1);
+
+      const idx2 = targetList.findIndex(t => t.staff_id === staff2Id && t.date === dateStr);
+      const clone2 = idx2 !== -1 ? { ...targetList[idx2] } : null;
+      if (idx2 !== -1) targetList.splice(idx2, 1);
+
+      if (clone2) {
+        clone2.staff_id = staff1Id;
+        clone2.staff_name = s1.name;
+        targetList.push(clone2);
+      }
+      if (clone1) {
+        clone1.staff_id = staff2Id;
+        clone1.staff_name = s2.name;
+        targetList.push(clone1);
+      }
+    }
+
+    swappedDays++;
+  }
+
+  localStorage.setItem('hrt_turns_2026', JSON.stringify(state.turns2026));
+  localStorage.setItem('hrt_turns_2027', JSON.stringify(state.turns2027));
+
+  rebuildTurnsMap();
+  renderApp();
+  closeShiftScheduleModal();
+
+  alert(`¡Intercambio de rotación realizado con éxito entre ${s1.name} y ${s2.name}!\nPeríodo: ${startStr} al ${endStr} (${swappedDays} días procesados).`);
 }

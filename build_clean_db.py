@@ -653,6 +653,49 @@ for pid, s in staff_db.items():
     s['estamento'] = estamento
     s['jornada'] = jornada
 
+    # Map section according to hospital area codes requested:
+    # Urgencia / Urgencia Y Biología Molecular -> ALU
+    # Hematología -> AH
+    # Química (Inmunoquímica) -> AIC
+    # usuarios TENS -> APA
+    # Administrativa o similares -> ADM
+    # Microbiología -> AMB
+    # Diego Rojas Verdugo -> ATE
+    # Toma de Muestras -> ATE
+    # Auxiliares -> Auxiliares
+    def map_section(name, raw_sec, sheets, est, rol):
+        if name == 'Diego Rojas Verdugo':
+            return 'ATE'
+        sec_upper = (raw_sec or '').upper()
+        sheet_str = ' '.join(sheets or []).upper()
+        if 'URGENCIA' in sec_upper or 'URGENCIA' in sheet_str:
+            return 'ALU'
+        if 'HEMATOLOG' in sec_upper:
+            return 'AH'
+        if 'INMUNOQU' in sec_upper or 'QUIMIC' in sec_upper:
+            return 'AIC'
+        if 'MICROBIOLOG' in sec_upper:
+            return 'AMB'
+        if 'ADMINISTRA' in sec_upper or 'FUNCIONES' in sec_upper or rol == 'Administrativo' or est == 'Administrativo':
+            return 'ADM'
+        if 'TENS' in sec_upper or 'TENS' in sheet_str or est == 'TENS':
+            return 'APA'
+        if 'TOMA DE MUESTRA' in sec_upper or 'TOMA DE MUESTRA' in sheet_str or name == 'Maria Jose Peñailillo':
+            return 'ATE'
+        if 'AUXILIAR' in sec_upper or 'AUXILIAR' in sheet_str or est == 'Auxiliar':
+            return 'Auxiliares'
+        return raw_sec
+
+    s['section'] = map_section(name, sec, s.get('sheets', []), estamento, role)
+
+for t in turns_2026:
+    if t.get('staff_id') in staff_db:
+        t['section'] = staff_db[t['staff_id']]['section']
+
+for m in tdm_2026:
+    if m.get('staff_id') in staff_db:
+        m['section'] = staff_db[m['staff_id']]['section']
+
 print(f"Refined Staff count: {len(staff_db)}")
 print(f"Refined Shifts count: {len(turns_2026)}")
 print(f"Refined TDM assignments: {len(tdm_2026)}")

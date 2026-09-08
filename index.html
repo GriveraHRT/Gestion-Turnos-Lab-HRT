@@ -134,8 +134,12 @@
           </button>
         </div>
 
-        <!-- Right Side: Range Absence Button & Warning Badge -->
-        <div class="flex items-center space-x-2">
+        <!-- Right Side: Action Buttons & Warning Badge -->
+        <div class="flex items-center space-x-2 flex-wrap gap-y-1">
+          <button onclick="openShiftScheduleModal()" class="bg-sky-600 hover:bg-sky-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow flex items-center space-x-1.5 transition shrink-0" title="Asignar esquemas de 4to turno, pasar a diurno o intercambiar rotaciones">
+            <i data-lucide="calendar-sync" class="w-4 h-4"></i>
+            <span>⚡ Esquemas y Rotaciones</span>
+          </button>
           <button onclick="openRangeModal()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow flex items-center space-x-1.5 transition shrink-0">
             <i data-lucide="calendar-range" class="w-4 h-4"></i>
             <span>🌴 Programar Ausencia por Rango</span>
@@ -152,13 +156,13 @@
   </nav>
 
   <!-- Controls Bar: Month Picker, Quick Presets, Grouping & Filters -->
-  <section class="max-w-[1640px] mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-2 w-full">
+  <section class="max-w-[1640px] mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-2 w-full" id="section-controls-bar">
     <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm space-y-3">
       
       <!-- Top row: Month navigation and Search -->
       <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
         <!-- Month Navigation Buttons -->
-        <div class="flex items-center space-x-2 overflow-x-auto pb-1 md:pb-0" id="month-picker-container">
+        <div class="flex items-center space-x-2 overflow-x-auto pb-1 md:pb-0 no-scrollbar" id="month-picker-container">
           <button onclick="prevMonth()" class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition" title="Mes anterior">
             <i data-lucide="chevron-left" class="w-4 h-4"></i>
           </button>
@@ -170,8 +174,8 @@
           </button>
         </div>
 
-        <!-- Search Bar with smart RUT normalization -->
-        <div class="flex items-center space-x-2 flex-grow max-w-md">
+        <!-- Search Bar with smart RUT normalization (visible on General Calendar) -->
+        <div class="flex items-center space-x-2 flex-grow max-w-md" id="calendar-search-container">
           <div class="relative w-full">
             <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
             <input type="text" id="input-search" oninput="applyFilters()" placeholder="Buscar por funcionario o RUT (con o sin puntos)..." class="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white transition">
@@ -183,17 +187,17 @@
       </div>
 
       <!-- Bottom row: Quick Presets & Subdivide/Grouping Selectors (visible on General Calendar) -->
-      <div id="general-calendar-controls" class="flex flex-col lg:flex-row lg:items-center justify-between gap-2.5 pt-2 border-t border-slate-100">
+      <div id="general-calendar-controls" class="flex flex-col 2xl:flex-row 2xl:items-center justify-between gap-3 pt-2.5 border-t border-slate-100">
         
-        <!-- Quick View Presets (Urgencias, Rutina, TENS, Auxiliares, etc.) -->
-        <div class="flex items-center space-x-1 sm:space-x-1.5 overflow-x-auto pb-1 lg:pb-0" id="view-presets-container">
+        <!-- Quick View Presets (Urgencias, Rutina, TENS, Auxiliares, etc.) - Wrap naturally without scrollbar -->
+        <div class="flex flex-wrap items-center gap-1.5 no-scrollbar" id="view-presets-container">
           <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mr-1 shrink-0">Vista Rápida:</span>
           <button onclick="setPresetFilter('ALL')" id="preset-ALL" class="preset-btn active px-2.5 py-1 text-xs font-bold rounded-lg transition bg-sky-600 text-white shadow-xs whitespace-nowrap">
             🌟 Todos (<span id="count-all">98</span>)
           </button>
           <button onclick="setPresetFilter('URGENCIAS')" id="preset-URGENCIAS" class="preset-btn px-2.5 py-1 text-xs font-semibold rounded-lg transition text-slate-600 hover:bg-slate-100 whitespace-nowrap flex items-center space-x-1">
             <span class="w-2 h-2 rounded-full bg-rose-500"></span>
-            <span>🚨 Urgencias</span>
+            <span>🚨 Urgencias (ALU)</span>
             <span id="count-urgencias" class="text-[10px] bg-rose-100 text-rose-700 px-1.5 py-0.2 rounded-full font-bold ml-0.5">58</span>
           </button>
           <button onclick="setPresetFilter('RUTINA')" id="preset-RUTINA" class="preset-btn px-2.5 py-1 text-xs font-semibold rounded-lg transition text-slate-600 hover:bg-slate-100 whitespace-nowrap flex items-center space-x-1">
@@ -256,8 +260,8 @@
   </section>
 
   <!-- Interactive Legend Bar -->
-  <section class="max-w-[1640px] mx-auto px-4 sm:px-6 lg:px-8 py-2 w-full">
-    <div class="flex items-center justify-between bg-slate-100/80 px-3 py-2 rounded-lg border border-slate-200 text-xs overflow-x-auto gap-3">
+  <section class="max-w-[1640px] mx-auto px-4 sm:px-6 lg:px-8 py-2 w-full" id="section-legend">
+    <div class="flex items-center justify-between bg-slate-100/80 px-3 py-2 rounded-lg border border-slate-200 text-xs overflow-x-auto no-scrollbar gap-3">
       <span class="font-bold text-slate-500 uppercase tracking-wider text-[10px]">Leyenda:</span>
       <div class="flex items-center space-x-3 flex-wrap gap-y-1">
         <div class="flex items-center space-x-1.5">
@@ -291,6 +295,10 @@
         <div class="flex items-center space-x-1.5">
           <span class="w-3.5 h-3.5 rounded bg-slate-700 text-white text-[10px] font-bold flex items-center justify-center">N</span>
           <span class="font-medium text-slate-700">Noche (20-08h)</span>
+        </div>
+        <div class="flex items-center space-x-1.5">
+          <span class="w-3.5 h-3.5 rounded bg-sky-100 text-sky-800 border border-sky-300 text-[10px] font-bold flex items-center justify-center">D</span>
+          <span class="font-medium text-slate-700">Diurno (Lun-Vie)</span>
         </div>
         <div class="flex items-center space-x-1.5">
           <span class="w-3.5 h-3.5 rounded bg-orange-500 inline-block shadow-sm"></span>
@@ -408,6 +416,92 @@
       <!-- Audit Summary Cards -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="directorio-stats-cards">
         <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Filtros del Directorio de Funcionarios -->
+      <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm space-y-3">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+          
+          <!-- Búsqueda específica en directorio -->
+          <div class="relative flex-grow max-w-md">
+            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
+            <input type="text" id="directorio-filter-search" oninput="applyDirectorioFilters()" placeholder="Buscar por funcionario o RUT en directorio..." class="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white transition">
+            <button id="directorio-clear-search" onclick="clearDirectorioSearch()" class="hidden text-slate-400 hover:text-slate-600 absolute right-2.5 top-2.5" title="Limpiar">
+              <i data-lucide="x" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+
+          <!-- Filtros Selectores -->
+          <div class="flex items-center space-x-2 flex-wrap gap-y-2">
+            <!-- Filtro Sección / Área -->
+            <div class="flex items-center space-x-1">
+              <span class="text-[11px] font-bold text-slate-500 shrink-0">Sección:</span>
+              <select id="directorio-filter-section" onchange="applyDirectorioFilters()" class="text-xs py-1.5 px-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-700 font-semibold focus:ring-2 focus:ring-sky-500">
+                <option value="ALL">Todas las Secciones</option>
+                <option value="ALU">ALU (Urgencias)</option>
+                <option value="AH">AH (Hematología)</option>
+                <option value="AIC">AIC (Química / Inmunoquímica)</option>
+                <option value="AMB">AMB (Microbiología)</option>
+                <option value="APA">APA (TENS / Paramédicos)</option>
+                <option value="ADM">ADM (Administrativa)</option>
+                <option value="ATE">ATE (Toma de Exámenes)</option>
+                <option value="Auxiliares">Auxiliares</option>
+              </select>
+            </div>
+
+            <!-- Filtro Estado Datos -->
+            <div class="flex items-center space-x-1">
+              <span class="text-[11px] font-bold text-slate-500 shrink-0">Estado Datos:</span>
+              <select id="directorio-filter-estado" onchange="applyDirectorioFilters()" class="text-xs py-1.5 px-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-700 font-semibold focus:ring-2 focus:ring-sky-500">
+                <option value="ALL">Todos los Estados</option>
+                <option value="COMPLETO">✅ Completo</option>
+                <option value="PENDIENTE">⚠️ Datos Pendientes</option>
+              </select>
+            </div>
+
+            <!-- Filtro Jornada -->
+            <div class="flex items-center space-x-1">
+              <span class="text-[11px] font-bold text-slate-500 shrink-0">Jornada:</span>
+              <select id="directorio-filter-jornada" onchange="applyDirectorioFilters()" class="text-xs py-1.5 px-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-700 font-semibold focus:ring-2 focus:ring-sky-500">
+                <option value="ALL">Todas las Jornadas</option>
+                <option value="Turno">Turno (4to Turno)</option>
+                <option value="Diurno">Diurno</option>
+              </select>
+            </div>
+
+            <!-- Filtro Estamento -->
+            <div class="flex items-center space-x-1">
+              <span class="text-[11px] font-bold text-slate-500 shrink-0">Estamento:</span>
+              <select id="directorio-filter-estamento" onchange="applyDirectorioFilters()" class="text-xs py-1.5 px-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-700 font-semibold focus:ring-2 focus:ring-sky-500">
+                <option value="ALL">Todos los Estamentos</option>
+                <option value="TM_BQ">TM y Bioquímicos</option>
+                <option value="Tecnólogo Médico">Tecnólogo Médico (TM)</option>
+                <option value="Bioquímico">Bioquímico (BQ)</option>
+                <option value="TENS">TENS</option>
+                <option value="Auxiliar">Auxiliar</option>
+                <option value="Interno TM">Interno TM</option>
+                <option value="Administrativo">Administrativo</option>
+              </select>
+            </div>
+
+            <!-- Botón resetear filtros -->
+            <button onclick="resetDirectorioFilters()" class="text-xs px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold transition flex items-center space-x-1" title="Restablecer filtros">
+              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+              <span>Limpiar</span>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Barra inferior: Contador de resultados -->
+        <div class="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-100">
+          <div id="directorio-results-count" class="font-medium text-slate-700">
+            Mostrando 98 de 98 funcionarios
+          </div>
+          <div id="directorio-active-tags" class="flex items-center space-x-1.5 flex-wrap">
+            <!-- Active filter pills populated by JS -->
+          </div>
+        </div>
       </div>
 
       <!-- Staff Table -->
@@ -700,13 +794,301 @@
         </div>
         <div>
           <label class="block font-semibold text-slate-700 mb-1">Sección / Área de Trabajo:</label>
-          <input type="text" id="staff-edit-section" placeholder="Hematología, Urgencia, Inmunoquímica..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-sky-500">
+          <select id="staff-edit-section" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-sky-500 font-medium bg-white">
+            <option value="ALU">ALU (Urgencias / Biología Molecular)</option>
+            <option value="AH">AH (Hematología)</option>
+            <option value="AIC">AIC (Química / Inmunoquímica)</option>
+            <option value="AMB">AMB (Microbiología)</option>
+            <option value="APA">APA (TENS / Paramédicos)</option>
+            <option value="ADM">ADM (Administrativa)</option>
+            <option value="ATE">ATE (Toma de Exámenes)</option>
+            <option value="Auxiliares">Auxiliares</option>
+          </select>
+        </div>
+
+        <!-- Quick link to Schedule / Rotation modal for this staff member -->
+        <div class="pt-1">
+          <button type="button" onclick="openShiftScheduleFromStaffModal()" class="w-full py-2 px-3 bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 rounded-lg font-bold text-xs flex items-center justify-center space-x-2 transition">
+            <i data-lucide="calendar-sync" class="w-4 h-4 text-sky-600"></i>
+            <span>⚡ Asignar Patrón 4to Turno / Traspaso / Rotación</span>
+          </button>
         </div>
       </div>
       <div class="bg-slate-50 px-5 py-3 border-t border-slate-100 flex items-center justify-end space-x-2">
         <button onclick="closeStaffModal()" class="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-200 rounded-lg font-medium">Cancelar</button>
         <button onclick="saveStaffModal()" class="px-4 py-1.5 text-xs bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-lg shadow">Guardar Cambios</button>
       </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Gestor de Esquemas de Turno y Rotaciones (4to Turno, Diurno, Intercambio) -->
+  <div id="modal-shift-schedule" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 hidden p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden border border-slate-100 animate-fade-in flex flex-col max-h-[90vh]">
+      
+      <!-- Modal Header -->
+      <div class="bg-slate-900 text-white p-4 flex items-center justify-between shrink-0">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-8 h-8 rounded-lg bg-sky-500/20 border border-sky-400/30 flex items-center justify-center text-sky-400">
+            <i data-lucide="calendar-sync" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white">Gestión de Esquemas de Turno y Rotaciones</h3>
+            <p class="text-[11px] text-slate-400">Asignar 4to Turno (L-N-L-L), traspaso a diurno o intercambios de turno entre personal</p>
+          </div>
+        </div>
+        <button onclick="closeShiftScheduleModal()" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Tab Buttons for the 3 Operations -->
+      <div class="flex items-center border-b border-slate-200 bg-slate-50 px-4 pt-2 gap-2 shrink-0 overflow-x-auto">
+        <button onclick="switchScheduleTab('PATTERN')" id="tab-sched-pattern" class="px-3 py-2 text-xs font-bold border-b-2 border-sky-600 text-sky-700 flex items-center space-x-1.5 transition whitespace-nowrap">
+          <span>⚡ Asignar 4to Turno (L-N-L-L)</span>
+        </button>
+        <button onclick="switchScheduleTab('DIURNO')" id="tab-sched-diurno" class="px-3 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 border-b-2 border-transparent flex items-center space-x-1.5 transition whitespace-nowrap">
+          <span>☀️ Pasar a Diurno</span>
+        </button>
+        <button onclick="switchScheduleTab('SWAP')" id="tab-sched-swap" class="px-3 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 border-b-2 border-transparent flex items-center space-x-1.5 transition whitespace-nowrap">
+          <span>🔄 Intercambiar Rotación</span>
+        </button>
+      </div>
+
+      <!-- Tab Content Area (Scrollable) -->
+      <div class="p-5 overflow-y-auto space-y-4 text-xs">
+
+        <!-- TAB 1: ASIGNAR 4TO TURNO -->
+        <div id="sched-tab-content-pattern" class="space-y-4">
+          <div class="bg-sky-50/80 border border-sky-200 rounded-xl p-3 text-sky-950 text-xs">
+            <div class="font-bold flex items-center space-x-1 mb-0.5">
+              <i data-lucide="info" class="w-4 h-4 text-sky-600"></i>
+              <span>Patrón Operativo Oficial HRT (4to Turno):</span>
+            </div>
+            <span>Genera automáticamente la secuencia cíclica de 4 días: <strong>Largo (08:00 a 20:00)</strong> ➔ <strong>Noche (20:00 a 08:00)</strong> ➔ <strong>Saliente / Libre</strong> ➔ <strong>Libre</strong>.</span>
+          </div>
+
+          <!-- Funcionario selector -->
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Funcionario a Programar:</label>
+            <select id="sched-pattern-staff" onchange="updateSchedulePreview()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-semibold text-slate-800 bg-white focus:ring-2 focus:ring-sky-500">
+              <!-- Populated by JS -->
+            </select>
+          </div>
+
+          <!-- Date Range -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Fecha de Inicio (Primer Turno):</label>
+              <input type="date" id="sched-pattern-start" onchange="updateSchedulePreview()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-medium focus:ring-2 focus:ring-sky-500">
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Fecha de Término (Hasta):</label>
+              <input type="date" id="sched-pattern-end" onchange="updateSchedulePreview()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-medium focus:ring-2 focus:ring-sky-500">
+            </div>
+          </div>
+
+          <!-- Quick Date Range Presets -->
+          <div class="flex items-center space-x-1.5 flex-wrap">
+            <span class="text-[11px] font-bold text-slate-400">Rango rápido:</span>
+            <button type="button" onclick="setPatternQuickRange('MONTH')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium transition">Fin de Mes</button>
+            <button type="button" onclick="setPatternQuickRange('3MONTHS')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium transition">+3 Meses</button>
+            <button type="button" onclick="setPatternQuickRange('6MONTHS')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium transition">+6 Meses</button>
+            <button type="button" onclick="setPatternQuickRange('YEAR')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium transition">Fin de Año</button>
+          </div>
+
+          <!-- Starting Shift of the cycle -->
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Turno en la Fecha de Inicio (Turno de Partida):</label>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <label class="flex items-center p-2 rounded-lg border border-slate-200 bg-white hover:bg-orange-50 cursor-pointer space-x-2">
+                <input type="radio" name="sched-cycle-start" value="L" checked onchange="updateSchedulePreview()" class="text-sky-600 focus:ring-sky-500">
+                <div>
+                  <span class="font-bold text-orange-900 block text-xs">☀️ Largo (L)</span>
+                  <span class="text-[10px] text-slate-400">L ➔ N ➔ Libre ➔ Libre</span>
+                </div>
+              </label>
+              <label class="flex items-center p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 cursor-pointer space-x-2">
+                <input type="radio" name="sched-cycle-start" value="N" onchange="updateSchedulePreview()" class="text-sky-600 focus:ring-sky-500">
+                <div>
+                  <span class="font-bold text-slate-900 block text-xs">🌙 Noche (N)</span>
+                  <span class="text-[10px] text-slate-400">N ➔ Libre ➔ Libre ➔ L</span>
+                </div>
+              </label>
+              <label class="flex items-center p-2 rounded-lg border border-slate-200 bg-white hover:bg-emerald-50 cursor-pointer space-x-2">
+                <input type="radio" name="sched-cycle-start" value="X1" onchange="updateSchedulePreview()" class="text-sky-600 focus:ring-sky-500">
+                <div>
+                  <span class="font-bold text-emerald-900 block text-xs">🏖️ Libre 1 (Sal.)</span>
+                  <span class="text-[10px] text-slate-400">Libre ➔ Libre ➔ L ➔ N</span>
+                </div>
+              </label>
+              <label class="flex items-center p-2 rounded-lg border border-slate-200 bg-white hover:bg-emerald-50 cursor-pointer space-x-2">
+                <input type="radio" name="sched-cycle-start" value="X2" onchange="updateSchedulePreview()" class="text-sky-600 focus:ring-sky-500">
+                <div>
+                  <span class="font-bold text-emerald-900 block text-xs">🏖️ Libre 2</span>
+                  <span class="text-[10px] text-slate-400">Libre ➔ L ➔ N ➔ Libre</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Options -->
+          <div class="space-y-2 pt-1 border-t border-slate-100">
+            <label class="flex items-center space-x-2 cursor-pointer">
+              <input type="checkbox" id="sched-preserve-absences" checked onchange="updateSchedulePreview()" class="rounded text-sky-600 focus:ring-sky-500">
+              <span class="text-xs text-slate-700 font-medium">Preservar ausencias existentes (Vacaciones, Licencias Médicas, Administrativos)</span>
+            </label>
+            <label class="flex items-center space-x-2 cursor-pointer">
+              <input type="checkbox" id="sched-update-jornada-turno" checked class="rounded text-sky-600 focus:ring-sky-500">
+              <span class="text-xs text-slate-700 font-medium">Actualizar jornada oficial del funcionario a <strong>"Turno"</strong></span>
+            </label>
+          </div>
+
+          <!-- Live Preview Box -->
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-3" id="sched-pattern-preview-box">
+            <div class="font-bold text-slate-700 flex items-center justify-between mb-2">
+              <span>Vista previa de generación:</span>
+              <span id="sched-preview-summary" class="text-xs text-sky-700 font-bold">Calculando...</span>
+            </div>
+            <div id="sched-preview-pills" class="flex items-center space-x-1.5 overflow-x-auto pb-1 text-[11px]">
+              <!-- Generated preview pills -->
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: PASAR A DIURNO -->
+        <div id="sched-tab-content-diurno" class="hidden space-y-4">
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-amber-900 text-xs">
+            <div class="font-bold flex items-center space-x-1 mb-0.5">
+              <i data-lucide="sun" class="w-4 h-4 text-amber-600"></i>
+              <span>Traspaso a Jornada Diurna (Lunes a Viernes):</span>
+            </div>
+            <span>Elimina todos los turnos rotativos (Largo 'L' y Noche 'N') en el rango seleccionado y rellena los días hábiles (Lunes a Viernes) con jornada normal ('D'). Los fines de semana quedan libres.</span>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Funcionario a pasar a Diurno:</label>
+            <select id="sched-diurno-staff" onchange="updateDiurnoPreview()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-semibold text-slate-800 bg-white focus:ring-2 focus:ring-sky-500">
+              <!-- Populated by JS -->
+            </select>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Desde Fecha:</label>
+              <input type="date" id="sched-diurno-start" onchange="updateDiurnoPreview()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-medium focus:ring-2 focus:ring-sky-500">
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Hasta Fecha:</label>
+              <input type="date" id="sched-diurno-end" onchange="updateDiurnoPreview()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-medium focus:ring-2 focus:ring-sky-500">
+            </div>
+          </div>
+
+          <!-- Quick date buttons for Diurno -->
+          <div class="flex items-center space-x-1.5 pt-0.5">
+            <span class="text-[10px] text-slate-400 font-bold uppercase">Atajos:</span>
+            <button type="button" onclick="setDiurnoQuickRange('MONTH')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium transition">+Fin de Mes</button>
+            <button type="button" onclick="setDiurnoQuickRange('3MONTHS')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium transition">+3 Meses</button>
+            <button type="button" onclick="setDiurnoQuickRange('6MONTHS')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium transition">+6 Meses</button>
+            <button type="button" onclick="setDiurnoQuickRange('YEAR')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium transition">Fin de Año</button>
+          </div>
+
+          <div class="space-y-2 pt-1 border-t border-slate-100">
+            <label class="flex items-center space-x-2 cursor-pointer">
+              <input type="checkbox" id="sched-diurno-fill" checked onchange="updateDiurnoPreview()" class="rounded text-sky-600 focus:ring-sky-500">
+              <span class="text-xs text-slate-700 font-medium">Rellenar días hábiles (Lunes a Viernes) con turno ordinario <strong>"D"</strong> (08:00 a 17:00)</span>
+            </label>
+            <label class="flex items-center space-x-2 cursor-pointer">
+              <input type="checkbox" id="sched-diurno-omit-holidays" checked onchange="updateDiurnoPreview()" class="rounded text-sky-600 focus:ring-sky-500">
+              <span class="text-xs text-slate-700 font-medium">Omitir feriados nacionales (no programar turno en feriado)</span>
+            </label>
+            <label class="flex items-center space-x-2 cursor-pointer">
+              <input type="checkbox" id="sched-diurno-preserve-absences" checked onchange="updateDiurnoPreview()" class="rounded text-sky-600 focus:ring-sky-500">
+              <span class="text-xs text-slate-700 font-medium">Preservar ausencias legales existentes (Vacaciones, Licencias Médicas, Administrativos)</span>
+            </label>
+            <label class="flex items-center space-x-2 cursor-pointer">
+              <input type="checkbox" id="sched-update-jornada-diurno" checked class="rounded text-sky-600 focus:ring-sky-500">
+              <span class="text-xs text-slate-700 font-medium">Actualizar jornada oficial del funcionario a <strong>"Diurno"</strong></span>
+            </label>
+          </div>
+
+          <!-- Live Preview Box for Diurno -->
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-3" id="sched-diurno-preview-box">
+            <div class="font-bold text-slate-700 flex items-center justify-between mb-2">
+              <span>Vista previa de traspaso a Diurno:</span>
+              <span id="sched-diurno-preview-summary" class="text-xs text-sky-700 font-bold">Calculando...</span>
+            </div>
+            <div id="sched-diurno-preview-pills" class="flex items-center space-x-1.5 overflow-x-auto pb-1 text-[11px] no-scrollbar">
+              <!-- Generated preview pills -->
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: INTERCAMBIAR ROTACIÓN (SWAP) -->
+        <div id="sched-tab-content-swap" class="hidden space-y-4">
+          <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-indigo-900 text-xs">
+            <div class="font-bold flex items-center space-x-1 mb-0.5">
+              <i data-lucide="arrow-left-right" class="w-4 h-4 text-indigo-600"></i>
+              <span>Intercambio de Rotación entre Dos Funcionarios:</span>
+            </div>
+            <span>Intercambia todos los turnos operativos (Largos, Noches y Libres) entre los dos funcionarios seleccionados durante el período indicado.</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Funcionario A (Titular Turno A):</label>
+              <select id="sched-swap-staff-1" onchange="updateSwapPreview()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-semibold text-slate-800 bg-white focus:ring-2 focus:ring-sky-500">
+                <!-- Populated by JS -->
+              </select>
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Funcionario B (Titular Turno B):</label>
+              <select id="sched-swap-staff-2" onchange="updateSwapPreview()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-semibold text-slate-800 bg-white focus:ring-2 focus:ring-sky-500">
+                <!-- Populated by JS -->
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Desde Fecha:</label>
+              <input type="date" id="sched-swap-start" onchange="updateSwapPreview()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-medium focus:ring-2 focus:ring-sky-500">
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Hasta Fecha:</label>
+              <input type="date" id="sched-swap-end" onchange="updateSwapPreview()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-medium focus:ring-2 focus:ring-sky-500">
+            </div>
+          </div>
+
+          <div>
+            <label class="flex items-center space-x-2 cursor-pointer">
+              <input type="checkbox" id="sched-swap-include-absences" onchange="updateSwapPreview()" class="rounded text-sky-600 focus:ring-sky-500">
+              <span class="text-xs text-slate-700 font-medium">Intercambiar también ausencias personales (Vacaciones, Administrativos) - <em>Por defecto se conservan las ausencias de cada uno</em></span>
+            </label>
+          </div>
+
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-3" id="sched-swap-preview-box">
+            <div class="font-bold text-slate-700 mb-1">Resumen del Intercambio:</div>
+            <div id="sched-swap-summary-text" class="text-xs text-slate-600">
+              Selecciona ambos funcionarios y las fechas para previsualizar el intercambio.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer with Action Buttons -->
+      <div class="bg-slate-50 px-5 py-3 border-t border-slate-200 flex items-center justify-between shrink-0">
+        <button type="button" onclick="closeShiftScheduleModal()" class="px-4 py-2 text-xs text-slate-600 hover:bg-slate-200 rounded-lg font-semibold transition">
+          Cancelar
+        </button>
+        <div class="flex items-center space-x-2">
+          <button type="button" id="btn-submit-schedule" onclick="executeShiftScheduleAction()" class="px-5 py-2 text-xs bg-sky-600 hover:bg-sky-500 text-white rounded-lg shadow font-bold transition flex items-center space-x-1.5">
+            <i data-lucide="check-check" class="w-4 h-4"></i>
+            <span id="btn-submit-schedule-label">Aplicar Esquema 4to Turno</span>
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
 
