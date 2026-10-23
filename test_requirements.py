@@ -1,242 +1,180 @@
 import json
-import re
+import subprocess
 
 def test_data_bundle():
-    print("Testing data bundle and staff master...")
+    print("1. Testing data bundle, staff master, and October 2026 updates...")
     with open('data/staff_master.json', encoding='utf-8') as f:
         db = json.load(f)
-    
-    assert len(db) == 100, f"Expected 100 staff, got {len(db)}"
-    assert db['patricia_morales_rojas']['section'] == 'AH'
-    assert db['patricia_morales_morales']['section'] == 'APA'
-    assert db['teresa_fuentes_munoz']['section'] == 'APA'
-    assert db['teresa_fuentes_munoz']['rut'] == '20.367.852-5'
-    assert db['patricia_morales_morales']['rut'] == '16.555.264-4'
-    assert db['patricia_morales_rojas']['rut'] == '11.480.276-K'
-    assert len([s for s in db.values() if s.get('missing_fields')]) == 4
-    
-    # Requirement 3 validation:
-    # 1. Diego Rojas Verdugo -> ATE
-    assert db['diego_rojas_verdugo']['section'] == 'ATE', f"Diego Rojas Verdugo must be ATE, got {db['diego_rojas_verdugo']['section']}"
-    
-    # 2. Urgencia / Urgencia Y Biología Molecular -> ALU
-    for s in db.values():
-        if 'URGENCIA' in ' '.join(s.get('sheets', [])).upper():
-            assert s['section'] == 'ALU', f"{s['name']} in urgency sheets must have section ALU, got {s['section']}"
-    assert db['rodrigo_benavente_contreras']['section'] == 'ALU'
-    
-    # 3. Hematología -> AH
-    for name in ['Consuelo Cerda Wehinger', 'Juan Cerpa Castillo', 'Marcela Salgado Carreño', 'Miryam Espina Herrera', 'Romina Diaz Espinoza']:
-        found = [s for s in db.values() if s['name'] == name]
-        assert len(found) == 1
-        assert found[0]['section'] == 'AH', f"{name} must be AH"
-        
-    # 4. Química / Inmunoquímica -> AIC
-    for name in ['Alejandra Vorphal Vasquez', 'Camila Gutierrez', 'Camila Reyes Vivero', 'Carolina Arancibia Jara', 'Daniel Schulz', 'Loreto Diaz Rios']:
-        found = [s for s in db.values() if s['name'] == name]
-        assert len(found) == 1
-        assert found[0]['section'] == 'AIC', f"{name} must be AIC"
-        
-    # 5. Microbiología -> AMB (except Diego Rojas who is ATE)
-    for name in ['Barbara Fuenzalida Ibañez', 'Cristian Andrade', 'Daniel Calderon Calderon', 'Francisco Sepulveda', 'Katalina Barrera', 'Melissa Canales Mejias', 'Nicole Hernandez Norambuena']:
-        found = [s for s in db.values() if s['name'] == name]
-        assert len(found) == 1
-        assert found[0]['section'] == 'AMB', f"{name} must be AMB"
-        
-    # 6. usuarios TENS -> APA
-    for name in ['Ingrid Silva Valdivia', 'Jimena Caceres Valdes', 'Laura Perez', 'Rosa Bernal Muñoz', 'Ruth Jara Lara', 'Susana Quintana']:
-        found = [s for s in db.values() if s['name'] == name]
-        assert len(found) == 1
-        assert found[0]['section'] == 'APA', f"{name} must be APA"
-        
-    # 7. Administrativa o similares -> ADM
-    for name in ['Arlette Garrido Miño', 'Camila Walker', 'Carolina Diaz Ponce', 'Constanza Riquelme', 'Jimena Gonzalez', 'María Riquelme', 'Valeria Montes']:
-        found = [s for s in db.values() if s['name'] == name]
-        assert len(found) == 1
-        assert found[0]['section'] == 'ADM', f"{name} must be ADM"
 
-    print("Requirement 3 (Sections mapping): PASSED!")
+    assert len(db) == 101, f"Expected 101 unified staff from updated Oct 2026 sheet, got {len(db)}"
+    assert 'katalina_tdm' not in db, "katalina_tdm should be merged into katalina_barrera"
+    assert 'reemplazo_ignacio' not in db, "reemplazo_ignacio should be merged into ignacio_brunel"
+    assert 'TOMA DE MUESTRA' in db['katalina_barrera']['sheets'], "katalina_barrera should include TOMA DE MUESTRA sheet"
+    assert 'PROFESIONALES RUTINA' in db['katalina_barrera']['sheets'], "katalina_barrera should include PROFESIONALES RUTINA sheet"
+    assert 'LAB. URGENCIA' in db['ignacio_brunel']['sheets'] and 'PROFESIONALES RUTINA' in db['ignacio_brunel']['sheets'], "ignacio_brunel should include both Urgencia and Profesionales Rutina"
 
-def test_html_elements():
-    print("Testing HTML structure for Requirements 1, 2, 4...")
+    with open('data/data_bundle.js', encoding='utf-8') as f:
+        raw = f.read()
+    prefix = "window.TURNOS_INITIAL_DATA = "
+    assert raw.startswith(prefix), "data_bundle.js does not start with expected prefix"
+    json_str = raw[len(prefix):].strip().rstrip(';')
+    bundle = json.loads(json_str)
+
+    staff = bundle['staff']
+    turns = bundle['turns_2026']
+    tdm = bundle['tdm_2026']
+
+    assert len(staff) == len(db)
+    assert len(turns) > 8000, f"Expected > 8000 turns, got {len(turns)}"
+    assert len(tdm) > 1250, f"Expected > 1250 TDM assignments, got {len(tdm)}"
+
+    # Official section codes validation
+    valid_sections = {'ALU', 'AH', 'AIC', 'AMB', 'APA', 'ADM', 'ATE', 'Auxiliares'}
+    for sid, s in staff.items():
+        sec = s.get('section')
+        assert sec in valid_sections, f"Invalid section '{sec}' for staff {sid} ({s.get('name')})"
+
+    # Diego Rojas Verdugo & Alejandra Vorphal -> ATE
+    assert db['diego_rojas_verdugo']['section'] == 'ATE'
+    assert db['maria_alejandra_vorphal_vasquez']['section'] == 'ATE'
+
+    # Hematología -> AH
+    for sid in ['consuelo_cerda_wehinger', 'juan_cerpa_castillo', 'marcela_salgado_carreno', 'miryam_espina_herrera', 'romina_diaz_espinoza', 'patricia_morales_rojas']:
+        assert db[sid]['section'] == 'AH', f"{sid} should be AH, got {db[sid]['section']}"
+
+    # Inmunoquímica -> AIC
+    for sid in ['camila_gutierrez', 'camila_reyes_vivero', 'carolina_arancibia_jara', 'daniel_schulz', 'loreto_diaz_rios', 'teresa_fuentes_munoz']:
+        assert db[sid]['section'] == 'AIC', f"{sid} should be AIC, got {db[sid]['section']}"
+
+    # Microbiología -> AMB
+    for sid in ['barbara_fuenzalida_ibanez', 'cristian_andrade', 'daniel_calderon_calderon', 'francisco_sepulveda', 'katalina_barrera', 'melissa_canales_mejias', 'nicole_hernandez_norambuena']:
+        assert db[sid]['section'] == 'AMB', f"{sid} should be AMB, got {db[sid]['section']}"
+
+    # All TENS -> APA
+    tens_staff = [s for s in staff.values() if s['role'] == 'TENS']
+    assert len(tens_staff) >= 24
+    for t in tens_staff:
+        assert t['section'] == 'APA', f"TENS {t['name']} has section {t['section']}, expected APA"
+
+    # Jimena Gonzalez -> Administrativo / ADM
+    jg = staff.get('jimena_gonzalez')
+    assert jg is not None and jg['role'] == 'Administrativo' and jg['estamento'] == 'Administrativo' and jg['section'] == 'ADM'
+
+    # Susana Santos vs Susana Sepulveda distinct official identities
+    assert staff['susana_santos']['rut'] == '18.474.372-8'
+    assert staff['susana_santos']['official_name'] == 'SUSANA FRANCISCA SANTOS SEPULVEDA'
+    assert staff['susana_sepulveda']['rut'] == '10.892.073-4'
+    assert staff['susana_sepulveda']['official_name'] == 'SUSANA EUGENIA SEPULVEDA VILLANUEVA'
+
+    # Teresa Fuentes Muñoz
+    tf = staff.get('teresa_fuentes_munoz')
+    assert tf is not None and tf['rut'] == '20.367.852-5' and not tf['needs_completion']
+
+    # Brayans Saavedra (new Oct/Nov TDM induction)
+    bs = staff.get('brayans_saavedra')
+    assert bs is not None and bs['section'] == 'APA' and 'TOMA DE MUESTRA' in bs['sheets']
+
+    # Corrected official RUTs (no misaligned Excel row swaps)
+    assert staff['daniela_castillo']['rut'] == '17.171.464-8'
+    assert staff['olivia_belen_rosales']['rut'] == '18.981.532-8'
+    assert staff['ociel_beltran']['rut'] == '18.543.174-6'
+    assert staff['valentino_becerra']['rut'] == '18.905.196-4'
+    assert staff['javier_malpica']['rut'] == '25.649.865-0'
+    assert staff['elieser_valdebenito']['rut'] == '17.824.539-2'
+    assert staff['sergio_rojo']['rut'] == '17.845.030-1'
+
+    # October 2026 Auxiliares & TDM data from updated Google Sheet
+    oct_aux = [t for t in turns if t['sheet'] == 'AUXILIARES' and t['date'].startswith('2026-10-')]
+    assert len(oct_aux) > 0, "Expected October 2026 Auxiliares shifts"
+    oct_tdm = [t for t in tdm if t['date'].startswith('2026-10-')]
+    assert len(oct_tdm) > 100, f"Expected > 100 October 2026 TDM assignments, got {len(oct_tdm)}"
+
+    # Vacaciones (FL) vs Licencia Médica (LM)
+    vac_records = [t for t in turns if t['event_type'] == 'VACACIONES']
+    lm_records = [t for t in turns if t['event_type'] == 'LICENCIA_MEDICA']
+    assert len(vac_records) > 200
+    assert len(lm_records) > 1000
+    for sid in ['camila_reyes_vivero', 'consuelo_cerda_wehinger', 'katalina_barrera', 'sergio_rojo', 'valeria_montes']:
+        staff_turns = [t for t in turns if t['staff_id'] == sid]
+        lm_count = sum(1 for t in staff_turns if t['event_type'] == 'LICENCIA_MEDICA')
+        vac_count = sum(1 for t in staff_turns if t['event_type'] == 'VACACIONES')
+        assert lm_count > 0, f"{sid} should have LICENCIA_MEDICA records"
+        assert vac_count == 0, f"{sid} should have 0 VACACIONES records"
+
+    # Extensión Horaria E+(N) vs Horas por Turno Extra H+(N) vs Día Compensatorio (DC) vs A Devolución de Tiempo
+    ext_records = [t for t in turns if t['event_type'] == 'EXTENSION_HORARIA']
+    hex_records = [t for t in turns if t['event_type'] == 'HORAS_TURNO_EXTRA']
+    comp_records = [t for t in turns if t['event_type'] == 'COMPENSATORIO']
+    dev_work_records = [t for t in turns if t.get('a_devolucion') is True]
+
+    assert len(ext_records) >= 80, f"Expected >= 80 EXTENSION_HORARIA (E+N) records, got {len(ext_records)}"
+    assert len(hex_records) >= 250, f"Expected >= 250 HORAS_TURNO_EXTRA (H+N) records, got {len(hex_records)}"
+    assert len(comp_records) >= 200, f"Expected >= 200 COMPENSATORIO (DC) absence records, got {len(comp_records)}"
+    assert len(dev_work_records) >= 130, f"Expected >= 130 work records marked a_devolucion=True, got {len(dev_work_records)}"
+    assert all(t['code'] == 'DC' for t in comp_records), "All COMPENSATORIO records should have code 'DC' (not H+6/H+9)"
+
+    # All DEVOLUCION_TIEMPO records must display 'DT' in cell code so columns stay uniform, while preserving dt_schedule
+    dt_records = [t for t in turns if t['event_type'] == 'DEVOLUCION_TIEMPO']
+    assert len(dt_records) >= 200, f"Expected >= 200 DEVOLUCION_TIEMPO records, got {len(dt_records)}"
+    assert all(t['code'] == 'DT' for t in dt_records), "All DEVOLUCION_TIEMPO records must have code='DT' for uniform column width"
+    assert sum(1 for t in dt_records if t.get('dt_schedule')) >= 180, "Expected partial-day DT records to preserve dt_schedule"
+
+    print("   -> Data bundle tests: PASSED!")
+
+
+def test_html_and_css():
+    print("2. Testing HTML structure and CSS layout rules...")
     with open('index.html', encoding='utf-8') as f:
         html = f.read()
 
-    # Requirement 1: scrollbar removal & wrapping
-    assert 'id="view-presets-container"' in html
-
-    # Requirement 2: controls bar IDs and directory filters
-    assert 'id="section-controls-bar"' in html
-    assert 'id="calendar-search-container"' in html
-    assert 'id="section-legend"' in html
-    assert 'id="directorio-filter-search"' in html
-    assert 'id="directorio-filter-section"' in html
-    assert 'id="directorio-filter-estado"' in html
-    assert 'id="directorio-filter-jornada"' in html
-    assert 'id="directorio-filter-estamento"' in html
-    assert 'id="directorio-results-count"' in html
-
-    # Requirement 4: shift schedule modal and tabs
-    assert 'id="modal-shift-schedule"' in html
-    assert 'id="sched-tab-content-pattern"' in html
-    assert 'id="sched-tab-content-diurno"' in html
-    assert 'id="sched-tab-content-swap"' in html
-    assert 'openShiftScheduleModal' in html
-
-    print("HTML Elements for all requirements: PASSED!")
-
-def test_js_logic():
-    print("Testing JS logic in app.js...")
-    with open('app.js', encoding='utf-8') as f:
-        js = f.read()
-
-    # Check switchTab hides calendar-search-container outside Calendario General
-    assert 'calendarSearch.classList.toggle' in js
-    assert "normTab !== 'CALENDARIO GENERAL'" in js
-
-    # Check migrateStaffSections exists and maps Diego Rojas to ATE
-    assert 'migrateStaffSections' in js
-    assert 'Diego Rojas Verdugo' in js
-    assert "'ATE'" in js
-
-    # Check shift schedule implementation
-    assert 'applyPatternSchedule' in js
-    assert 'applyDiurnoSchedule' in js
-    assert 'applySwapSchedule' in js
-    assert 'updateSchedulePreview' in js
-    assert 'updateDiurnoPreview' in js
-    assert 'updateSwapPreview' in js
-    assert 'setDiurnoQuickRange' in js
-    assert 'event-diurno' in js
-
-    # Check cross-year rebuildTurnsMap indexes both 2026 and 2027
-    assert 'state.turns2026' in js and 'state.turns2027' in js
-
-    # Check TM_BQ filter group
-    assert 'TM_BQ' in js
-
-    print("JS Logic assertions: PASSED!")
-
-def test_shift_engine_simulation():
-    print("Simulating shift assignment & swapping engines...")
-    # 4-turn cycle simulation:
-    cycle_map = {
-        'L': ['L', 'N', None, None],
-        'N': ['N', None, None, 'L'],
-        'X1': [None, None, 'L', 'N'],
-        'X2': [None, 'L', 'N', None]
-    }
-
-    # Verify every start offset produces a periodic 4-day sequence
-    for start_code, pattern in cycle_map.items():
-        seq = [pattern[i % 4] for i in range(12)]
-        assert len(seq) == 12
-        # Check that L is always followed by N
-        for i in range(len(seq) - 1):
-            if seq[i] == 'L':
-                assert seq[i+1] == 'N'
-            if seq[i] == 'N':
-                assert seq[i+1] is None
-
-    # Verify absence preservation logic
-    absences = ['VACACIONES', 'ADMINISTRATIVO', 'LICENCIA_MEDICA', 'DEVOLUCION_TIEMPO', 'COMISION_SERVICIO', 'SIN_GOCE_SUELDO']
-    sample_turns = [
-        {'date': '2026-03-01', 'code': 'L', 'event_type': 'TURNO'},
-        {'date': '2026-03-02', 'code': 'N', 'event_type': 'TURNO'},
-        {'date': '2026-03-03', 'code': 'VAC', 'event_type': 'VACACIONES'},
-        {'date': '2026-03-04', 'code': 'LM', 'event_type': 'LICENCIA_MEDICA'},
+    required_ids = [
+        'calendarTopbarTools', 'calendarQuickBar', 'calendarLegendBar',
+        'paintToolsGroup', 'btnUndoAction', 'btnOpenShiftManager', 'btnQuickRangeAbsence',
+        'modalCellEdit', 'cellStaffSelect', 'cellStaffId', 'cellDate', 'cellEndDate',
+        'cellRangeMode', 'cellRangePreview', 'extraHoursBuilder', 'daModeBuilder',
+        'daModeFull', 'daModeMorning', 'daModeAfternoon', 'dtScheduleBuilder',
+        'dtModePartial', 'dtModeFull', 'dtStartTime', 'dtEndTime', 'dtScheduleTextInput',
+        'cellDevolucionGroup', 'cellDevolucionCheck',
+        'modalShiftManager', 'smStaff', 'smPattern', 'smStartDate', 'smEndDate',
+        'smPreserveAbsences', 'smDiurnoStaff', 'smDiurnoFillD', 'smSwapStaffA', 'smSwapStaffB',
+        'modalStaffAnnual', 'annualKpiGrid', 'annualTimelineTable',
+        'dirSearch', 'dirFilterSection', 'dirFilterStatus', 'dirFilterModality',
+        'dirFilterEstamento', 'dirCountBadge'
     ]
-    # Diurno filter simulation:
-    preserved = [t for t in sample_turns if t['event_type'] in absences]
-    assert len(preserved) == 2
-    assert {t['event_type'] for t in preserved} == {'VACACIONES', 'LICENCIA_MEDICA'}
+    for rid in required_ids:
+        assert f'id="{rid}"' in html, f"Missing required element id='{rid}' in index.html"
 
-    # Diurno Monday-Friday generation simulation (2026-10-01 to 2026-10-07)
-    # 2026-10-01 is Thursday, 02 is Friday, 03 is Saturday, 04 is Sunday, 05 is Monday, 06 is Tuesday, 07 is Wednesday
-    from datetime import date, timedelta
-    s_date = date(2026, 10, 1)
-    e_date = date(2026, 10, 7)
-    diff_days = (e_date - s_date).days + 1
-    generated_diurno = []
-    for i in range(diff_days):
-        d = s_date + timedelta(days=i)
-        is_weekend = d.weekday() in (5, 6) # Sat, Sun
-        if not is_weekend:
-            generated_diurno.append({'date': d.isoformat(), 'code': 'D', 'event_type': 'TURNO'})
+    with open('styles.css', encoding='utf-8') as f:
+        css = f.read()
+    assert 'min-width: 220px;' in css
+    assert 'left: 220px;' in css
+    assert 'min-width: 410px;' in css
+    assert '.is-devolucion' in css
+    assert '.ev-EXTENSION_HORARIA' in css
+    assert '.ev-HORAS_TURNO_EXTRA' in css
+    print("   -> HTML and CSS tests: PASSED!")
 
-    assert len(generated_diurno) == 5, f"Expected 5 business days, got {len(generated_diurno)}"
-    assert all(t['code'] == 'D' for t in generated_diurno)
-    assert not any(t['date'] in ('2026-10-03', '2026-10-04') for t in generated_diurno)
 
-    # Cross-year turn indexing simulation
-    mock_turns2026 = [{'staff_id': 'staff1', 'date': '2026-12-31', 'code': 'L'}]
-    mock_turns2027 = [{'staff_id': 'staff1', 'date': '2027-01-01', 'code': 'N'}]
-    turns_map = {}
-    for r in mock_turns2026: turns_map[r['staff_id'] + '_' + r['date']] = r
-    for r in mock_turns2027: turns_map[r['staff_id'] + '_' + r['date']] = r
-    assert turns_map.get('staff1_2026-12-31')['code'] == 'L'
-    assert turns_map.get('staff1_2027-01-01')['code'] == 'N'
-
-    print("Shift engine simulations: PASSED!")
-
-def test_morales_distinction():
-    print("Testing distinction between Patricia Morales Morales and Patricia Morales Rojas...")
+def test_morales_and_search_in_node():
+    print("3. Testing Patricia Morales distinction, RUT search, and JS runtime in Node.js...")
     with open('data/staff_master.json', encoding='utf-8') as f:
         db = json.load(f)
 
-    # 1. Verification of Patricia Morales Morales (TENS, APA, TDM)
     pmm = db.get('patricia_morales_morales')
-    assert pmm is not None, "patricia_morales_morales must exist in staff master"
-    assert pmm['name'] == 'Patricia Morales Morales'
+    assert pmm['official_name'] == 'PATRICIA ANDREA MORALES MORALES'
     assert pmm['rut'] == '16.555.264-4'
     assert pmm['role'] == 'TENS'
-    assert pmm['estamento'] == 'TENS'
     assert pmm['section'] == 'APA'
-    assert 'TENS RUTINA' in pmm['sheets']
     assert 'TOMA DE MUESTRA' in pmm['sheets']
 
-    # 2. Verification of Patricia Morales Rojas (Profesional TM Hematología, AH)
     pmr = db.get('patricia_morales_rojas')
-    assert pmr is not None, "patricia_morales_rojas must exist in staff master"
-    assert pmr['name'] == 'Patricia Morales Rojas'
+    assert pmr['official_name'] == 'PATRICIA ESTER AIDA MORALES ROJAS'
     assert pmr['rut'] == '11.480.276-K'
     assert pmr['role'] == 'Profesional'
     assert pmr['estamento'] == 'Tecnólogo Médico'
     assert pmr['section'] == 'AH'
-    assert 'PROFESIONALES RUTINA' in pmr['sheets']
     assert 'TOMA DE MUESTRA' not in pmr['sheets']
 
-    # 3. TDM assignments verification
-    with open('data/tdm_2026.json', encoding='utf-8') as f:
-        tdm = json.load(f)
-    pmm_tdm = [t for t in tdm if t.get('staff_id') == 'patricia_morales_morales']
-    pmr_tdm = [t for t in tdm if t.get('staff_id') == 'patricia_morales_rojas']
-    assert len(pmm_tdm) > 0, "Patricia Morales Morales must have assignments in Toma de Muestra"
-    assert len(pmr_tdm) == 0, "Patricia Morales Rojas must NOT have assignments in Toma de Muestra"
-
-    # 4. Verification in styles.css for sticky column widths (expanded to 300px / 410px)
-    with open('styles.css', encoding='utf-8') as f:
-        css = f.read()
-    assert 'min-width: 300px;' in css
-    assert 'left: 300px;' in css
-    assert 'min-width: 410px;' in css
-
-    # 5. Verification in app.js
-    with open('app.js', encoding='utf-8') as f:
-        js = f.read()
-    assert "DATA_VERSION = '3.5'" in js
-    assert "Patricia Morales Rojas" in js
-    assert "Patricia Morales Morales" in js
-    assert "s.section = 'AH'" in js
-    assert "s.section = 'APA'" in js
-    assert "SECTION_HUMAN_SEARCH" in js
-    assert "getMemberSearchTokens" in js
-    assert "secBadge" in js
-    assert "tdmBadge" in js
-    assert "🩸 TDM" in js
-
-    # 6. Verification of search discriminability (multi-token frequency & section search)
-    import subprocess
     node_test = """
     global.window = global;
     global.document = { addEventListener: () => {}, getElementById: () => null };
@@ -245,43 +183,134 @@ def test_morales_distinction():
     eval(fs.readFileSync('data/data_bundle.js', 'utf8'));
     eval(fs.readFileSync('app.js', 'utf8'));
     const staff = window.TURNOS_INITIAL_DATA.staff;
-    
-    // Query 1: morales morales
+
+    // 1. morales morales
     const resMM = Object.values(staff).filter(m => matchesSearch(m, 'morales morales'));
     if (!resMM.some(m => m.id === 'patricia_morales_morales') || resMM.some(m => m.id === 'patricia_morales_rojas')) {
-      console.error('FAIL: morales morales search did not isolate PMM', resMM.map(m => m.name));
+      console.error('FAIL: morales morales search did not isolate PMM');
       process.exit(1);
     }
-    // Query 2: morales rojas
+    // 2. morales rojas
     const resMR = Object.values(staff).filter(m => matchesSearch(m, 'morales rojas'));
     if (!resMR.some(m => m.id === 'patricia_morales_rojas') || resMR.some(m => m.id === 'patricia_morales_morales')) {
-      console.error('FAIL: morales rojas search did not isolate PMR', resMR.map(m => m.name));
+      console.error('FAIL: morales rojas search did not isolate PMR');
       process.exit(1);
     }
-    // Query 3: hematologia
+    // 3. hematologia
     const resHem = Object.values(staff).filter(m => matchesSearch(m, 'hematologia'));
     if (!resHem.some(m => m.id === 'patricia_morales_rojas') || resHem.some(m => m.id === 'patricia_morales_morales')) {
-      console.error('FAIL: hematologia search did not include PMR exclusively over PMM', resHem.map(m => m.name));
+      console.error('FAIL: hematologia search did not isolate PMR over PMM');
       process.exit(1);
     }
-    // Query 4: toma de muestra
+    // 4. toma de muestra
     const resTDM = Object.values(staff).filter(m => matchesSearch(m, 'toma de muestra'));
     if (!resTDM.some(m => m.id === 'patricia_morales_morales') || resTDM.some(m => m.id === 'patricia_morales_rojas')) {
-      console.error('FAIL: toma de muestra search did not include PMM exclusively over PMR', resTDM.map(m => m.name));
+      console.error('FAIL: toma de muestra search did not isolate PMM over PMR');
       process.exit(1);
     }
-    console.log('Search discrimination tests in Node.js passed!');
+    // 5. RUT search with and without dots/hyphen
+    const resRut1 = Object.values(staff).filter(m => matchesSearch(m, '185431746'));
+    const resRut2 = Object.values(staff).filter(m => matchesSearch(m, '18.543.174-6'));
+    if (resRut1.length !== 1 || resRut2.length !== 1 || resRut1[0].id !== 'ociel_beltran') {
+      console.error('FAIL: RUT search without punctuation failed', resRut1);
+      process.exit(1);
+    }
+    console.log('   -> Node.js runtime & search discrimination tests: PASSED!');
     """
     res = subprocess.run(['node', '-e', node_test], capture_output=True, text=True)
-    assert res.returncode == 0, f"Node search test failed: {res.stderr}\n{res.stdout}"
+    assert res.returncode == 0, f"Node test failed: {res.stderr}\n{res.stdout}"
+    print(res.stdout.strip())
 
-    print("Patricia Morales distinction tests: PASSED!")
+
+def test_auth_traceability_and_gas():
+    print("4. Testing 3-Tier Role System, Traceability Privacy, and Google Apps Script bundle...")
+    from pathlib import Path
+
+    with open('index.html', encoding='utf-8') as f:
+        html = f.read()
+
+    auth_audit_ids = [
+        'authTopbarBox', 'authGuestView', 'authLoggedView', 'btnOpenLoginModal',
+        'loggedUserName', 'loggedUserRole', 'btnOpenUserManager', 'btnLogout',
+        'tabBtnAudit', 'view-audit', 'auditSearch', 'auditFilterUser', 'auditFilterCategory',
+        'btnExportAuditCSV', 'btnClearAuditLog', 'auditTbody',
+        'cellAuditTraceBanner', 'cellAuthorizedByInput',
+        'modalLogin', 'loginForm', 'loginUsernameInput', 'loginPasswordInput',
+        'modalUserManager', 'usersListTbody', 'btnSaveUserAccount',
+        'modalCloudConfig', 'gasWebAppUrlInput', 'btnSaveCloudConfig'
+    ]
+    for rid in auth_audit_ids:
+        assert f'id="{rid}"' in html, f"Missing auth/traceability element id='{rid}' in index.html"
+
+    assert Path('google_apps_script/Code.gs').exists(), "Missing google_apps_script/Code.gs"
+    assert Path('google_apps_script/Index.html').exists(), "Missing google_apps_script/Index.html"
+    assert Path('google_apps_script/INSTRUCCIONES_APPS_SCRIPT.md').exists(), "Missing google_apps_script/INSTRUCCIONES_APPS_SCRIPT.md"
+
+    node_role_test = """
+    global.window = global;
+    global.document = {
+      addEventListener: () => {},
+      getElementById: () => null,
+      querySelectorAll: () => [],
+      body: { classList: { remove: () => {}, add: () => {} } }
+    };
+    global.localStorage = { getItem: () => null, setItem: () => {}, removeItem: () => {} };
+    const fs = require('fs');
+    const code = fs.readFileSync('data/data_bundle.js', 'utf8') + '\\n' + fs.readFileSync('app.js', 'utf8') + `
+    // 1. Default Viewer (unauthenticated)
+    state.currentUser = null;
+    if (canEditCalendar() !== false || isAdmin() !== false || canViewTraceability() !== false) {
+      console.error('FAIL: Viewer role permissions check failed');
+      process.exit(1);
+    }
+
+    // 2. Jefatura role
+    state.currentUser = { username: 'jefatura', name: 'Jefatura Test', role: 'jefatura', cargo: 'Coordinación' };
+    if (canEditCalendar() !== true || isAdmin() !== false || canViewTraceability() !== true) {
+      console.error('FAIL: Jefatura role permissions check failed');
+      process.exit(1);
+    }
+
+    // 3. Admin role
+    state.currentUser = { username: 'admin', name: 'Admin Test', role: 'admin', cargo: 'Dirección' };
+    if (canEditCalendar() !== true || isAdmin() !== true || canViewTraceability() !== true) {
+      console.error('FAIL: Admin role permissions check failed');
+      process.exit(1);
+    }
+
+    // 4. Traceability stamp & Audit Log recording
+    const stamp = buildTraceStamp('TM Jefe Coord');
+    if (stamp.updated_by_user !== 'admin' || stamp.authorized_by !== 'TM Jefe Coord') {
+      console.error('FAIL: buildTraceStamp failed', stamp);
+      process.exit(1);
+    }
+    recordAuditEntry({
+      category: 'AUSENCIA',
+      action: 'Otorgamiento de Día Administrativo',
+      staffId: 'ociel_beltran',
+      staffName: 'Ociel Beltran',
+      dateRange: '2026-10-25',
+      beforeVal: 'D',
+      afterVal: 'DA',
+      detail: 'Día Administrativo Jornada Completa',
+      authorizedBy: 'TM Jefe Coord'
+    });
+    if (state.auditLog.length !== 1 || state.auditLog[0].after_val !== 'DA' || state.auditLog[0].authorized_by !== 'TM Jefe Coord') {
+      console.error('FAIL: recordAuditEntry did not record expected audit entry', state.auditLog);
+      process.exit(1);
+    }
+    console.log('   -> Role permissions, Traceability privacy & GAS bundle tests: PASSED!');
+    `;
+    eval(code);
+    """
+    res = subprocess.run(['node', '-e', node_role_test], capture_output=True, text=True)
+    assert res.returncode == 0, f"Node role test failed: {res.stderr}\n{res.stdout}"
+    print(res.stdout.strip())
+
 
 if __name__ == '__main__':
     test_data_bundle()
-    test_html_elements()
-    test_js_logic()
-    test_shift_engine_simulation()
-    test_morales_distinction()
-    print("\nALL VERIFICATION TESTS COMPLETED SUCCESSFULLY!")
-
+    test_html_and_css()
+    test_morales_and_search_in_node()
+    test_auth_traceability_and_gas()
+    print("\n=== ALL AUTOMATED VERIFICATION TESTS PASSED 100%! ===")

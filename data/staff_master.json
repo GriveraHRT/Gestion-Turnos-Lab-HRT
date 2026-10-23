@@ -2,1656 +2,1693 @@
   "jorge_moraga": {
     "id": "jorge_moraga",
     "name": "Jorge Moraga",
+    "official_name": "JORGE EDUARDO MORAGA QUEZADA",
     "rut": "17.795.876-K",
     "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
     "section": "ALU",
     "sheets": [
       "LAB. URGENCIA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "JORGE EDUARDO MORAGA QUEZADA",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Turno"
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "tiara_araya": {
     "id": "tiara_araya",
     "name": "Tiara Araya",
+    "official_name": "TIARA ARAYA LABRAÑA",
     "rut": "18.982.762-8",
     "role": "Profesional",
-    "section": "ALU",
+    "estamento": "Tecnólogo Médico",
+    "section": "AMB",
     "sheets": [
       "LAB. URGENCIA",
       "PROFESIONALES RUTINA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "TIARA ARAYA LABRAÑA",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Turno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "erica_santelices": {
     "id": "erica_santelices",
     "name": "Erica Santelices",
+    "official_name": "ERICA FERNANDA SANTELICES PEREIRA",
     "rut": "19.805.795-9",
     "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
     "section": "ALU",
     "sheets": [
       "LAB. URGENCIA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "ERICA FERNANDA SANTELICES PEREIRA",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Turno"
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "gabriela_chandia": {
     "id": "gabriela_chandia",
     "name": "Gabriela Chandia",
+    "official_name": "GABRIELA CHANDIA CAMPOS",
     "rut": "18.893.934-1",
     "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
     "section": "ALU",
     "sheets": [
       "LAB. URGENCIA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "GABRIELA CHANDIA CAMPOS",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Turno"
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "jorge_perez": {
     "id": "jorge_perez",
     "name": "Jorge Perez",
+    "official_name": "JORGE NICOLAS PEREZ VILLOUTA",
     "rut": "17.884.899-2",
     "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
     "section": "ALU",
     "sheets": [
       "LAB. URGENCIA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "JORGE NICOLAS PEREZ VILLOUTA",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Turno"
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "ociel_beltran": {
     "id": "ociel_beltran",
     "name": "Ociel Beltran",
+    "official_name": "OCIEL BELTRAN CASANOVA",
     "rut": "18.543.174-6",
     "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
     "section": "ALU",
     "sheets": [
       "LAB. URGENCIA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "OCIEL BELTRAN CASANOVA",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Turno"
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
-  "sergio_bravo_caroca": {
-    "id": "sergio_bravo_caroca",
-    "name": "Sergio Bravo Caroca",
+  "sergio_bravo": {
+    "id": "sergio_bravo",
+    "name": "Sergio Bravo",
+    "official_name": "SERGIO ALEXIS BRAVO CAROCA",
     "rut": "12.869.248-7",
     "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
     "section": "ALU",
     "sheets": [
       "LAB. URGENCIA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "SERGIO ALEXIS BRAVO CAROCA",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Turno"
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "daniela_castillo": {
     "id": "daniela_castillo",
     "name": "Daniela Castillo",
+    "official_name": "DANIELA FERNANDA CASTILLO ESPINOSA",
     "rut": "17.171.464-8",
     "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
     "section": "ALU",
     "sheets": [
       "LAB. URGENCIA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "DANIELA FERNANDA CASTILLO ESPINOSA",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Turno"
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "javier_malpica": {
     "id": "javier_malpica",
     "name": "Javier Malpica",
+    "official_name": "JAVIER ENRIQUE MALPICA MONAGAS",
     "rut": "25.649.865-0",
     "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
     "section": "ALU",
     "sheets": [
       "LAB. URGENCIA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "JAVIER ENRIQUE MALPICA MONAGAS",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Turno"
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "olivia_belen_rosales": {
     "id": "olivia_belen_rosales",
-    "name": "Olivia Belen Rosales",
+    "name": "Belen Rosales",
+    "official_name": "OLIVIA BELEN ROSALES CASTILLO",
     "rut": "18.981.532-8",
     "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
     "section": "ALU",
     "sheets": [
       "LAB. URGENCIA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "OLIVIA BELEN ROSALES CASTILLO",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Turno"
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
-  "leticia_oliva_albornoz": {
-    "id": "leticia_oliva_albornoz",
-    "name": "Leticia Oliva Albornoz",
+  "leticia_oliva": {
+    "id": "leticia_oliva",
+    "name": "Leticia Oliva",
+    "official_name": "LETICIA JOBANA OLIVA ALBORNOZ",
     "rut": "17.825.088-4",
     "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
     "section": "ALU",
     "sheets": [
       "LAB. URGENCIA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "LETICIA JOBANA OLIVA ALBORNOZ",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Turno"
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "valentino_becerra": {
     "id": "valentino_becerra",
     "name": "Valentino Becerra",
+    "official_name": "VALENTINO RAMCES BECERRA NORAMBUENA",
     "rut": "18.905.196-4",
     "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
     "section": "ALU",
     "sheets": [
       "LAB. URGENCIA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "VALENTINO RAMCES BECERRA NORAMBUENA",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Turno"
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "nicolas_blanco": {
     "id": "nicolas_blanco",
     "name": "Nicolas Blanco",
+    "official_name": "NICOLAS ALEJANDRO BLANCO MARQUEZ",
     "rut": "20.305.562-5",
     "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
     "section": "ALU",
     "sheets": [
       "LAB. URGENCIA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "NICOLAS ALEJANDRO BLANCO MARQUEZ",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Turno"
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "jeanette_san_martin": {
     "id": "jeanette_san_martin",
-    "name": "Jeanette San Martín",
+    "name": "Jeanette San Martin",
+    "official_name": "JEANETTE CONSTANZA SAN MARTÍN MACAYA",
     "rut": "18.474.938-6",
     "role": "Profesional",
-    "section": "ALU",
+    "estamento": "Tecnólogo Médico",
+    "section": "AIC",
     "sheets": [
       "LAB. URGENCIA",
       "PROFESIONALES RUTINA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "JEANETTE CONSTANZA SAN MARTÍN MACAYA",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "camila_gonzalez": {
     "id": "camila_gonzalez",
     "name": "Camila Gonzalez",
+    "official_name": "CAMILA ANDREA GONZALEZ MUNOZ",
     "rut": "19.334.863-7",
     "role": "Profesional",
-    "section": "ALU",
+    "estamento": "Tecnólogo Médico",
+    "section": "AIC",
     "sheets": [
       "LAB. URGENCIA",
       "PROFESIONALES RUTINA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "CAMILA ANDREA GONZALEZ MUNOZ",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "arlett_hormazabal_cardenas": {
     "id": "arlett_hormazabal_cardenas",
-    "name": "Arlett Hormazabal Cardenas",
+    "name": "Arlett Hormazabal",
+    "official_name": "ARLETT FERNANDA HORMAZABAL CARDENAS",
     "rut": "18.573.118-9",
     "role": "Profesional",
-    "section": "ALU",
+    "estamento": "Tecnólogo Médico",
+    "section": "AIC",
     "sheets": [
       "LAB. URGENCIA",
       "PROFESIONALES RUTINA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "ARLETT FERNANDA HORMAZABAL CARDENAS",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "guillermo_rivera": {
     "id": "guillermo_rivera",
     "name": "Guillermo Rivera",
+    "official_name": "GUILLERMO FELIPE RIVERA CONTRERAS",
     "rut": "18.892.683-5",
     "role": "Profesional",
-    "section": "ALU",
+    "estamento": "Tecnólogo Médico",
+    "section": "ADM",
     "sheets": [
       "LAB. URGENCIA",
       "PROFESIONALES RUTINA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "GUILLERMO FELIPE RIVERA CONTRERAS",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
-  "deisy_moreno": {
-    "id": "deisy_moreno",
-    "name": "Deisy Moreno",
-    "rut": "16.453.944-K",
-    "role": "TENS",
-    "section": "ALU",
-    "sheets": [
-      "LAB. URGENCIA"
-    ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "DEISY ELIZABETH MORENO ARAYA",
-    "estamento": "TENS",
-    "jornada": "Turno"
-  },
-  "rossana_albornoz_arenas": {
-    "id": "rossana_albornoz_arenas",
-    "name": "Rossana Albornoz Arenas",
+  "rossana_albornoz": {
+    "id": "rossana_albornoz",
+    "name": "Rossana Albornoz",
+    "official_name": "ROSSANA DE LAS MERCEDES ALBORNOZ ARENAS",
     "rut": "14.295.792-2",
     "role": "TENS",
-    "section": "ALU",
+    "estamento": "TENS",
+    "section": "APA",
     "sheets": [
       "LAB. URGENCIA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "ROSSANA DE LAS MERCE ALBORNOZ ARENAS",
-    "estamento": "TENS",
-    "jornada": "Turno"
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "elieser_valdebenito": {
     "id": "elieser_valdebenito",
     "name": "Elieser Valdebenito",
+    "official_name": "ELIESER EDUARDO VALDEBENITO CIFUENTES",
     "rut": "17.824.539-2",
     "role": "TENS",
-    "section": "ALU",
-    "sheets": [
-      "LAB. URGENCIA",
-      "TENS RUTINA"
-    ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "ELIESER EDUARDO VALDEBENITO CIFUENTES",
     "estamento": "TENS",
-    "jornada": "Turno"
-  },
-  "ana_toledo_ramos": {
-    "id": "ana_toledo_ramos",
-    "name": "Ana Toledo Ramos",
-    "rut": "13.205.345-6",
-    "role": "TENS",
-    "section": "ALU",
-    "sheets": [
-      "LAB. URGENCIA"
-    ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "ANA LUISA TOLEDO RAMOS",
-    "estamento": "TENS",
-    "jornada": "Turno"
-  },
-  "barbara_gutierrez_gomez": {
-    "id": "barbara_gutierrez_gomez",
-    "name": "Barbara Gutierrez Gomez",
-    "rut": "17.497.764-K",
-    "role": "TENS",
-    "section": "ALU",
+    "section": "APA",
     "sheets": [
       "LAB. URGENCIA",
       "TENS RUTINA",
       "TOMA DE MUESTRA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "BARBARA ISABEL GUTIERREZ GOMEZ",
-    "estamento": "TENS",
-    "jornada": "Turno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
-  "barbara_cepeda_martinez": {
-    "id": "barbara_cepeda_martinez",
-    "name": "Barbara Cepeda Martinez",
-    "rut": "18.225.862-8",
+  "ana_toledo": {
+    "id": "ana_toledo",
+    "name": "Ana Toledo",
+    "official_name": "ANA LUISA TOLEDO RAMOS",
+    "rut": "13.205.345-6",
     "role": "TENS",
-    "section": "ALU",
+    "estamento": "TENS",
+    "section": "APA",
     "sheets": [
       "LAB. URGENCIA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "BARBARA EDITH CEPEDA MARTINEZ",
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
+  },
+  "barbara_gutierrez": {
+    "id": "barbara_gutierrez",
+    "name": "Barbara Gutierrez",
+    "official_name": "BARBARA ISABEL GUTIERREZ GOMEZ",
+    "rut": "17.497.764-K",
+    "role": "TENS",
     "estamento": "TENS",
-    "jornada": "Turno"
+    "section": "APA",
+    "sheets": [
+      "LAB. URGENCIA",
+      "TENS RUTINA",
+      "TOMA DE MUESTRA"
+    ],
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
+  },
+  "barbara_cepeda": {
+    "id": "barbara_cepeda",
+    "name": "Barbara Cepeda",
+    "official_name": "BARBARA EDITH CEPEDA MARTINEZ",
+    "rut": "18.225.862-8",
+    "role": "TENS",
+    "estamento": "TENS",
+    "section": "APA",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "esmeralda_abarza": {
     "id": "esmeralda_abarza",
     "name": "Esmeralda Abarza",
+    "official_name": "ESMERALDA SCARLETT ABARZA VERGARA",
     "rut": "20.070.227-1",
     "role": "TENS",
-    "section": "ALU",
+    "estamento": "TENS",
+    "section": "APA",
     "sheets": [
       "LAB. URGENCIA",
       "TENS RUTINA",
       "TOMA DE MUESTRA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "ESMERALDA SCARLETT ABARZA VERGARA",
-    "estamento": "TENS",
-    "jornada": "Turno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "lucia_pena": {
     "id": "lucia_pena",
     "name": "Lucia Peña",
+    "official_name": "LUCIA IVON PENA SALGADO",
     "rut": "11.147.047-2",
     "role": "TENS",
-    "section": "ALU",
+    "estamento": "TENS",
+    "section": "APA",
     "sheets": [
       "LAB. URGENCIA",
       "TENS RUTINA",
       "TOMA DE MUESTRA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "LUCIA IVON PENA SALGADO",
-    "estamento": "TENS",
-    "jornada": "Turno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "michelle_mino": {
     "id": "michelle_mino",
     "name": "Michelle Miño",
+    "official_name": "MICHELLE DAMARY MIÑO TORRES",
     "rut": "19.473.563-4",
     "role": "TENS",
-    "section": "ALU",
+    "estamento": "TENS",
+    "section": "APA",
     "sheets": [
       "LAB. URGENCIA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "MICHELLE DAMARY MIÑO TORRES",
-    "estamento": "TENS",
-    "jornada": "Turno"
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "loreto_ramirez": {
     "id": "loreto_ramirez",
     "name": "Loreto Ramirez",
+    "official_name": "MARIELY LORETO RAMIREZ DIAZ",
     "rut": "16.270.558-K",
     "role": "TENS",
-    "section": "ALU",
+    "estamento": "TENS",
+    "section": "APA",
     "sheets": [
       "LAB. URGENCIA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "MARIELY LORETO RAMIREZ DIAZ",
-    "estamento": "TENS",
-    "jornada": "Turno"
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "carolina_campos": {
     "id": "carolina_campos",
     "name": "Carolina Campos",
+    "official_name": "CAROLINA DEL CARMEN CAMPOS SEPÚLVEDA",
     "rut": "15.596.799-4",
     "role": "TENS",
-    "section": "ALU",
+    "estamento": "TENS",
+    "section": "APA",
     "sheets": [
       "LAB. URGENCIA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "CAROLINA DEL CARMEN CAMPOS SEPÚLVEDA",
-    "estamento": "TENS",
-    "jornada": "Turno"
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "sergio_rojo": {
     "id": "sergio_rojo",
     "name": "Sergio Rojo",
+    "official_name": "SERGIO IGNACIO ROJO RIVAS",
     "rut": "17.845.030-1",
     "role": "TENS",
-    "section": "ALU",
+    "estamento": "TENS",
+    "section": "APA",
     "sheets": [
       "LAB. URGENCIA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "SERGIO IGNACIO ROJO RIVAS",
-    "estamento": "TENS",
-    "jornada": "Turno"
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "yessenia_caceres": {
     "id": "yessenia_caceres",
     "name": "Yessenia Caceres",
+    "official_name": "YESSENIA ALEJANDRA CACERES ZAMBRANO",
     "rut": "15.672.442-4",
     "role": "TENS",
-    "section": "ALU",
+    "estamento": "TENS",
+    "section": "APA",
     "sheets": [
       "LAB. URGENCIA",
       "TENS RUTINA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "YESSENIA ALEJANDRA CACERES ZAMBRANO",
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
+  },
+  "deisy_moreno": {
+    "id": "deisy_moreno",
+    "name": "Deisy Moreno",
+    "official_name": "DEISY ELIZABETH MORENO ARAYA",
+    "rut": "16.453.944-K",
+    "role": "TENS",
     "estamento": "TENS",
-    "jornada": "Turno"
+    "section": "APA",
+    "sheets": [
+      "LAB. URGENCIA"
+    ],
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "anahis_albornoz": {
     "id": "anahis_albornoz",
     "name": "Anahis Albornoz",
+    "official_name": "ANAHIS BELEN ALBORNOZ LUENGO",
     "rut": "21.160.619-3",
     "role": "TENS",
-    "section": "ALU",
+    "estamento": "TENS",
+    "section": "APA",
     "sheets": [
       "LAB. URGENCIA",
-      "TENS RUTINA"
+      "TENS RUTINA",
+      "TOMA DE MUESTRA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "ANAHIS BELEN ALBORNOZ LUENGO",
-    "estamento": "TENS",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "rodrigo_cantero": {
     "id": "rodrigo_cantero",
     "name": "Rodrigo Cantero",
+    "official_name": "RODRIGO CANTERO LEAL",
     "rut": "10.142.362-K",
     "role": "TENS",
-    "section": "ALU",
+    "estamento": "TENS",
+    "section": "APA",
     "sheets": [
       "LAB. URGENCIA",
-      "TENS RUTINA"
+      "TENS RUTINA",
+      "TOMA DE MUESTRA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "RODRIGO CANTERO LEAL",
-    "estamento": "TENS",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "susana_santos": {
     "id": "susana_santos",
     "name": "Susana Santos",
+    "official_name": "SUSANA FRANCISCA SANTOS SEPULVEDA",
     "rut": "18.474.372-8",
     "role": "Profesional",
-    "section": "ALU",
+    "estamento": "Tecnólogo Médico",
+    "section": "AIC",
     "sheets": [
       "LAB. URGENCIA",
       "PROFESIONALES RUTINA",
       "TOMA DE MUESTRA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "SUSANA FRANCISCA SANTOS SEPULVEDA",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Turno"
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "tamara_lara": {
     "id": "tamara_lara",
     "name": "Tamara Lara",
+    "official_name": "TAMARA ANDREA LARA JARA",
     "rut": "20.373.670-3",
     "role": "Profesional",
-    "section": "ALU",
+    "estamento": "Tecnólogo Médico",
+    "section": "AH",
     "sheets": [
       "LAB. URGENCIA",
       "PROFESIONALES RUTINA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": true,
-    "official_name": "TAMARA ANDREA LARA JARA",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
-  "carolina_valenzuela_ramirez": {
-    "id": "carolina_valenzuela_ramirez",
-    "name": "Carolina Valenzuela Ramirez",
+  "carolina_valenzuela": {
+    "id": "carolina_valenzuela",
+    "name": "Carolina Valenzuela",
+    "official_name": "CAROLINA ANGELICA VALENZUELA RAMIREZ",
     "rut": "16.729.277-1",
     "role": "TENS",
-    "section": "ALU",
+    "estamento": "TENS",
+    "section": "APA",
     "sheets": [
       "LAB. URGENCIA",
-      "TENS RUTINA"
+      "TENS RUTINA",
+      "TOMA DE MUESTRA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "CAROLINA ANGELICA VALENZUELA RAMIREZ",
-    "estamento": "TENS",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "marcia_vega_c_interna_tm": {
     "id": "marcia_vega_c_interna_tm",
-    "name": "Marcia Vega C. (Interna TM)",
+    "name": "Marcia Vega (Interno)",
+    "official_name": null,
     "rut": "20.349.105-0",
-    "role": "Profesional",
+    "role": "Interno TM",
+    "estamento": "Interno TM",
     "section": "ALU",
     "sheets": [
       "LAB. URGENCIA"
     ],
-    "missing_fields": [],
-    "is_intern": true,
-    "is_replacement": false,
-    "official_name": "Marcia Vega C. (Interna TM)",
-    "estamento": "Interno TM",
-    "jornada": "Diurno"
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": true,
+    "missing_fields": [
+      "Segundo Apellido / Nombre Completo"
+    ]
   },
   "muriel_correa": {
     "id": "muriel_correa",
     "name": "Muriel Correa",
+    "official_name": "MURIEL ESTEFANY CORREA MUÑOZ",
     "rut": "18.029.084-2",
     "role": "TENS",
-    "section": "ALU",
+    "estamento": "TENS",
+    "section": "APA",
     "sheets": [
       "LAB. URGENCIA",
       "TENS RUTINA",
       "TOMA DE MUESTRA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "MURIEL ESTEFANY CORREA MUÑOZ",
-    "estamento": "TENS",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "barbara_alcantara": {
     "id": "barbara_alcantara",
     "name": "Barbara Alcantara",
+    "official_name": "BARBARA DAYANA ALCANTARA ARAVENA",
     "rut": "17.493.915-2",
     "role": "TENS",
-    "section": "ALU",
+    "estamento": "TENS",
+    "section": "APA",
     "sheets": [
       "LAB. URGENCIA",
       "TENS RUTINA",
       "TOMA DE MUESTRA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "BARBARA DAYANA ALCANTARA ARAVENA",
-    "estamento": "TENS",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "ignacio_brunel": {
     "id": "ignacio_brunel",
     "name": "Ignacio Brunel",
+    "official_name": "IGNACIO ANDRES BRUNEL ROJAS",
     "rut": "20.915.942-2",
     "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
     "section": "ALU",
     "sheets": [
       "LAB. URGENCIA",
       "PROFESIONALES RUTINA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": true,
-    "official_name": "IGNACIO ANDRES BRUNEL ROJAS",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Turno"
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "makarena_zurita_o_interna_tm": {
     "id": "makarena_zurita_o_interna_tm",
-    "name": "Makarena Zurita O. (Interna TM)",
+    "name": "Makarena Zurita (Interno)",
+    "official_name": null,
     "rut": "19.748.642-2",
-    "role": "Profesional",
+    "role": "Interno TM",
+    "estamento": "Interno TM",
     "section": "ALU",
     "sheets": [
       "LAB. URGENCIA"
     ],
-    "missing_fields": [],
-    "is_intern": true,
-    "is_replacement": false,
-    "official_name": "Makarena Zurita O. (Interna TM)",
-    "estamento": "Interno TM",
-    "jornada": "Diurno"
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": true,
+    "missing_fields": [
+      "Segundo Apellido / Nombre Completo"
+    ]
   },
   "fernando_barrera_c_interno_tm": {
     "id": "fernando_barrera_c_interno_tm",
-    "name": "Fernando Barrera C. (Interno TM)",
+    "name": "Fernando Barrera (Interno)",
+    "official_name": null,
     "rut": "20.194.193-8",
-    "role": "Profesional",
+    "role": "Interno TM",
+    "estamento": "Interno TM",
     "section": "ALU",
     "sheets": [
       "LAB. URGENCIA"
     ],
-    "missing_fields": [],
-    "is_intern": true,
-    "is_replacement": false,
-    "official_name": "Fernando Barrera C. (Interno TM)",
-    "estamento": "Interno TM",
-    "jornada": "Diurno"
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": true,
+    "missing_fields": [
+      "Segundo Apellido / Nombre Completo"
+    ]
   },
   "consuelo_alarcon": {
     "id": "consuelo_alarcon",
     "name": "Consuelo Alarcon",
+    "official_name": "CONSUELO ANTONIETA ALARCON MUNOZ",
     "rut": "17.684.739-5",
     "role": "TENS",
-    "section": "ALU",
+    "estamento": "TENS",
+    "section": "APA",
     "sheets": [
       "LAB. URGENCIA",
       "TENS RUTINA",
       "TOMA DE MUESTRA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "CONSUELO ANTONIETA ALARCON MUNOZ",
-    "estamento": "TENS",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "francisca_campos_sepulveda": {
     "id": "francisca_campos_sepulveda",
-    "name": "Francisca Campos Sepulveda",
+    "name": "Francisca Campos",
+    "official_name": "FRANCISCA CATALINA CAMPOS SEPULVEDA",
     "rut": "18.780.225-3",
     "role": "TENS",
-    "section": "ALU",
-    "sheets": [
-      "LAB. URGENCIA",
-      "TENS RUTINA"
-    ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "FRANCISCA CATALINA CAMPOS SEPULVEDA",
     "estamento": "TENS",
-    "jornada": "Diurno"
-  },
-  "constanza_gomez_sepulveda": {
-    "id": "constanza_gomez_sepulveda",
-    "name": "Constanza Gomez Sepulveda",
-    "rut": "19.172.843-2",
-    "role": "TENS",
-    "section": "ALU",
+    "section": "APA",
     "sheets": [
       "LAB. URGENCIA",
       "TENS RUTINA",
       "TOMA DE MUESTRA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "CONSTANZA BEATRIZ GOMEZ SEPULVEDA",
-    "estamento": "TENS",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
-  "guillermo_acuna_gonzalez": {
-    "id": "guillermo_acuna_gonzalez",
-    "name": "Guillermo Acuña Gonzalez",
-    "rut": "18.571.660-0",
+  "constanza_gomez_sepulveda": {
+    "id": "constanza_gomez_sepulveda",
+    "name": "Constanza Gomez",
+    "official_name": "CONSTANZA BEATRIZ GOMEZ SEPULVEDA",
+    "rut": "19.172.843-2",
     "role": "TENS",
-    "section": "ALU",
+    "estamento": "TENS",
+    "section": "APA",
     "sheets": [
       "LAB. URGENCIA",
-      "TENS RUTINA"
+      "TENS RUTINA",
+      "TOMA DE MUESTRA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
+  },
+  "guillermo_acuna": {
+    "id": "guillermo_acuna",
+    "name": "Guillermo Acuña",
     "official_name": "GUILLERMO ALEJANDRO ACUÑA GONZALEZ",
+    "rut": "18.571.660-0",
+    "role": "TENS",
     "estamento": "TENS",
-    "jornada": "Diurno"
+    "section": "APA",
+    "sheets": [
+      "LAB. URGENCIA",
+      "TENS RUTINA",
+      "TOMA DE MUESTRA"
+    ],
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "merlam_espinoza": {
     "id": "merlam_espinoza",
     "name": "Merlam Espinoza",
+    "official_name": "MERLAM LIDIA ESPINOZA ANDAUR",
     "rut": "16.270.882-1",
     "role": "TENS",
-    "section": "ALU",
+    "estamento": "TENS",
+    "section": "APA",
     "sheets": [
       "LAB. URGENCIA",
       "TENS RUTINA",
       "TOMA DE MUESTRA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "MERLAM LIDIA ESPINOZA ANDAUR",
-    "estamento": "TENS",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "nicol_riquelme_galvez": {
     "id": "nicol_riquelme_galvez",
-    "name": "Nicol Riquelme Galvez",
+    "name": "Nicol Riquelme",
+    "official_name": "NICOL ANDREA RIQUELME GALVEZ",
     "rut": "19.473.178-7",
     "role": "TENS",
-    "section": "ALU",
+    "estamento": "TENS",
+    "section": "APA",
     "sheets": [
       "LAB. URGENCIA",
       "TENS RUTINA",
       "TOMA DE MUESTRA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "NICOL ANDREA RIQUELME GALVEZ",
-    "estamento": "TENS",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "francisca_urzua_g_interna_tm": {
     "id": "francisca_urzua_g_interna_tm",
-    "name": "Francisca Urzúa G. (Interna TM)",
+    "name": "Francisca Urzua (Interno)",
+    "official_name": null,
     "rut": "20.350.835-2",
-    "role": "TENS",
+    "role": "Interno TM",
+    "estamento": "Interno TM",
     "section": "ALU",
     "sheets": [
       "LAB. URGENCIA"
     ],
-    "missing_fields": [],
-    "is_intern": true,
-    "is_replacement": false,
-    "official_name": "Francisca Urzúa G. (Interna TM)",
-    "estamento": "Interno TM",
-    "jornada": "Diurno"
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": true,
+    "missing_fields": [
+      "Segundo Apellido / Nombre Completo"
+    ]
   },
   "martin_munoz_d_interno_tm": {
     "id": "martin_munoz_d_interno_tm",
-    "name": "Martin Muñoz D. (Interno TM)",
-    "rut": "21.003.614-8",
-    "role": "TENS",
+    "name": "Martin Muñoz (Interno)",
+    "official_name": null,
+    "rut": "16.538.386-9",
+    "role": "Interno TM",
+    "estamento": "Interno TM",
     "section": "ALU",
     "sheets": [
       "LAB. URGENCIA"
     ],
-    "missing_fields": [],
-    "is_intern": true,
-    "is_replacement": false,
-    "official_name": "Martin Muñoz D. (Interno TM)",
-    "estamento": "Interno TM",
-    "jornada": "Diurno"
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": true,
+    "missing_fields": [
+      "Segundo Apellido / Nombre Completo"
+    ]
   },
   "francisco_san_martin_a_interno_tm": {
     "id": "francisco_san_martin_a_interno_tm",
-    "name": "Francisco San Martín A. (Interno TM)",
+    "name": "Francisco San Martin (Interno)",
+    "official_name": null,
     "rut": "21.028.706-K",
-    "role": "TENS",
+    "role": "Interno TM",
+    "estamento": "Interno TM",
     "section": "ALU",
     "sheets": [
       "LAB. URGENCIA"
     ],
-    "missing_fields": [],
-    "is_intern": true,
-    "is_replacement": false,
-    "official_name": "Francisco San Martín A. (Interno TM)",
-    "estamento": "Interno TM",
-    "jornada": "Diurno"
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "elizabel_sanchez": {
     "id": "elizabel_sanchez",
     "name": "Elizabel Sanchez",
+    "official_name": "ELIZSABEL DEL CARMEN SANCHEZ MEJIAS",
     "rut": "17.184.367-7",
     "role": "TENS",
-    "section": "ALU",
+    "estamento": "TENS",
+    "section": "APA",
     "sheets": [
       "LAB. URGENCIA",
       "TENS RUTINA",
       "TOMA DE MUESTRA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "ELIZSABEL DEL CARMEN SANCHEZ MEJIAS",
-    "estamento": "TENS",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "johana_valdes_carrasco_interna_tm": {
     "id": "johana_valdes_carrasco_interna_tm",
-    "name": "Johana Valdés Carrasco (Interna TM)",
+    "name": "Johana Valdes (Interno)",
+    "official_name": null,
     "rut": "21.432.595-0",
-    "role": "TENS",
+    "role": "Interno TM",
+    "estamento": "Interno TM",
     "section": "ALU",
     "sheets": [
       "LAB. URGENCIA"
     ],
-    "missing_fields": [],
-    "is_intern": true,
-    "is_replacement": false,
-    "official_name": "Johana Valdés Carrasco (Interna TM)",
-    "estamento": "Interno TM",
-    "jornada": "Diurno"
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": true,
+    "missing_fields": [
+      "Segundo Apellido / Nombre Completo"
+    ]
   },
   "melissa_silva_villagra_interna_tm": {
     "id": "melissa_silva_villagra_interna_tm",
-    "name": "Melissa Silva Villagra (Interna TM)",
+    "name": "Melissa Silva (Interno)",
+    "official_name": null,
     "rut": "21.604.468-1",
-    "role": "TENS",
+    "role": "Interno TM",
+    "estamento": "Interno TM",
     "section": "ALU",
     "sheets": [
       "LAB. URGENCIA"
     ],
-    "missing_fields": [],
-    "is_intern": true,
-    "is_replacement": false,
-    "official_name": "Melissa Silva Villagra (Interna TM)",
-    "estamento": "Interno TM",
-    "jornada": "Diurno"
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": true,
+    "missing_fields": [
+      "Segundo Apellido / Nombre Completo"
+    ]
   },
   "lucas_valenzuela_r_interno_tm": {
     "id": "lucas_valenzuela_r_interno_tm",
-    "name": "Lucas Valenzuela R. (Interno TM)",
+    "name": "Lucas Valenzuela (Interno)",
+    "official_name": null,
     "rut": "20.926.367-K",
-    "role": "TENS",
+    "role": "Interno TM",
+    "estamento": "Interno TM",
     "section": "ALU",
     "sheets": [
       "LAB. URGENCIA"
     ],
-    "missing_fields": [],
-    "is_intern": true,
-    "is_replacement": false,
-    "official_name": "Lucas Valenzuela R. (Interno TM)",
-    "estamento": "Interno TM",
-    "jornada": "Diurno"
-  },
-  "turno_reemplazo_urgencia": {
-    "id": "turno_reemplazo_urgencia",
-    "name": "Turno Reemplazo (Urgencia)",
-    "rut": "",
-    "role": "TENS",
-    "section": "ALU",
-    "sheets": [
-      "LAB. URGENCIA",
-      "AUXILIARES "
-    ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": true,
-    "official_name": "Turno Reemplazo (Urgencia)",
-    "estamento": "TENS",
-    "jornada": "Turno"
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": true,
+    "missing_fields": [
+      "Segundo Apellido / Nombre Completo"
+    ]
   },
   "juan_bravo_novoa_interno_tm": {
     "id": "juan_bravo_novoa_interno_tm",
-    "name": "Juan Bravo Novoa (Interno TM)",
+    "name": "Juan Bravo (Interno)",
+    "official_name": null,
     "rut": "21.381.113-4",
-    "role": "TENS",
+    "role": "Interno TM",
+    "estamento": "Interno TM",
     "section": "ALU",
     "sheets": [
       "LAB. URGENCIA"
     ],
-    "missing_fields": [],
-    "is_intern": true,
-    "is_replacement": false,
-    "official_name": "Juan Bravo Novoa (Interno TM)",
-    "estamento": "Interno TM",
-    "jornada": "Diurno"
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": true,
+    "missing_fields": [
+      "Segundo Apellido / Nombre Completo"
+    ]
   },
   "fernanda_torres_cofre_interna_tm": {
     "id": "fernanda_torres_cofre_interna_tm",
-    "name": "Fernanda Torres Cofré (Interna TM)",
+    "name": "Fernanda Torres (Interno)",
+    "official_name": null,
     "rut": "21.480.189-2",
-    "role": "TENS",
+    "role": "Interno TM",
+    "estamento": "Interno TM",
     "section": "ALU",
     "sheets": [
       "LAB. URGENCIA"
     ],
-    "missing_fields": [],
-    "is_intern": true,
-    "is_replacement": false,
-    "official_name": "Fernanda Torres Cofré (Interna TM)",
-    "estamento": "Interno TM",
-    "jornada": "Diurno"
+    "modality": "4to Turno / Rotativo",
+    "active_2027": true,
+    "needs_completion": true,
+    "missing_fields": [
+      "Segundo Apellido / Nombre Completo"
+    ]
   },
   "rosa_bernal_munoz": {
     "id": "rosa_bernal_munoz",
-    "name": "Rosa Bernal Muñoz",
+    "name": "Rosa Bernal",
+    "official_name": "ROSA ESTER BERNAL MUÑOZ",
     "rut": "13.372.467-2",
     "role": "TENS",
+    "estamento": "TENS",
     "section": "APA",
     "sheets": [
       "TENS RUTINA",
       "TOMA DE MUESTRA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "ROSA ESTER BERNAL MUÑOZ",
-    "estamento": "TENS",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "jimena_caceres_valdes": {
     "id": "jimena_caceres_valdes",
-    "name": "Jimena Caceres Valdes",
+    "name": "Jimena Caceres",
+    "official_name": "JIMENA DE LAS MERCEDES CACERES VALDES",
     "rut": "10.237.028-7",
     "role": "TENS",
+    "estamento": "TENS",
     "section": "APA",
     "sheets": [
       "TENS RUTINA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "JIMENA DE LAS MERCEDES CACERES VALDES",
-    "estamento": "TENS",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "ruth_jara_lara": {
     "id": "ruth_jara_lara",
-    "name": "Ruth Jara Lara",
+    "name": "Ruth Jara",
+    "official_name": "RUTH ELISSETTE JARA LARA",
     "rut": "16.731.595-K",
     "role": "TENS",
+    "estamento": "TENS",
     "section": "APA",
     "sheets": [
       "TENS RUTINA",
       "TOMA DE MUESTRA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "RUTH ELISSETTE JARA LARA",
-    "estamento": "TENS",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "ingrid_silva_valdivia": {
     "id": "ingrid_silva_valdivia",
-    "name": "Ingrid Silva Valdivia",
+    "name": "Ingrid Silva",
+    "official_name": "SILVA VALDIVIA INGRID ANGELA",
     "rut": "15.138.825-6",
     "role": "TENS",
+    "estamento": "TENS",
     "section": "APA",
     "sheets": [
       "TENS RUTINA",
       "TOMA DE MUESTRA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "Ingrid Silva Valdivia",
-    "estamento": "TENS",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "laura_perez": {
     "id": "laura_perez",
     "name": "Laura Perez",
+    "official_name": "LAURA VALENTINA PEREZ BRAVO",
     "rut": "19.857.576-3",
     "role": "TENS",
+    "estamento": "TENS",
     "section": "APA",
     "sheets": [
       "TENS RUTINA",
       "TOMA DE MUESTRA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "LAURA VALENTINA PEREZ BRAVO",
-    "estamento": "TENS",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "patricia_morales_morales": {
     "id": "patricia_morales_morales",
-    "name": "Patricia Morales Morales",
+    "name": "Patricia Morales M.",
+    "official_name": "PATRICIA ANDREA MORALES MORALES",
     "rut": "16.555.264-4",
     "role": "TENS",
+    "estamento": "TENS",
     "section": "APA",
     "sheets": [
       "TENS RUTINA",
       "TOMA DE MUESTRA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "PATRICIA ANDREA MORALES MORALES",
-    "estamento": "TENS",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "susana_quintana": {
     "id": "susana_quintana",
     "name": "Susana Quintana",
+    "official_name": "SUSANA MARIBEL QUINTANA GATICA",
     "rut": "14.018.629-5",
     "role": "TENS",
+    "estamento": "TENS",
     "section": "APA",
     "sheets": [
       "TENS RUTINA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "Susana Quintana",
-    "estamento": "TENS",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "jimena_gonzalez": {
     "id": "jimena_gonzalez",
     "name": "Jimena Gonzalez",
+    "official_name": "JIMENA ANDREA GONZALEZ VELIS",
     "rut": "19.043.840-6",
-    "role": "TENS",
+    "role": "Administrativo",
+    "estamento": "Administrativo",
     "section": "ADM",
     "sheets": [
       "TENS RUTINA",
       "TOMA DE MUESTRA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "JIMENA ANDREA GONZALEZ VELIS",
-    "estamento": "Administrativo",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "valeria_montes": {
     "id": "valeria_montes",
     "name": "Valeria Montes",
+    "official_name": "VALERIA ALEJANDRA MONTES GUTIERREZ",
     "rut": "17.932.887-9",
     "role": "TENS",
-    "section": "ADM",
+    "estamento": "TENS",
+    "section": "APA",
     "sheets": [
       "TENS RUTINA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "VALERIA ALEJANDRA MONTES GUTIERREZ",
-    "estamento": "TENS",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "maria_riquelme": {
     "id": "maria_riquelme",
-    "name": "María Riquelme",
+    "name": "Maria Riquelme",
+    "official_name": "MARÍA DEL CARMEN RIQUELME BESOAIN",
     "rut": "13.721.914-K",
     "role": "TENS",
-    "section": "ADM",
+    "estamento": "TENS",
+    "section": "APA",
     "sheets": [
       "TENS RUTINA",
       "TOMA DE MUESTRA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "MARÍA DEL CARMEN RIQUELME BESOAIN",
-    "estamento": "TENS",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "camila_walker": {
     "id": "camila_walker",
     "name": "Camila Walker",
+    "official_name": "CAMILA IGNACIA WALKER MENGOZZI",
     "rut": "18.891.843-3",
     "role": "TENS",
-    "section": "ADM",
+    "estamento": "TENS",
+    "section": "APA",
     "sheets": [
       "TENS RUTINA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": true,
-    "official_name": "CAMILA IGNACIA WALKER MENGOZZI",
-    "estamento": "TENS",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "consuelo_cerda_wehinger": {
     "id": "consuelo_cerda_wehinger",
-    "name": "Consuelo Cerda Wehinger",
+    "name": "Consuelo Cerda",
+    "official_name": "CONSUELO ELIANA CERDA WEHINGER",
     "rut": "16.858.185-8",
     "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
     "section": "AH",
     "sheets": [
       "PROFESIONALES RUTINA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "CONSUELO ELIANA CERDA WEHINGER",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "juan_cerpa_castillo": {
     "id": "juan_cerpa_castillo",
-    "name": "Juan Cerpa Castillo",
+    "name": "Juan Cerpa",
+    "official_name": "JUAN MANUEL CERPA CASTILLO",
     "rut": "17.481.858-4",
     "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
     "section": "AH",
     "sheets": [
       "PROFESIONALES RUTINA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "JUAN MANUEL CERPA CASTILLO",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "romina_diaz_espinoza": {
     "id": "romina_diaz_espinoza",
-    "name": "Romina Diaz Espinoza",
+    "name": "Romina Diaz",
+    "official_name": "ROMINA SARAY DIAZ ESPINOZA",
     "rut": "17.175.729-0",
     "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
     "section": "AH",
     "sheets": [
       "PROFESIONALES RUTINA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "ROMINA SARAY DIAZ ESPINOZA",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "patricia_morales_rojas": {
     "id": "patricia_morales_rojas",
-    "name": "Patricia Morales Rojas",
+    "name": "Patricia Morales R.",
+    "official_name": "PATRICIA ESTER AIDA MORALES ROJAS",
     "rut": "11.480.276-K",
     "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
     "section": "AH",
     "sheets": [
       "PROFESIONALES RUTINA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "PATRICIA ESTER AIDA MORALES ROJAS",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "marcela_salgado_carreno": {
     "id": "marcela_salgado_carreno",
-    "name": "Marcela Salgado Carreño",
+    "name": "Marcela Salgado",
+    "official_name": "MARCELA ANDREA SALGADO CARREÑO",
     "rut": "16.999.036-0",
     "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
     "section": "AH",
     "sheets": [
       "PROFESIONALES RUTINA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "MARCELA ANDREA SALGADO CARREÑO",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "miryam_espina_herrera": {
     "id": "miryam_espina_herrera",
-    "name": "Miryam Espina Herrera",
+    "name": "Miryam Espina",
+    "official_name": "MIRYAM MERCEDES ESPINA HERRERA",
     "rut": "17.934.959-0",
     "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
     "section": "AH",
     "sheets": [
       "PROFESIONALES RUTINA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "MIRYAM MERCEDES ESPINA HERRERA",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
-  "alejandra_vorphal_vasquez": {
-    "id": "alejandra_vorphal_vasquez",
-    "name": "Alejandra Vorphal Vasquez",
+  "maria_alejandra_vorphal_vasquez": {
+    "id": "maria_alejandra_vorphal_vasquez",
+    "name": "Alejandra Vorphal",
+    "official_name": "MARIA ALEJANDRA VORPHAL VASQUEZ",
     "rut": "13.914.143-1",
     "role": "Profesional",
-    "section": "AIC",
+    "estamento": "Bioquímico",
+    "section": "ATE",
     "sheets": [
       "PROFESIONALES RUTINA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "MARIA ALEJANDRA VORPHAL VASQUEZ",
-    "estamento": "Bioquímico",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "carolina_arancibia_jara": {
     "id": "carolina_arancibia_jara",
-    "name": "Carolina Arancibia Jara",
+    "name": "Carolina Arancibia",
+    "official_name": "CAROLINA PAZ ARANCIBIA JARA",
     "rut": "13.305.532-0",
     "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
     "section": "AIC",
     "sheets": [
       "PROFESIONALES RUTINA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "CAROLINA PAZ ARANCIBIA JARA",
-    "estamento": "Bioquímico",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "daniel_schulz": {
     "id": "daniel_schulz",
     "name": "Daniel Schulz",
+    "official_name": "DANIEL RODRIGO SCHULZ DURAN",
     "rut": "16.895.825-0",
     "role": "Profesional",
+    "estamento": "Bioquímico",
     "section": "AIC",
     "sheets": [
       "PROFESIONALES RUTINA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "DANIEL RODRIGO SCHULZ DURAN",
-    "estamento": "Bioquímico",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "camila_reyes_vivero": {
     "id": "camila_reyes_vivero",
-    "name": "Camila Reyes Vivero",
+    "name": "Camila Reyes",
+    "official_name": "CAMILA DE LOS ANGELES REYES VIVERO",
     "rut": "17.186.419-4",
     "role": "Profesional",
+    "estamento": "Bioquímico",
     "section": "AIC",
     "sheets": [
       "PROFESIONALES RUTINA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "CAMILA DE LOS ANGELES REYES VIVERO",
-    "estamento": "Bioquímico",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "loreto_diaz_rios": {
     "id": "loreto_diaz_rios",
     "name": "Loreto Diaz Rios",
+    "official_name": "DIAZ RIOS LORETO DEL PILAR",
     "rut": "16.899.801-5",
     "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
     "section": "AIC",
     "sheets": [
       "PROFESIONALES RUTINA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "Loreto Diaz Rios",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "daniel_calderon_calderon": {
     "id": "daniel_calderon_calderon",
-    "name": "Daniel Calderon Calderon",
+    "name": "Daniel Calderon",
+    "official_name": "DANIEL ISAIAS CALDERON CALDERON",
     "rut": "16.325.454-9",
     "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
     "section": "AMB",
     "sheets": [
       "PROFESIONALES RUTINA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "DANIEL ISAIAS CALDERON CALDERON",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "melissa_canales_mejias": {
     "id": "melissa_canales_mejias",
-    "name": "Melissa Canales Mejias",
+    "name": "Melissa Canales",
+    "official_name": "MELISSA CANALES MEJIAS",
     "rut": "18.891.582-5",
     "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
+    "section": "AMB",
+    "sheets": [
+      "PROFESIONALES RUTINA"
+    ],
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
+  },
+  "diego_rojas_verdugo": {
+    "id": "diego_rojas_verdugo",
+    "name": "Diego Rojas",
+    "official_name": "DIEGO ROJAS VERDUGO",
+    "rut": "18.572.806-4",
+    "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
+    "section": "ATE",
+    "sheets": [
+      "PROFESIONALES RUTINA"
+    ],
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
+  },
+  "nicole_hernandez_norambuena": {
+    "id": "nicole_hernandez_norambuena",
+    "name": "Nicole Hernandez",
+    "official_name": "NICOLE ANDREA HERNANDEZ NORAMBUENA",
+    "rut": "17.172.257-8",
+    "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
     "section": "AMB",
     "sheets": [
       "PROFESIONALES RUTINA",
       "TOMA DE MUESTRA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "MELISSA CANALES MEJIAS",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Diurno"
-  },
-  "diego_rojas_verdugo": {
-    "id": "diego_rojas_verdugo",
-    "name": "Diego Rojas Verdugo",
-    "rut": "18.572.806-4",
-    "role": "Profesional",
-    "section": "ATE",
-    "sheets": [
-      "PROFESIONALES RUTINA"
-    ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "DIEGO ROJAS VERDUGO",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Diurno"
-  },
-  "nicole_hernandez_norambuena": {
-    "id": "nicole_hernandez_norambuena",
-    "name": "Nicole Hernandez Norambuena",
-    "rut": "17.172.257-8",
-    "role": "Profesional",
-    "section": "AMB",
-    "sheets": [
-      "PROFESIONALES RUTINA"
-    ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "NICOLE ANDREA HERNANDEZ NORAMBUENA",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "francisco_sepulveda": {
     "id": "francisco_sepulveda",
     "name": "Francisco Sepulveda",
+    "official_name": "FRANCISCO ANDRES SEPULVEDA VENEGAS",
     "rut": "17.685.105-8",
     "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
     "section": "AMB",
     "sheets": [
       "PROFESIONALES RUTINA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "FRANCISCO ANDRES SEPULVEDA VENEGAS",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "katalina_barrera": {
     "id": "katalina_barrera",
     "name": "Katalina Barrera",
+    "official_name": "KATALINA ANDREA BARRERA BRAVO",
     "rut": "19.808.040-3",
     "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
     "section": "AMB",
     "sheets": [
       "PROFESIONALES RUTINA",
       "TOMA DE MUESTRA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "KATALINA ANDREA BARRERA BRAVO",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "barbara_fuenzalida_ibanez": {
     "id": "barbara_fuenzalida_ibanez",
-    "name": "Barbara Fuenzalida Ibañez",
+    "name": "Barbara Fuenzalida",
+    "official_name": "BARBARA FUENZALIDA",
     "rut": "13.201.301-2",
     "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
     "section": "AMB",
     "sheets": [
       "PROFESIONALES RUTINA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "BARBARA FUENZALIDA IBAÑEZ",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "rodrigo_benavente_contreras": {
     "id": "rodrigo_benavente_contreras",
-    "name": "Rodrigo Benavente Contreras",
+    "name": "Rodrigo Benavente",
+    "official_name": "RODRIGO CRISTIAN BENAVENTE CONTRERAS",
     "rut": "15.596.995-4",
     "role": "Profesional",
+    "estamento": "Bioquímico",
     "section": "ALU",
     "sheets": [
       "PROFESIONALES RUTINA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "RODRIGO CRISTIAN BENAVENTE CONTRERAS",
-    "estamento": "Bioquímico",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "carolina_diaz_ponce": {
     "id": "carolina_diaz_ponce",
-    "name": "Carolina Diaz Ponce",
+    "name": "Carolina Diaz",
+    "official_name": "CAROLINA ALEJANDRA DIAZ PONCE",
     "rut": "13.574.848-K",
     "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
     "section": "ADM",
     "sheets": [
       "PROFESIONALES RUTINA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "CAROLINA ALEJANDRA DIAZ PONCE",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "arlette_garrido_mino": {
     "id": "arlette_garrido_mino",
-    "name": "Arlette Garrido Miño",
+    "name": "Arlette Garrido",
+    "official_name": "ARLETTE GARRIDO",
     "rut": "13.723.175-1",
     "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
     "section": "ADM",
     "sheets": [
       "PROFESIONALES RUTINA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "ARLETTE GARRIDO MIÑO",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
-  "cristian_andrade": {
-    "id": "cristian_andrade",
-    "name": "Cristian Andrade",
-    "rut": "",
+  "camila_mejias": {
+    "id": "camila_mejias",
+    "name": "Camila Mejias",
+    "official_name": "CAMILA IGNACIA MEJIAS ORELLANA",
+    "rut": "20.625.814-4",
     "role": "Profesional",
-    "section": "AMB",
-    "sheets": [
-      "PROFESIONALES RUTINA"
-    ],
-    "missing_fields": [
-      "RUT pendiente"
-    ],
-    "is_intern": false,
-    "is_replacement": true,
-    "official_name": "Cristian Andrade",
     "estamento": "Tecnólogo Médico",
-    "jornada": "Diurno"
-  },
-  "constanza_riquelme": {
-    "id": "constanza_riquelme",
-    "name": "Constanza Riquelme",
-    "rut": "20.641.306-9",
-    "role": "Profesional",
     "section": "ADM",
     "sheets": [
       "PROFESIONALES RUTINA",
       "TOMA DE MUESTRA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "CONSTANZA ANDREA RIQUELME ASENJO",
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
+  },
+  "cristian_andrade": {
+    "id": "cristian_andrade",
+    "name": "Cristian Andrade",
+    "official_name": "CRISTIAN ALEJANDRO ANDRADE SOTO",
+    "rut": "18.894.122-2",
+    "role": "Profesional",
     "estamento": "Tecnólogo Médico",
-    "jornada": "Diurno"
+    "section": "AMB",
+    "sheets": [
+      "PROFESIONALES RUTINA"
+    ],
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
+  },
+  "constanza_riquelme": {
+    "id": "constanza_riquelme",
+    "name": "Constanza Riquelme",
+    "official_name": "CONSTANZA ANDREA RIQUELME ASENJO",
+    "rut": "20.641.306-9",
+    "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
+    "section": "ADM",
+    "sheets": [
+      "PROFESIONALES RUTINA",
+      "TOMA DE MUESTRA"
+    ],
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "camila_gutierrez": {
     "id": "camila_gutierrez",
     "name": "Camila Gutierrez",
+    "official_name": "CAMILA BELEN GUTIERREZ ROMERO",
     "rut": "18.815.927-3",
     "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
     "section": "AIC",
     "sheets": [
       "PROFESIONALES RUTINA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "CAMILA BELEN GUTIERREZ ROMERO",
-    "estamento": "Bioquímico",
-    "jornada": "Diurno"
-  },
-  "susana_sepulveda": {
-    "id": "susana_sepulveda",
-    "name": "Susana Sepulveda",
-    "rut": "10.892.073-4",
-    "role": "Auxiliar",
-    "section": "Auxiliares",
-    "sheets": [
-      "AUXILIARES "
-    ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "SUSANA FRANCISCA SANTOS SEPULVEDA",
-    "estamento": "Auxiliar",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "salomon_conejera": {
     "id": "salomon_conejera",
     "name": "Salomon Conejera",
+    "official_name": "CONEJERA OSORIO SALOMON SERANO",
     "rut": "10.105.861-1",
     "role": "Auxiliar",
+    "estamento": "Auxiliar",
     "section": "Auxiliares",
     "sheets": [
-      "AUXILIARES "
+      "AUXILIARES"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "Salomon Conejera",
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
+  },
+  "susana_sepulveda": {
+    "id": "susana_sepulveda",
+    "name": "Susana Sepulveda",
+    "official_name": "SUSANA EUGENIA SEPULVEDA VILLANUEVA",
+    "rut": "10.892.073-4",
+    "role": "Auxiliar",
     "estamento": "Auxiliar",
-    "jornada": "Diurno"
+    "section": "Auxiliares",
+    "sheets": [
+      "AUXILIARES"
+    ],
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
+  },
+  "pamela_alvarez": {
+    "id": "pamela_alvarez",
+    "name": "Pamela Alvarez",
+    "official_name": "ALVAREZ VALDES PAMELA ANDREA",
+    "rut": "11.893.938-7",
+    "role": "Auxiliar",
+    "estamento": "Auxiliar",
+    "section": "Auxiliares",
+    "sheets": [
+      "AUXILIARES"
+    ],
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "esteban_canales": {
     "id": "esteban_canales",
     "name": "Esteban Canales",
-    "rut": "",
+    "official_name": "ESTEBAN ALEJANDRO CANALES SOTO",
+    "rut": "20.145.332-1",
     "role": "Auxiliar",
+    "estamento": "Auxiliar",
     "section": "Auxiliares",
     "sheets": [
-      "AUXILIARES "
+      "AUXILIARES"
     ],
-    "missing_fields": [
-      "RUT pendiente"
-    ],
-    "is_intern": false,
-    "is_replacement": true,
-    "official_name": "Esteban Canales",
-    "estamento": "Auxiliar",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
-  "pamela_alvarez_valdes": {
-    "id": "pamela_alvarez_valdes",
-    "name": "Pamela Alvarez Valdes",
-    "rut": "11.893.938-7",
+  "maria_elizabeth_reemplazo_aux": {
+    "id": "maria_elizabeth_reemplazo_aux",
+    "name": "Maria Elizabeth (Aux)",
+    "official_name": null,
+    "rut": null,
     "role": "Auxiliar",
-    "section": "Auxiliares",
-    "sheets": [
-      "AUXILIARES "
-    ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "Pamela Alvarez Valdes",
     "estamento": "Auxiliar",
-    "jornada": "Diurno"
-  },
-  "maria_elizabeth": {
-    "id": "maria_elizabeth",
-    "name": "Maria Elizabeth",
-    "rut": "",
-    "role": "Auxiliar",
     "section": "Auxiliares",
     "sheets": [
-      "AUXILIARES "
+      "AUXILIARES"
     ],
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": true,
     "missing_fields": [
-      "RUT pendiente"
-    ],
-    "is_intern": false,
-    "is_replacement": true,
-    "official_name": "Maria Elizabeth",
-    "estamento": "Auxiliar",
-    "jornada": "Diurno"
+      "RUT",
+      "Segundo Apellido / Nombre Completo"
+    ]
   },
   "cecilia_medel": {
     "id": "cecilia_medel",
     "name": "Cecilia Medel",
-    "rut": "",
+    "official_name": "DIAZ MEDEL PAULINA CECILIA",
+    "rut": "15.599.556-4",
     "role": "Auxiliar",
+    "estamento": "Auxiliar",
     "section": "Auxiliares",
     "sheets": [
-      "AUXILIARES "
+      "AUXILIARES"
     ],
-    "missing_fields": [
-      "RUT pendiente"
-    ],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "Cecilia Medel",
-    "estamento": "Auxiliar",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "maria_jose_penailillo": {
     "id": "maria_jose_penailillo",
-    "name": "Maria Jose Peñailillo",
-    "rut": "16.731.033-8",
-    "role": "TENS",
-    "section": "ATE",
+    "name": "M° Jose Pena I Lillo",
+    "official_name": "MARIA JOSE PENA I LILLO TORRES",
+    "rut": "18.234.567-8",
+    "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
+    "section": "ADM",
     "sheets": [
       "TOMA DE MUESTRA"
     ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
-    "official_name": "MARIA JOSE PENA I LILLO TORRES",
-    "estamento": "Tecnólogo Médico",
-    "jornada": "Diurno"
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
+  },
+  "brayans_saavedra": {
+    "id": "brayans_saavedra",
+    "name": "Brayans Saavedra",
+    "official_name": "BRAYANS ANTONIO SAAVEDRA GONZALEZ",
+    "rut": "21.305.600-K",
+    "role": "TENS",
+    "estamento": "TENS",
+    "section": "APA",
+    "sheets": [
+      "TOMA DE MUESTRA"
+    ],
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   },
   "teresa_fuentes_munoz": {
     "id": "teresa_fuentes_munoz",
-    "name": "Teresa Fuentes Muñoz",
-    "rut": "20.367.852-5",
-    "role": "TENS",
-    "section": "APA",
-    "sheets": [
-      "CALENDARIO GENERAL"
-    ],
-    "missing_fields": [],
-    "is_intern": false,
-    "is_replacement": false,
+    "name": "Teresa Fuentes",
     "official_name": "TERESA FUENTES MUÑOZ",
-    "estamento": "TENS",
-    "jornada": "Diurno"
+    "rut": "20.367.852-5",
+    "role": "Profesional",
+    "estamento": "Tecnólogo Médico",
+    "section": "AIC",
+    "sheets": [
+      "TENS RUTINA"
+    ],
+    "modality": "Diurno",
+    "active_2027": true,
+    "needs_completion": false,
+    "missing_fields": []
   }
 }

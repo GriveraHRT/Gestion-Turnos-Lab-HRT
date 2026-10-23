@@ -2,137 +2,170 @@
   "2026": [
     {
       "date": "2026-01-01",
-      "name": "Año Nuevo"
+      "name": "Año Nuevo",
+      "irrenunciable": true
     },
     {
       "date": "2026-04-03",
-      "name": "Viernes Santo"
+      "name": "Viernes Santo",
+      "irrenunciable": false
     },
     {
       "date": "2026-04-04",
-      "name": "Sábado Santo"
+      "name": "Sábado Santo",
+      "irrenunciable": false
     },
     {
       "date": "2026-05-01",
-      "name": "Día del Trabajador"
+      "name": "Día Nacional del Trabajo",
+      "irrenunciable": true
     },
     {
       "date": "2026-05-21",
-      "name": "Día de las Glorias Navales"
+      "name": "Día de las Glorias Navales",
+      "irrenunciable": false
     },
     {
       "date": "2026-06-21",
-      "name": "Día Nacional de los Pueblos Indígenas"
+      "name": "Día Nacional de los Pueblos Indígenas",
+      "irrenunciable": false
     },
     {
       "date": "2026-06-29",
-      "name": "San Pedro y San Pablo"
+      "name": "San Pedro y San Pablo",
+      "irrenunciable": false
     },
     {
       "date": "2026-07-16",
-      "name": "Día de la Virgen del Carmen"
+      "name": "Día de la Virgen del Carmen",
+      "irrenunciable": false
     },
     {
       "date": "2026-08-15",
-      "name": "Asunción de la Virgen"
+      "name": "Asunción de la Virgen",
+      "irrenunciable": false
     },
     {
       "date": "2026-09-18",
-      "name": "Independencia Nacional"
+      "name": "Independencia Nacional",
+      "irrenunciable": true
     },
     {
       "date": "2026-09-19",
-      "name": "Día de las Glorias del Ejército"
+      "name": "Día de las Glorias del Ejército",
+      "irrenunciable": true
     },
     {
       "date": "2026-10-12",
-      "name": "Encuentro de Dos Mundos"
+      "name": "Encuentro de Dos Mundos",
+      "irrenunciable": false
     },
     {
       "date": "2026-10-31",
-      "name": "Día de las Iglesias Evangélicas"
+      "name": "Día de las Iglesias Evangélicas y Protestantes",
+      "irrenunciable": false
     },
     {
       "date": "2026-11-01",
-      "name": "Día de Todos los Santos"
+      "name": "Día de Todos los Santos",
+      "irrenunciable": false
     },
     {
       "date": "2026-12-08",
-      "name": "Inmaculada Concepción"
+      "name": "Inmaculada Concepción",
+      "irrenunciable": false
     },
     {
       "date": "2026-12-25",
-      "name": "Navidad"
+      "name": "Navidad",
+      "irrenunciable": true
     }
   ],
   "2027": [
     {
       "date": "2027-01-01",
-      "name": "Año Nuevo"
+      "name": "Año Nuevo",
+      "irrenunciable": true
     },
     {
       "date": "2027-03-26",
-      "name": "Viernes Santo"
+      "name": "Viernes Santo",
+      "irrenunciable": false
     },
     {
       "date": "2027-03-27",
-      "name": "Sábado Santo"
+      "name": "Sábado Santo",
+      "irrenunciable": false
     },
     {
       "date": "2027-05-01",
-      "name": "Día del Trabajador"
+      "name": "Día Nacional del Trabajo",
+      "irrenunciable": true
     },
     {
       "date": "2027-05-21",
-      "name": "Día de las Glorias Navales"
+      "name": "Día de las Glorias Navales",
+      "irrenunciable": false
     },
     {
       "date": "2027-06-21",
-      "name": "Día Nacional de los Pueblos Indígenas"
+      "name": "Día Nacional de los Pueblos Indígenas",
+      "irrenunciable": false
     },
     {
       "date": "2027-06-28",
-      "name": "San Pedro y San Pablo"
+      "name": "San Pedro y San Pablo",
+      "irrenunciable": false
     },
     {
       "date": "2027-07-16",
-      "name": "Día de la Virgen del Carmen"
+      "name": "Día de la Virgen del Carmen",
+      "irrenunciable": false
     },
     {
       "date": "2027-08-15",
-      "name": "Asunción de la Virgen"
+      "name": "Asunción de la Virgen",
+      "irrenunciable": false
     },
     {
       "date": "2027-09-17",
-      "name": "Feriado Adicional Fiestas Patrias"
+      "name": "Feriado Adicional Fiestas Patrias",
+      "irrenunciable": false
     },
     {
       "date": "2027-09-18",
-      "name": "Independencia Nacional"
+      "name": "Independencia Nacional",
+      "irrenunciable": true
     },
     {
       "date": "2027-09-19",
-      "name": "Día de las Glorias del Ejército"
+      "name": "Día de las Glorias del Ejército",
+      "irrenunciable": true
     },
     {
       "date": "2027-10-11",
-      "name": "Encuentro de Dos Mundos"
+      "name": "Encuentro de Dos Mundos",
+      "irrenunciable": false
     },
     {
       "date": "2027-10-31",
-      "name": "Día de las Iglesias Evangélicas"
+      "name": "Día de las Iglesias Evangélicas y Protestantes",
+      "irrenunciable": false
     },
     {
       "date": "2027-11-01",
-      "name": "Día de Todos los Santos"
+      "name": "Día de Todos los Santos",
+      "irrenunciable": false
     },
     {
       "date": "2027-12-08",
-      "name": "Inmaculada Concepción"
+      "name": "Inmaculada Concepción",
+      "irrenunciable": false
     },
     {
       "date": "2027-12-25",
-      "name": "Navidad"
+      "name": "Navidad",
+      "irrenunciable": true
     }
   ]
 }

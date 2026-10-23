@@ -1,1098 +1,1211 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema de Gestión de Turnos y Calendario - Laboratorio HRT</title>
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            brand: {
-              50: '#f0f9ff',
-              100: '#e0f2fe',
-              500: '#0284c7',
-              600: '#0369a1',
-              700: '#075985',
-              800: '#0c4a6e',
-              900: '#0f172a',
-            }
-          }
-        }
-      }
-    }
-  </script>
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="styles.css">
-  <!-- Vendor libraries -->
-  <script src="assets/xlsx.full.min.js"></script>
-  <script src="assets/lucide.min.js"></script>
-  <!-- Initial Bundle Data -->
-  <script src="data/data_bundle.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sistema de Gestión de Turnos y Dotación — Laboratorio Clínico HRT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%230f172a'/%3E%3Cstop offset='100%25' stop-color='%231e3a8a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='2' y='2' width='36' height='36' rx='9' fill='url(%23bg)' stroke='%2338bdf8' stroke-width='2'/%3E%3Cpath d='M8 12.5h7.8l2.6-4.7 2.8 8.4 2.4-5.8 1.8 2.1H32' fill='none' stroke='%2338bdf8' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ctext x='20' y='29.5' text-anchor='middle' fill='%23ffffff' font-family='Inter,Segoe UI,Arial,sans-serif' font-weight='800' font-size='13' letter-spacing='0.6'%3EHRT%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+<body>
+  <!-- ==================================================================== -->
+  <!-- NIVEL 1: CABECERA INSTITUCIONAL INTEGRADA (1 SOLA LÍNEA LIMPIA)       -->
+  <!-- ==================================================================== -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-logo" title="Hospital Regional de Talca — Laboratorio Clínico">
+        <svg class="brand-emblem-svg" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="hrtExecBg" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#0f172a" />
+              <stop offset="100%" stop-color="#1e3a8a" />
+            </linearGradient>
+          </defs>
+          <!-- Marco e insignia ejecutiva oscura con borde cian clínico -->
+          <rect x="2" y="2" width="36" height="36" rx="9" fill="url(#hrtExecBg)" stroke="#38bdf8" stroke-width="1.9" />
+          <!-- Onda de pulso clínico (ECG) superior -->
+          <path d="M8 12.5H15.8L18.4 7.8L21.2 16.2L23.6 10.4L25.4 12.5H32" stroke="#38bdf8" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- Monograma institucional HRT -->
+          <text x="20" y="29.5" text-anchor="middle" fill="#ffffff" font-family="'Inter', 'Segoe UI', sans-serif" font-weight="800" font-size="13" letter-spacing="0.5">HRT</text>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1>Laboratorio Clínico</h1>
+        <p class="subtitle">Gestión de Turnos y Dotación</p>
+      </div>
+    </div>
 
-  <!-- Top Hospital Header -->
-  <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50 border-b border-slate-800">
-    <div class="max-w-[1640px] mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16">
-        
-        <!-- Hospital Branding -->
-        <div class="flex items-center space-x-3">
-          <div class="h-10 w-10 rounded-lg bg-sky-600 flex items-center justify-center text-white shadow-md">
-            <i data-lucide="flask-conical" class="w-6 h-6"></i>
-          </div>
-          <div>
-            <div class="flex items-center space-x-2">
-              <h1 class="text-lg font-bold tracking-tight text-white">Hospital Regional de Talca</h1>
-              <span class="px-2 py-0.5 text-xs font-semibold bg-sky-950 text-sky-400 rounded-full border border-sky-800">Laboratorio Clínico</span>
-            </div>
-            <p class="text-xs text-slate-400">Planificación de Turnos, Ausentismos y Toma de Muestras</p>
-          </div>
-        </div>
+    <!-- Pestañas Principales Integradas en la Cabecera -->
+    <nav class="main-tabs" aria-label="Navegación Principal">
+      <div class="tab-list">
+        <button class="tab-btn active" data-tab="calendar">
+          Calendario General <span class="tab-pill" id="badgeTotalStaff">0</span>
+        </button>
+        <button class="tab-btn" data-tab="tdm">
+          Toma de Muestras <span class="tab-pill tab-pill-purple" id="badgeTdmCount">0</span>
+        </button>
+        <button class="tab-btn" data-tab="directory">
+          Dotación &amp; Personal <span class="tab-pill tab-pill-warn" id="badgeIncompleteStaff">0</span>
+        </button>
+        <button class="tab-btn" data-tab="analytics">
+          Estadísticas
+        </button>
+        <button class="tab-btn hidden" data-tab="audit" id="tabBtnAudit" data-role-req="editor" title="Historial de quién otorgó días o modificó turnos (Solo Jefatura y Administrador)">
+          📋 Trazabilidad <span class="tab-pill tab-pill-cyan" id="badgeAuditCount">0</span>
+        </button>
+      </div>
+    </nav>
 
-        <!-- Year Toggle (2026 Histórico vs 2027 Nuevo) -->
-        <div class="flex items-center bg-slate-800 p-1 rounded-xl border border-slate-700 shadow-inner">
-          <button id="btn-year-2026" onclick="setYear(2026)" class="px-4 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center space-x-1.5 bg-sky-500 text-white shadow-sm">
-            <i data-lucide="archive" class="w-3.5 h-3.5"></i>
-            <span>2026 (Histórico)</span>
-          </button>
-          <button id="btn-year-2027" onclick="setYear(2027)" class="px-4 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center space-x-1.5 bg-slate-700 text-slate-300 hover:text-white">
-            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
-            <span>2027 (Planificación)</span>
-          </button>
-        </div>
+    <!-- Selector de Periodo y Acciones Globales Compactas -->
+    <div class="topbar-controls">
+      <div class="period-selector" id="monthControlGroup">
+        <button id="btnPrevMonth" class="btn-icon" title="Mes Anterior">◀</button>
+        <select id="monthSelect" class="select-period" aria-label="Mes">
+          <option value="1">Enero</option>
+          <option value="2">Febrero</option>
+          <option value="3">Marzo</option>
+          <option value="4">Abril</option>
+          <option value="5">Mayo</option>
+          <option value="6">Junio</option>
+          <option value="7">Julio</option>
+          <option value="8">Agosto</option>
+          <option value="9">Septiembre</option>
+          <option value="10">Octubre</option>
+          <option value="11">Noviembre</option>
+          <option value="12">Diciembre</option>
+        </select>
+        <select id="yearSelect" class="select-period select-year" aria-label="Año">
+          <option value="2026" selected>2026</option>
+          <option value="2027">2027</option>
+        </select>
+        <button id="btnNextMonth" class="btn-icon" title="Mes Siguiente">▶</button>
+        <button id="btnCurrentMonth" class="btn-today-chip" title="Ir a Octubre 2026">Hoy</button>
+      </div>
 
-        <!-- Top Actions -->
-        <div class="flex items-center space-x-2">
-          <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow flex items-center space-x-1.5 transition">
-            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
-            <span class="hidden sm:inline">Exportar Excel</span>
+      <div class="action-buttons">
+        <button id="btnUndoAction" class="btn-topbar-icon" data-role-req="editor" title="Deshacer última modificación (Ctrl+Z)" disabled>
+          ↩️
+        </button>
+        <button id="btnQuickRangeAbsence" class="btn btn-primary" data-role-req="editor" title="Registrar vacaciones, licencias médicas, días administrativos o permisos por rango de fechas">
+          + Agendar Ausencia
+        </button>
+        <button id="btnOpenShiftManager" class="btn btn-topbar-subtle" data-role-req="editor" title="Generar ciclos de 4to Turno, pasar a Diurno o intercambiar rotaciones">
+          ⚙️ Rotaciones
+        </button>
+
+        <!-- Menú desplegable de utilidades secundarias para evitar saturación visual -->
+        <div class="dropdown-wrapper" id="moreToolsDropdown">
+          <button type="button" id="btnMoreTools" class="btn btn-topbar-subtle" title="Más herramientas y exportación">
+            ⋯ Herramientas ▾
           </button>
-          <button onclick="saveChanges()" class="bg-sky-600 hover:bg-sky-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow flex items-center space-x-1.5 transition">
-            <i data-lucide="save" class="w-4 h-4"></i>
-            <span class="hidden sm:inline">Guardar</span>
-          </button>
-          <div class="relative group">
-            <button class="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white p-2 rounded-lg text-xs transition border border-slate-700">
-              <i data-lucide="settings" class="w-4 h-4"></i>
+          <div class="dropdown-menu hidden" id="moreToolsMenu">
+            <button type="button" id="btnExportCSV" class="dropdown-item">
+              <span>📥</span>
+              <div>
+                <strong>Exportar Vista a CSV</strong>
+                <small>Descarga planilla del mes compatible con Excel</small>
+              </div>
             </button>
-            <div class="absolute right-0 mt-1 w-52 bg-white text-slate-800 rounded-xl shadow-2xl border border-slate-200 py-2 hidden group-hover:block z-50 animate-fade-in">
-              <div class="px-3 py-1 text-xs font-bold text-slate-400 uppercase tracking-wider">Copia de Seguridad</div>
-              <button onclick="exportJSONBackup()" class="w-full text-left px-4 py-2 text-xs hover:bg-slate-100 flex items-center space-x-2">
-                <i data-lucide="download" class="w-3.5 h-3.5 text-slate-500"></i>
-                <span>Descargar Backup JSON</span>
-              </button>
-              <label class="w-full text-left px-4 py-2 text-xs hover:bg-slate-100 flex items-center space-x-2 cursor-pointer">
-                <i data-lucide="upload" class="w-3.5 h-3.5 text-slate-500"></i>
-                <span>Cargar Backup JSON</span>
-                <input type="file" id="input-json-file" accept=".json" class="hidden" onchange="importJSONBackup(event)">
-              </label>
-              <div class="border-t border-slate-100 my-1"></div>
-              <button onclick="clone2026to2027()" class="w-full text-left px-4 py-2 text-xs text-indigo-600 hover:bg-indigo-50 flex items-center space-x-2">
-                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                <span>Importar Plantilla 2026 a 2027</span>
-              </button>
-              <button onclick="clearPlanning2027()" class="w-full text-left px-4 py-2 text-xs text-rose-600 hover:bg-rose-50 flex items-center space-x-2">
-                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                <span>Vaciar Planificación 2027</span>
-              </button>
-            </div>
+            <button type="button" id="btnGenerate2027" class="dropdown-item" data-role-req="admin">
+              <span>✨</span>
+              <div>
+                <strong>Proyectar Año 2027</strong>
+                <small>Calcula continuidad de 4to turno hacia 2027</small>
+              </div>
+            </button>
+            <button type="button" id="btnExportBundle" class="dropdown-item" data-role-req="admin">
+              <span>💾</span>
+              <div>
+                <strong>Guardar Base para Red (data_bundle.js)</strong>
+                <small>Consolida nombres, turnos y trazabilidad</small>
+              </div>
+            </button>
+            <button type="button" id="btnOpenCloudConfig" class="dropdown-item" data-role-req="admin">
+              <span>☁️</span>
+              <div>
+                <strong>Conexión Web / Google Apps Script</strong>
+                <small>Sincronización en la nube y estado de red</small>
+              </div>
+            </button>
+            <hr class="dropdown-divider" data-role-req="admin" />
+            <button type="button" id="btnSyncBaseData" class="dropdown-item dropdown-item-danger" data-role-req="admin">
+              <span>🔄</span>
+              <div>
+                <strong>Restaurar Base Oficial</strong>
+                <small>Recarga datos desde TURNOS 2026.xlsx</small>
+              </div>
+            </button>
           </div>
         </div>
+      </div>
 
+      <!-- Bloque de Control de Usuario y Sesión (Visualización vs Jefatura / Administrador) -->
+      <div class="auth-topbar-box" id="authTopbarBox">
+        <!-- Estado 1: Usuario Estándar sin sesión (Modo Solo Visualización) -->
+        <div class="auth-guest-view" id="authGuestView">
+          <span class="viewer-mode-pill" title="Acceso estándar de solo lectura. Inicia sesión para marcar días o editar turnos.">
+            👀 Solo Lectura
+          </span>
+          <button type="button" id="btnOpenLoginModal" class="btn btn-login-topbar" title="Iniciar sesión como Jefatura o Administrador para modificar el calendario">
+            🔐 Acceso Jefatura
+          </button>
+        </div>
+
+        <!-- Estado 2: Sesión Iniciada (Jefatura o Administrador) -->
+        <div class="auth-logged-view hidden" id="authLoggedView">
+          <div class="logged-user-chip" id="loggedUserChip" title="Sesión activa con permisos de edición y trazabilidad">
+            <span class="role-dot" id="loggedRoleDot"></span>
+            <div class="logged-user-meta">
+              <strong id="loggedUserName">Jefatura</strong>
+              <small id="loggedUserRole">Jefatura</small>
+            </div>
+          </div>
+          <button type="button" id="btnOpenUserManager" class="btn btn-topbar-subtle" data-role-req="admin" title="Administrar usuarios, roles y contraseñas">
+            🔑 Usuarios
+          </button>
+          <button type="button" id="btnLogout" class="btn btn-logout-topbar" title="Cerrar sesión y volver a modo Solo Visualización">
+            Salir
+          </button>
+        </div>
       </div>
     </div>
   </header>
 
-  <!-- Secondary Navigation Bar: Main Functional Views -->
-  <nav class="bg-white border-b border-slate-200 shadow-sm sticky top-16 z-40">
-    <div class="max-w-[1640px] mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between overflow-x-auto py-2.5">
-        
-        <!-- Functional Tabs: Unified General Calendar is Primary -->
-        <div class="flex items-center space-x-1 sm:space-x-2 flex-nowrap" id="section-tabs">
-          <button onclick="switchTab('CALENDARIO GENERAL')" data-tab="CALENDARIO GENERAL" class="tab-btn active px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 whitespace-nowrap bg-sky-100 text-sky-800 border border-sky-300 shadow-xs">
-            <i data-lucide="calendar" class="w-4 h-4 text-sky-600"></i>
-            <span>📅 Calendario General (Todo el Personal)</span>
-          </button>
-          <button onclick="switchTab('TOMA DE MUESTRA')" data-tab="TOMA DE MUESTRA" class="tab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 whitespace-nowrap text-slate-600 hover:bg-slate-100">
-            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-            <span>🩸 Toma de Muestras (TDM)</span>
-          </button>
-          <div class="h-5 w-px bg-slate-200 mx-1"></div>
-          <button onclick="switchTab('DIRECTORIO')" data-tab="DIRECTORIO" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 whitespace-nowrap text-slate-600 hover:bg-slate-100">
-            <i data-lucide="users" class="w-3.5 h-3.5 text-slate-500"></i>
-            <span>👥 Dotación & Personal</span>
-          </button>
-          <button onclick="switchTab('METRICAS')" data-tab="METRICAS" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 whitespace-nowrap text-slate-600 hover:bg-slate-100">
-            <i data-lucide="bar-chart-3" class="w-3.5 h-3.5 text-slate-500"></i>
-            <span>📊 Estadísticas</span>
-          </button>
-        </div>
-
-        <!-- Right Side: Action Buttons & Warning Badge -->
-        <div class="flex items-center space-x-2 flex-wrap gap-y-1">
-          <button onclick="openShiftScheduleModal()" class="bg-sky-600 hover:bg-sky-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow flex items-center space-x-1.5 transition shrink-0" title="Asignar esquemas de 4to turno, pasar a diurno o intercambiar rotaciones">
-            <i data-lucide="calendar-sync" class="w-4 h-4"></i>
-            <span>⚡ Esquemas y Rotaciones</span>
-          </button>
-          <button onclick="openRangeModal()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow flex items-center space-x-1.5 transition shrink-0">
-            <i data-lucide="calendar-range" class="w-4 h-4"></i>
-            <span>🌴 Programar Ausencia por Rango</span>
-          </button>
-          <div id="quota-warning-badge" class="hidden 2xl:flex items-center space-x-2 bg-amber-50 border border-amber-200 text-amber-800 px-3 py-1.5 rounded-lg text-xs shrink-0 whitespace-nowrap">
-            <i data-lucide="alert-circle" class="w-3.5 h-3.5 text-amber-600"></i>
-            <span class="font-semibold">Regla TENS:</span>
-            <span>Máximo 4-5 ausencias/día</span>
-          </div>
-        </div>
-
-      </div>
+  <!-- ==================================================================== -->
+  <!-- NIVEL 2: BARRA DE TRABAJO CONTEXTUAL DEL CALENDARIO (1 LÍNEA)         -->
+  <!-- ==================================================================== -->
+  <section class="calendar-toolbar" id="calendarQuickBar">
+    <!-- Izquierda: Filtros de Sección Sobrios -->
+    <div class="quick-filters">
+      <button class="filter-chip active" data-filter="all">Todos</button>
+      <button class="filter-chip" data-filter="urgencia">Urgencias (ALU)</button>
+      <button class="filter-chip" data-filter="rutina">Rutina</button>
+      <button class="filter-chip" data-filter="tens">TENS (APA)</button>
+      <button class="filter-chip" data-filter="auxiliares">Auxiliares</button>
+      <button class="filter-chip" data-filter="profesionales">TM y Bioquímicos</button>
+      <button class="filter-chip" data-filter="tdm_active" title="Funcionarios con asignación en Toma de Muestras este mes">En TDM</button>
+      <button class="filter-chip" data-filter="absent_month" title="Funcionarios con Vacaciones, Licencias o Permisos este mes">Con Ausencias</button>
     </div>
-  </nav>
 
-  <!-- Controls Bar: Month Picker, Quick Presets, Grouping & Filters -->
-  <section class="max-w-[1640px] mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-2 w-full" id="section-controls-bar">
-    <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm space-y-3">
-      
-      <!-- Top row: Month navigation and Search -->
-      <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
-        <!-- Month Navigation Buttons -->
-        <div class="flex items-center space-x-2 overflow-x-auto pb-1 md:pb-0 no-scrollbar" id="month-picker-container">
-          <button onclick="prevMonth()" class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition" title="Mes anterior">
-            <i data-lucide="chevron-left" class="w-4 h-4"></i>
-          </button>
-          <div class="flex items-center space-x-1" id="months-list">
-            <!-- Populated by JS: Ene, Feb, Mar... -->
-          </div>
-          <button onclick="nextMonth()" class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition" title="Mes siguiente">
-            <i data-lucide="chevron-right" class="w-4 h-4"></i>
-          </button>
-        </div>
-
-        <!-- Search Bar with smart RUT normalization (visible on General Calendar) -->
-        <div class="flex items-center space-x-2 flex-grow max-w-md" id="calendar-search-container">
-          <div class="relative w-full">
-            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
-            <input type="text" id="input-search" oninput="applyFilters()" placeholder="Buscar por funcionario o RUT (con o sin puntos)..." class="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white transition">
-            <button id="btn-clear-search" onclick="clearSearch()" class="hidden text-slate-400 hover:text-slate-600 absolute right-2.5 top-2.5" title="Limpiar búsqueda">
-              <i data-lucide="x" class="w-3.5 h-3.5"></i>
-            </button>
-          </div>
-        </div>
+    <!-- Derecha: Búsqueda, Agrupación y Botones de Paneles Auxiliares (Pintar / Leyenda) -->
+    <div id="calendarTopbarTools" class="calendar-topbar-tools">
+      <div class="search-box">
+        <input type="text" id="globalSearch" placeholder="🔍 Buscar funcionario o RUT..." autocomplete="off" />
+        <button id="btnClearSearch" class="btn-clear-search hidden" title="Limpiar búsqueda">✕</button>
       </div>
 
-      <!-- Bottom row: Quick Presets & Subdivide/Grouping Selectors (visible on General Calendar) -->
-      <div id="general-calendar-controls" class="flex flex-col 2xl:flex-row 2xl:items-center justify-between gap-3 pt-2.5 border-t border-slate-100">
-        
-        <!-- Quick View Presets (Urgencias, Rutina, TENS, Auxiliares, etc.) - Wrap naturally without scrollbar -->
-        <div class="flex flex-wrap items-center gap-1.5 no-scrollbar" id="view-presets-container">
-          <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mr-1 shrink-0">Vista Rápida:</span>
-          <button onclick="setPresetFilter('ALL')" id="preset-ALL" class="preset-btn active px-2.5 py-1 text-xs font-bold rounded-lg transition bg-sky-600 text-white shadow-xs whitespace-nowrap">
-            🌟 Todos (<span id="count-all">98</span>)
-          </button>
-          <button onclick="setPresetFilter('URGENCIAS')" id="preset-URGENCIAS" class="preset-btn px-2.5 py-1 text-xs font-semibold rounded-lg transition text-slate-600 hover:bg-slate-100 whitespace-nowrap flex items-center space-x-1">
-            <span class="w-2 h-2 rounded-full bg-rose-500"></span>
-            <span>🚨 Urgencias (ALU)</span>
-            <span id="count-urgencias" class="text-[10px] bg-rose-100 text-rose-700 px-1.5 py-0.2 rounded-full font-bold ml-0.5">58</span>
-          </button>
-          <button onclick="setPresetFilter('RUTINA')" id="preset-RUTINA" class="preset-btn px-2.5 py-1 text-xs font-semibold rounded-lg transition text-slate-600 hover:bg-slate-100 whitespace-nowrap flex items-center space-x-1">
-            <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-            <span>🔬 Rutina</span>
-            <span id="count-rutina" class="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.2 rounded-full font-bold ml-0.5">77</span>
-          </button>
-          <button onclick="setPresetFilter('TENS')" id="preset-TENS" class="preset-btn px-2.5 py-1 text-xs font-semibold rounded-lg transition text-slate-600 hover:bg-slate-100 whitespace-nowrap flex items-center space-x-1">
-            <span class="w-2 h-2 rounded-full bg-cyan-500"></span>
-            <span>💉 TENS</span>
-            <span id="count-tens" class="text-[10px] bg-cyan-100 text-cyan-700 px-1.5 py-0.2 rounded-full font-bold ml-0.5">47</span>
-          </button>
-          <button onclick="setPresetFilter('AUXILIARES')" id="preset-AUXILIARES" class="preset-btn px-2.5 py-1 text-xs font-semibold rounded-lg transition text-slate-600 hover:bg-slate-100 whitespace-nowrap flex items-center space-x-1">
-            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-            <span>🧹 Auxiliares</span>
-            <span id="count-auxiliares" class="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.2 rounded-full font-bold ml-0.5">9</span>
-          </button>
-          <button onclick="setPresetFilter('PROFESIONALES')" id="preset-PROFESIONALES" class="preset-btn px-2.5 py-1 text-xs font-semibold rounded-lg transition text-slate-600 hover:bg-slate-100 whitespace-nowrap flex items-center space-x-1">
-            <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
-            <span>🩺 TM y Bioquímicos</span>
-            <span id="count-profesionales" class="text-[10px] bg-indigo-100 text-indigo-700 px-1.5 py-0.2 rounded-full font-bold ml-0.5">56</span>
-          </button>
-        </div>
-
-        <!-- Subdivisión / Agrupación and Specific Filters -->
-        <div class="flex items-center space-x-2 flex-wrap gap-y-2">
-          <!-- Agrupar Por -->
-          <div class="flex items-center space-x-1.5">
-            <span class="text-[11px] font-bold text-slate-500 shrink-0">Subdividir por:</span>
-            <select id="select-group-by" onchange="changeGrouping(this.value)" class="text-xs py-1.5 px-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 font-semibold focus:ring-2 focus:ring-sky-500">
-              <option value="ESTAMENTO">🏢 Por Estamento (TM, BQ, TENS, Aux...)</option>
-              <option value="JORNADA">⏰ Por Jornada (Turno Rotativo / Diurno)</option>
-              <option value="SECTION">🏥 Por Sección / Área de Trabajo</option>
-              <option value="NONE">📋 Sin Agrupar (Orden Alfabético)</option>
-            </select>
-          </div>
-
-          <!-- Filtro Estamento específico -->
-          <select id="select-estamento-filter" onchange="applyFilters()" class="text-xs py-1.5 px-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-700 focus:ring-2 focus:ring-sky-500">
-            <option value="ALL">Todos los Estamentos</option>
-            <option value="Tecnólogo Médico">Tecnólogo Médico (TM)</option>
-            <option value="Bioquímico">Bioquímico (BQ)</option>
-            <option value="TENS">TENS</option>
-            <option value="Auxiliar">Auxiliar</option>
-            <option value="Interno TM">Interno TM</option>
-            <option value="Administrativo">Administrativo</option>
-          </select>
-
-          <!-- Filtro Jornada específica -->
-          <select id="select-jornada-filter" onchange="applyFilters()" class="text-xs py-1.5 px-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-700 focus:ring-2 focus:ring-sky-500">
-            <option value="ALL">Todas las Jornadas</option>
-            <option value="Turno">Turno (4to Turno / Urgencias)</option>
-            <option value="Diurno">Diurno (Jornada Ordinaria)</option>
-          </select>
-        </div>
-
+      <div class="toolbar-select-inline">
+        <label for="groupBySelect">Agrupar:</label>
+        <select id="groupBySelect" class="select-input select-compact">
+          <option value="estamento" selected>Por Estamento</option>
+          <option value="section">Por Sección / Área</option>
+          <option value="modality">Por Jornada</option>
+          <option value="alpha">Alfabético (A-Z)</option>
+        </select>
       </div>
 
-    </div>
-  </section>
-
-  <!-- Interactive Legend Bar -->
-  <section class="max-w-[1640px] mx-auto px-4 sm:px-6 lg:px-8 py-2 w-full" id="section-legend">
-    <div class="flex items-center justify-between bg-slate-100/80 px-3 py-2 rounded-lg border border-slate-200 text-xs overflow-x-auto no-scrollbar gap-3">
-      <span class="font-bold text-slate-500 uppercase tracking-wider text-[10px]">Leyenda:</span>
-      <div class="flex items-center space-x-3 flex-wrap gap-y-1">
-        <div class="flex items-center space-x-1.5">
-          <span class="w-3.5 h-3.5 rounded bg-red-500 inline-block shadow-sm"></span>
-          <span class="font-medium text-slate-700">Feriado Legal (Vacaciones)</span>
-        </div>
-        <div class="flex items-center space-x-1.5">
-          <span class="w-3.5 h-3.5 rounded bg-yellow-400 inline-block shadow-sm"></span>
-          <span class="font-medium text-slate-700">Día Administrativo</span>
-        </div>
-        <div class="flex items-center space-x-1.5">
-          <span class="w-3.5 h-3.5 rounded bg-purple-400 inline-block shadow-sm"></span>
-          <span class="font-medium text-slate-700">Devolución de Tiempo</span>
-        </div>
-        <div class="flex items-center space-x-1.5">
-          <span class="w-3.5 h-3.5 rounded bg-pink-400 inline-block shadow-sm"></span>
-          <span class="font-medium text-slate-700">Comisión de Servicio (*)</span>
-        </div>
-        <div class="flex items-center space-x-1.5">
-          <span class="w-3.5 h-3.5 rounded bg-orange-400 inline-block shadow-sm"></span>
-          <span class="font-medium text-slate-700">Licencia Médica</span>
-        </div>
-        <div class="flex items-center space-x-1.5">
-          <span class="w-3.5 h-3.5 rounded bg-blue-900 inline-block shadow-sm"></span>
-          <span class="font-medium text-slate-700">Permiso Sin Goce</span>
-        </div>
-        <div class="flex items-center space-x-1.5">
-          <span class="w-3.5 h-3.5 rounded bg-orange-200 text-orange-900 text-[10px] font-bold flex items-center justify-center">L</span>
-          <span class="font-medium text-slate-700">Largo (08-20h)</span>
-        </div>
-        <div class="flex items-center space-x-1.5">
-          <span class="w-3.5 h-3.5 rounded bg-slate-700 text-white text-[10px] font-bold flex items-center justify-center">N</span>
-          <span class="font-medium text-slate-700">Noche (20-08h)</span>
-        </div>
-        <div class="flex items-center space-x-1.5">
-          <span class="w-3.5 h-3.5 rounded bg-sky-100 text-sky-800 border border-sky-300 text-[10px] font-bold flex items-center justify-center">D</span>
-          <span class="font-medium text-slate-700">Diurno (Lun-Vie)</span>
-        </div>
-        <div class="flex items-center space-x-1.5">
-          <span class="w-3.5 h-3.5 rounded bg-orange-500 inline-block shadow-sm"></span>
-          <span class="font-medium text-slate-700">Fin de Semana</span>
-        </div>
-        <div class="flex items-center space-x-1.5 text-amber-900 bg-amber-100/90 px-2 py-0.5 rounded border border-amber-300 text-[11px] font-semibold shrink-0">
-          <i data-lucide="alert-circle" class="w-3 h-3 text-amber-700"></i>
-          <span>Regla TENS: Máx 4-5 ausencias/día</span>
-        </div>
-      </div>
-      <div class="text-slate-400 text-[11px] hidden lg:block italic">
-        * Haz clic en cualquier día para asignar o editar
+      <div class="toolbar-toggles">
+        <button type="button" id="btnTogglePaintDrawer" class="btn-drawer-toggle" data-role-req="editor" title="Activar barra de pintado rápido en grilla (clic o arrastrar)">
+          🎨 Pintar Rápido
+        </button>
+        <button type="button" id="btnToggleLegendDrawer" class="btn-drawer-toggle" title="Ver simbología de turnos y colores">
+          ℹ️ Simbología
+        </button>
       </div>
     </div>
   </section>
 
-  <!-- Main Workspace Area -->
-  <main class="max-w-[1640px] mx-auto px-4 sm:px-6 lg:px-8 py-2 w-full flex-grow">
-    
-    <!-- Planning Mode Guidance Banner (displayed dynamically when year is 2027) -->
-    <div id="banner-planificacion-2027" class="hidden mb-3 p-3 bg-gradient-to-r from-sky-50 to-indigo-50 border border-sky-200 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs shadow-xs animate-fade-in">
-      <div class="flex items-center space-x-2.5">
-        <span class="p-2 bg-sky-600 text-white rounded-lg shadow-xs shrink-0">
-          <i data-lucide="sparkles" class="w-4 h-4"></i>
-        </span>
-        <div>
-          <span class="font-bold text-sky-950">Modo Planificación 2027:</span>
-          <span class="text-sky-800 ml-1">
-            Esta planilla está lista para programar el nuevo año. Haz clic en cualquier casilla para asignar turnos/ausencias. Para consultar el historial existente, pulsa
-            <button onclick="setYear(2026)" class="underline font-bold text-sky-900 hover:text-sky-700">2026 (Histórico)</button>.
-          </span>
-        </div>
-      </div>
-      <div class="flex items-center space-x-2 shrink-0">
-        <button onclick="clone2026to2027()" class="px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-lg shadow-xs transition flex items-center space-x-1.5">
-          <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-          <span>Importar Plantilla Base 2026</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- 1. Matrix View Container (Urgencia, Rutina Profesionales, TENS, Auxiliares) -->
-    <div id="view-matrix" class="table-matrix-wrapper bg-white">
-      <table class="table-matrix" id="shift-matrix-table">
-        <thead id="matrix-head">
-          <!-- Rendered dynamically -->
-        </thead>
-        <tbody id="matrix-body">
-          <!-- Rendered dynamically -->
-        </tbody>
-      </table>
-    </div>
-
-    <!-- 2. Special Toma de Muestras (TDM) Coordinator Board View -->
-    <div id="view-tdm" class="hidden space-y-4">
-      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div>
-          <h2 class="text-base font-bold text-slate-800 flex items-center space-x-2">
-            <span class="h-3 w-3 rounded-full bg-emerald-500"></span>
-            <span>Tablero de Coordinación Diaria - Toma de Muestras (TDM)</span>
-          </h2>
-          <p class="text-xs text-slate-500 mt-0.5">
-            Designación de puestos operativos y horarios. El personal proviene de Rutina TENS, Urgencia y Profesionales sin duplicar personas.
-          </p>
-        </div>
-        
-        <!-- Day Selector for TDM -->
-        <div class="flex items-center space-x-2 bg-slate-50 p-1.5 rounded-lg border border-slate-200">
-          <button onclick="stepTDMDay(-1)" class="p-1 rounded bg-white hover:bg-slate-100 text-slate-600 shadow-xs">
-            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+  <!-- ==================================================================== -->
+  <!-- PANELES DESPLEGABLES BAJO DEMANDA (OCULTOS POR DEFECTO)               -->
+  <!-- ==================================================================== -->
+  <section class="legend-bar" id="calendarLegendBar">
+    <!-- Cajón 1: Modo Pintar Rápido (Se abre solo al pulsar "🎨 Pintar Rápido") -->
+    <div class="collapsible-drawer hidden" id="paintDrawerPanel">
+      <div class="paint-toolbar">
+        <span class="paint-toolbar-label">🎨 Pincel Activo (clic o arrastrar sobre celdas):</span>
+        <div class="paint-tools" id="paintToolsGroup">
+          <button class="paint-btn active" data-paint="" title="Modo normal: clic en cualquier celda abre ventana de detalle y rango">
+            👆 Selección Normal
           </button>
-          <input type="date" id="tdm-date-input" onchange="onTDMDateChange(this.value)" class="text-xs font-semibold bg-transparent border-0 focus:ring-0 text-slate-700 cursor-pointer">
-          <button onclick="stepTDMDay(1)" class="p-1 rounded bg-white hover:bg-slate-100 text-slate-600 shadow-xs">
-            <i data-lucide="chevron-right" class="w-4 h-4"></i>
-          </button>
-          <button onclick="setTDMToday()" class="text-xs font-bold text-emerald-600 hover:text-emerald-700 px-2 py-1 bg-emerald-50 rounded">Hoy</button>
+          <button class="paint-btn paint-fl" data-paint="VACACIONES:FL">FL Vacaciones</button>
+          <button class="paint-btn paint-da" data-paint="ADMINISTRATIVO:DA">DA Día Admin.</button>
+          <button class="paint-btn paint-lm" data-paint="LICENCIA_MEDICA:LM">LM Licencia</button>
+          <button class="paint-btn paint-dc" data-paint="COMPENSATORIO:DC" title="Día Compensatorio (Permiso para ausentarse)">DC Compensatorio</button>
+          <button class="paint-btn paint-dt" data-paint="DEVOLUCION_TIEMPO:DT" title="Uso de Devolución de Tiempo (Ausencia/Permiso)">DT Uso Devol.</button>
+          <button class="paint-btn paint-l" data-paint="TURNO:L">L Largo</button>
+          <button class="paint-btn paint-n" data-paint="TURNO:N">N Noche</button>
+          <button class="paint-btn paint-d" data-paint="TURNO:D">D Diurno</button>
+          <button class="paint-btn paint-m" data-paint="TURNO:M">M Mañana</button>
+          <button class="paint-btn paint-t" data-paint="TURNO:T">T Tarde</button>
+          <button class="paint-btn paint-erase" data-paint="CLEAR">🧹 Borrar</button>
         </div>
-      </div>
-
-      <!-- TDM Stations Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="tdm-stations-grid">
-        <!-- Rendered dynamically -->
-      </div>
-      
-      <!-- TDM Monthly Overview Table -->
-      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm mt-6">
-        <h3 class="text-sm font-bold text-slate-800 mb-2 flex items-center space-x-2">
-          <i data-lucide="calendar" class="w-4 h-4 text-emerald-600"></i>
-          <span>Resumen Mensual de Designaciones Toma de Muestra</span>
-        </h3>
-        <div class="table-matrix-wrapper" id="tdm-monthly-table-wrapper">
-          <!-- Rendered dynamically -->
-        </div>
+        <button type="button" id="btnClosePaintDrawer" class="drawer-close-btn" title="Cerrar modo pintar y volver a selección normal">✕ Cerrar</button>
       </div>
     </div>
 
-    <!-- 3. Directorio & Dotación View -->
-    <div id="view-directorio" class="hidden space-y-4">
-      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+    <!-- Cajón 2: Simbología (Se abre solo al pulsar "ℹ️ Simbología") -->
+    <div class="collapsible-drawer hidden" id="legendDrawerPanel">
+      <div class="legend-items">
+        <span class="legend-title">Simbología Oficial:</span>
+        <span class="legend-badge shift-L"><b>L</b> Largo (08-20h)</span>
+        <span class="legend-badge shift-N"><b>N</b> Noche (20-08h)</span>
+        <span class="legend-badge shift-D"><b>D</b> Diurno</span>
+        <span class="legend-badge shift-M"><b>M</b> Mañana</span>
+        <span class="legend-badge shift-T"><b>T</b> Tarde</span>
+        <span class="legend-badge ev-VACACIONES"><b>FL</b> Vacaciones</span>
+        <span class="legend-badge ev-ADMINISTRATIVO"><b>DA</b> Admin.</span>
+        <span class="legend-badge ev-LICENCIA_MEDICA"><b>LM</b> Licencia</span>
+        <span class="legend-badge ev-COMPENSATORIO" title="Permiso Compensatorio (Ausencia justificada)"><b>DC</b> Compensatorio</span>
+        <span class="legend-badge ev-DEVOLUCION_TIEMPO" title="Ausencia o salida por uso de Devolución de Tiempo"><b>DT</b> Uso Devol.</span>
+        <span class="legend-badge ev-COMISION_SERVICIO"><b>*</b> Capacitación</span>
+        <span class="legend-badge ev-EXTENSION_HORARIA" title="Quedarse más horas tras la jornada"><b>E+(N)</b> Extensión Horaria</span>
+        <span class="legend-badge ev-HORAS_TURNO_EXTRA" title="Horas realizadas por turno extra"><b>H+(N)</b> Horas Turno Extra</span>
+        <span class="legend-badge is-devolucion" title="Cuando E+N, H+N, L o N está en rosado, significa que se realizó para Devolución de Tiempo"><b>Rosado</b> = A Devolución (E+, H+, L, N)</span>
+        <span class="legend-badge badge-tdm-dot">● En TDM</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="workspace">
+
+    <!-- ==================================================================== -->
+    <!-- VISTA 1: CALENDARIO GENERAL UNIFICADO                                -->
+    <!-- ==================================================================== -->
+    <section id="view-calendar" class="view-panel active">
+      <div class="calendar-container" id="calendarScrollContainer">
+        <table class="calendar-table" id="calendarTable">
+          <thead id="calendarThead"></thead>
+          <tbody id="calendarTbody"></tbody>
+        </table>
+      </div>
+
+      <!-- Barra de Estado Inferior Discreta -->
+      <footer class="calendar-footer-strip" id="calendarStatusStrip">
+        <div class="strip-left">
+          <strong id="calendarMonthLabel">Octubre 2026</strong>
+          <span class="strip-sep">·</span>
+          <span id="calendarVisibleCount">Mostrando 0 funcionarios</span>
+          <span class="strip-sep">·</span>
+          <span id="calendarPaintStatus" class="paint-status-pill">Clic en celda: editar rango · Clic en nombre: ver Ficha Anual</span>
+        </div>
+        <div class="strip-right" id="tensAbsenceSummaryPill"></div>
+      </footer>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- VISTA 2: TOMA DE MUESTRAS (TDM)                                      -->
+    <!-- ==================================================================== -->
+    <section id="view-tdm" class="view-panel">
+      <div class="panel-header">
         <div>
-          <h2 class="text-base font-bold text-slate-800 flex items-center space-x-2">
-            <i data-lucide="users" class="w-5 h-5 text-sky-600"></i>
-            <span>Dotación y Directorio de Funcionarios</span>
-          </h2>
-          <p class="text-xs text-slate-500 mt-0.5">
-            Listado oficial del personal del laboratorio. Aquí puedes completar RUTs y apellidos pendientes para mantener el formato uniforme.
-          </p>
+          <h2>🩸 Módulo de Toma de Muestras (TDM)</h2>
+          <p>Tablero funcional de asignación diaria por puesto/box y matriz mensual interactiva vinculada en tiempo real con ausencias y turnos del Calendario General.</p>
         </div>
-        <button onclick="openNewStaffModal()" class="bg-sky-600 hover:bg-sky-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow flex items-center space-x-1.5">
-          <i data-lucide="user-plus" class="w-4 h-4"></i>
-          <span>Agregar Funcionario</span>
-        </button>
-      </div>
-
-      <!-- Audit Summary Cards -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="directorio-stats-cards">
-        <!-- Rendered dynamically -->
-      </div>
-
-      <!-- Filtros del Directorio de Funcionarios -->
-      <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm space-y-3">
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-          
-          <!-- Búsqueda específica en directorio -->
-          <div class="relative flex-grow max-w-md">
-            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
-            <input type="text" id="directorio-filter-search" oninput="applyDirectorioFilters()" placeholder="Buscar por funcionario o RUT en directorio..." class="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white transition">
-            <button id="directorio-clear-search" onclick="clearDirectorioSearch()" class="hidden text-slate-400 hover:text-slate-600 absolute right-2.5 top-2.5" title="Limpiar">
-              <i data-lucide="x" class="w-3.5 h-3.5"></i>
-            </button>
-          </div>
-
-          <!-- Filtros Selectores -->
-          <div class="flex items-center space-x-2 flex-wrap gap-y-2">
-            <!-- Filtro Sección / Área -->
-            <div class="flex items-center space-x-1">
-              <span class="text-[11px] font-bold text-slate-500 shrink-0">Sección:</span>
-              <select id="directorio-filter-section" onchange="applyDirectorioFilters()" class="text-xs py-1.5 px-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-700 font-semibold focus:ring-2 focus:ring-sky-500">
-                <option value="ALL">Todas las Secciones</option>
-                <option value="ALU">ALU (Urgencias)</option>
-                <option value="AH">AH (Hematología)</option>
-                <option value="AIC">AIC (Química / Inmunoquímica)</option>
-                <option value="AMB">AMB (Microbiología)</option>
-                <option value="APA">APA (TENS / Paramédicos)</option>
-                <option value="ADM">ADM (Administrativa)</option>
-                <option value="ATE">ATE (Toma de Exámenes)</option>
-                <option value="Auxiliares">Auxiliares</option>
-              </select>
-            </div>
-
-            <!-- Filtro Estado Datos -->
-            <div class="flex items-center space-x-1">
-              <span class="text-[11px] font-bold text-slate-500 shrink-0">Estado Datos:</span>
-              <select id="directorio-filter-estado" onchange="applyDirectorioFilters()" class="text-xs py-1.5 px-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-700 font-semibold focus:ring-2 focus:ring-sky-500">
-                <option value="ALL">Todos los Estados</option>
-                <option value="COMPLETO">✅ Completo</option>
-                <option value="PENDIENTE">⚠️ Datos Pendientes</option>
-              </select>
-            </div>
-
-            <!-- Filtro Jornada -->
-            <div class="flex items-center space-x-1">
-              <span class="text-[11px] font-bold text-slate-500 shrink-0">Jornada:</span>
-              <select id="directorio-filter-jornada" onchange="applyDirectorioFilters()" class="text-xs py-1.5 px-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-700 font-semibold focus:ring-2 focus:ring-sky-500">
-                <option value="ALL">Todas las Jornadas</option>
-                <option value="Turno">Turno (4to Turno)</option>
-                <option value="Diurno">Diurno</option>
-              </select>
-            </div>
-
-            <!-- Filtro Estamento -->
-            <div class="flex items-center space-x-1">
-              <span class="text-[11px] font-bold text-slate-500 shrink-0">Estamento:</span>
-              <select id="directorio-filter-estamento" onchange="applyDirectorioFilters()" class="text-xs py-1.5 px-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-700 font-semibold focus:ring-2 focus:ring-sky-500">
-                <option value="ALL">Todos los Estamentos</option>
-                <option value="TM_BQ">TM y Bioquímicos</option>
-                <option value="Tecnólogo Médico">Tecnólogo Médico (TM)</option>
-                <option value="Bioquímico">Bioquímico (BQ)</option>
-                <option value="TENS">TENS</option>
-                <option value="Auxiliar">Auxiliar</option>
-                <option value="Interno TM">Interno TM</option>
-                <option value="Administrativo">Administrativo</option>
-              </select>
-            </div>
-
-            <!-- Botón resetear filtros -->
-            <button onclick="resetDirectorioFilters()" class="text-xs px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold transition flex items-center space-x-1" title="Restablecer filtros">
-              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-              <span>Limpiar</span>
-            </button>
-          </div>
-
-        </div>
-
-        <!-- Barra inferior: Contador de resultados -->
-        <div class="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-100">
-          <div id="directorio-results-count" class="font-medium text-slate-700">
-            Mostrando 98 de 98 funcionarios
-          </div>
-          <div id="directorio-active-tags" class="flex items-center space-x-1.5 flex-wrap">
-            <!-- Active filter pills populated by JS -->
-          </div>
-        </div>
-      </div>
-
-      <!-- Staff Table -->
-      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-slate-200 text-left text-xs" id="table-staff-directory">
-            <thead class="bg-slate-900 text-white font-semibold">
-              <tr>
-                <th class="px-4 py-3">Nombre Funcionario</th>
-                <th class="px-4 py-3">RUT</th>
-                <th class="px-4 py-3">Estamento</th>
-                <th class="px-4 py-3">Jornada</th>
-                <th class="px-4 py-3">Sección / Área</th>
-                <th class="px-4 py-3">Estado Datos</th>
-                <th class="px-4 py-3 text-right">Acciones</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100 bg-white" id="directorio-table-body">
-              <!-- Rendered dynamically -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- 4. Estadísticas y Métricas View -->
-    <div id="view-metricas" class="hidden space-y-4">
-      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-        <h2 class="text-base font-bold text-slate-800 flex items-center space-x-2">
-          <i data-lucide="bar-chart-2" class="w-5 h-5 text-indigo-600"></i>
-          <span>Panel de Estadísticas y Control de Ausentismos</span>
-        </h2>
-        <p class="text-xs text-slate-500 mt-0.5">
-          Monitoreo de días de vacaciones, administrativos, licencias y cumplimiento del tope de ausencias diarias.
-        </p>
-      </div>
-
-      <!-- High level KPIs -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="metrics-kpis">
-        <!-- Rendered dynamically -->
-      </div>
-
-      <!-- Absences Breakdown by Staff -->
-      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-        <h3 class="text-sm font-bold text-slate-800 mb-3 flex items-center space-x-2">
-          <i data-lucide="pie-chart" class="w-4 h-4 text-slate-600"></i>
-          <span>Desglose Individual de Ausentismos y Horas (<span id="stats-year-label">2027</span>)</span>
-        </h3>
-        <div class="overflow-x-auto">
-          <table class="min-w-full text-xs text-left divide-y divide-slate-200" id="table-metrics-staff">
-            <thead class="bg-slate-100 text-slate-700 font-bold">
-              <tr>
-                <th class="px-3 py-2">Funcionario</th>
-                <th class="px-3 py-2">Estamento</th>
-                <th class="px-3 py-2">Sección</th>
-                <th class="px-3 py-2 text-center text-red-700">Vacaciones (Días)</th>
-                <th class="px-3 py-2 text-center text-yellow-700">Administrativos (Días)</th>
-                <th class="px-3 py-2 text-center text-purple-700">Devoluciones (Horas)</th>
-                <th class="px-3 py-2 text-center text-orange-700">Licencias Médicas</th>
-                <th class="px-3 py-2 text-center text-slate-700">Turnos Noche</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100" id="table-metrics-body">
-              <!-- Rendered dynamically -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-  </main>
-
-  <!-- Footer -->
-  <footer class="bg-slate-900 text-slate-400 text-xs py-4 border-t border-slate-800 mt-auto">
-    <div class="max-w-[1640px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
-      <div class="flex items-center space-x-2">
-        <span class="font-bold text-slate-200">Hospital Regional de Talca</span>
-        <span>•</span>
-        <span>Unidad de Laboratorio Clínico</span>
-      </div>
-      <div class="flex items-center space-x-3 text-slate-400">
-        <span>Sistema de Gestión de Turnos 2027</span>
-        <span>•</span>
-        <span>Versión 2.0 Web</span>
-      </div>
-    </div>
-  </footer>
-
-  <!-- MODAL: Quick Shift & Multi-day Absence Picker -->
-  <div id="modal-shift-picker" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 hidden p-4">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-100 animate-fade-in">
-      
-      <!-- Modal Header -->
-      <div class="bg-slate-900 text-white p-4 flex items-center justify-between">
-        <div>
-          <h3 class="text-sm font-bold flex items-center space-x-2" id="modal-shift-title-container">
-            <i data-lucide="calendar" class="w-4 h-4 text-sky-400"></i>
-            <span id="modal-shift-title">Asignar Turno / Ausencia</span>
-          </h3>
-          <p class="text-xs text-slate-400 mt-0.5" id="modal-shift-subtitle">Selecciona funcionario y período</p>
-        </div>
-        <button onclick="closeShiftModal()" class="text-slate-400 hover:text-white p-1 rounded-lg">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <!-- Modal Body -->
-      <div class="p-4 space-y-3.5 max-h-[80vh] overflow-y-auto">
-        
-        <!-- Historical Year 2026 Warning Notice -->
-        <div id="modal-historical-notice" class="hidden text-xs text-amber-800 bg-amber-50 border border-amber-200 p-2.5 rounded-xl flex items-center space-x-2">
-          <i data-lucide="info" class="w-4 h-4 text-amber-600 shrink-0"></i>
-          <span><strong>Año 2026 (Histórico):</strong> Modo consulta. Para programar ausencias y turnos nuevos del servicio usa <strong>2027</strong>.</span>
-        </div>
-
-        <!-- Staff Selector (Visible when opened from top toolbar) -->
-        <div id="modal-staff-select-container" class="hidden">
-          <label class="block text-xs font-bold text-slate-700 mb-1">Funcionario:</label>
-          <select id="modal-staff-select" onchange="onModalStaffChange(this.value)" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-semibold text-slate-800 bg-white focus:ring-2 focus:ring-sky-500">
-            <!-- Populated by JS -->
+        <div class="tdm-controls">
+          <button id="btnTdmPrevDay" class="btn btn-outline-dark btn-sm" title="Día Anterior">◀ Día Ant.</button>
+          <label for="tdmDateInput">Fecha:</label>
+          <input type="date" id="tdmDateInput" class="date-input" value="2026-10-16" />
+          <button id="btnTdmNextDay" class="btn btn-outline-dark btn-sm" title="Día Siguiente">Día Sig. ▶</button>
+          <select id="tdmFilterStation" class="select-input">
+            <option value="all">Todas las Estaciones / Puestos</option>
+            <option value="Box Toma de Muestra">Box Toma de Muestra AM (08:00 - 11:00)</option>
+            <option value="TDM Tarde">TDM Tarde (11:00 - 17:00)</option>
+            <option value="Apertura">Apertura Toma de Muestra (07:30)</option>
+            <option value="Recepción">Recepción de Pacientes</option>
+            <option value="Orientador">Orientador / Registros / UMT</option>
+            <option value="SOS">Refuerzo SOS (08:30)</option>
+            <option value="Urgencia">Apoyo Urgencia (07:00 - 08:00)</option>
           </select>
-        </div>
-        
-        <!-- Range & Period Selector -->
-        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-slate-700 flex items-center space-x-1.5">
-              <i data-lucide="clock" class="w-3.5 h-3.5 text-sky-600"></i>
-              <span>Período / Rango de Fechas:</span>
-            </span>
-            <span id="modal-range-badge" class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-sky-100 text-sky-800 border border-sky-200">1 día</span>
-          </div>
-
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Fecha Desde:</label>
-              <input type="date" id="modal-range-start" onchange="onRangeStartDateChanged()" class="w-full text-xs p-1.5 border border-slate-300 rounded-lg bg-white font-medium text-slate-800 focus:ring-2 focus:ring-sky-500">
-            </div>
-            <div>
-              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Fecha Hasta:</label>
-              <input type="date" id="modal-range-end" onchange="onRangeDatesChanged()" class="w-full text-xs p-1.5 border border-slate-300 rounded-lg bg-white font-medium text-slate-800 focus:ring-2 focus:ring-sky-500">
-            </div>
-          </div>
-
-          <!-- Quick Duration Presets -->
-          <div class="flex items-center space-x-1 overflow-x-auto pt-1 pb-0.5">
-            <span class="text-[10px] text-slate-400 font-semibold mr-1 shrink-0">Atajos:</span>
-            <button type="button" onclick="setRangeDays(1)" class="px-2 py-0.5 text-[10px] font-semibold rounded bg-white hover:bg-slate-200 border border-slate-200 text-slate-700 shadow-2xs">1 día</button>
-            <button type="button" onclick="setRangeDays(7)" class="px-2 py-0.5 text-[10px] font-semibold rounded bg-white hover:bg-slate-200 border border-slate-200 text-slate-700 shadow-2xs">1 sem (7d)</button>
-            <button type="button" onclick="setRangeDays(14)" class="px-2 py-0.5 text-[10px] font-bold rounded bg-sky-50 hover:bg-sky-100 border border-sky-300 text-sky-700 shadow-2xs">2 sem (14d)</button>
-            <button type="button" onclick="setRangeDays(15)" class="px-2 py-0.5 text-[10px] font-semibold rounded bg-white hover:bg-slate-200 border border-slate-200 text-slate-700 shadow-2xs">15 días</button>
-            <button type="button" onclick="setRangeDays(21)" class="px-2 py-0.5 text-[10px] font-semibold rounded bg-white hover:bg-slate-200 border border-slate-200 text-slate-700 shadow-2xs">3 sem (21d)</button>
-            <button type="button" onclick="setRangeToEndOfMonth()" class="px-2 py-0.5 text-[10px] font-semibold rounded bg-white hover:bg-slate-200 border border-slate-200 text-slate-700 shadow-2xs">Fin de mes</button>
-          </div>
-
-          <!-- Application Mode -->
-          <div class="flex items-center space-x-4 text-xs pt-1 border-t border-slate-200/80">
-            <label class="flex items-center space-x-1.5 cursor-pointer text-slate-700">
-              <input type="radio" name="range-day-mode" id="mode-all-days" value="all" checked onchange="onRangeDatesChanged()" class="text-sky-600 focus:ring-sky-500">
-              <span class="text-[11px] font-medium">Todos los días (Continuo)</span>
-            </label>
-            <label class="flex items-center space-x-1.5 cursor-pointer text-slate-700" title="Omite sábados, domingos y feriados chilenos">
-              <input type="radio" name="range-day-mode" id="mode-workdays" value="workdays" onchange="onRangeDatesChanged()" class="text-sky-600 focus:ring-sky-500">
-              <span class="text-[11px] font-medium">Solo días hábiles (Lunes a Viernes)</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- Absence & Leave Options -->
-        <div>
-          <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Permisos y Ausentismos</label>
-          <div class="grid grid-cols-2 gap-2">
-            <button type="button" id="btn-ev-vacaciones" onclick="selectEventType('VACACIONES', 'FL')" class="event-choice-btn flex items-center space-x-2 p-2.5 rounded-xl border border-red-200 bg-red-50 hover:bg-red-100 text-red-800 text-xs font-semibold transition">
-              <span class="w-3 h-3 rounded-full bg-red-500"></span>
-              <span>🌴 Vacaciones (FL)</span>
-            </button>
-            <button type="button" id="btn-ev-administrativo" onclick="selectEventType('ADMINISTRATIVO', 'DA')" class="event-choice-btn flex items-center space-x-2 p-2.5 rounded-xl border border-yellow-200 bg-yellow-50 hover:bg-yellow-100 text-yellow-800 text-xs font-semibold transition">
-              <span class="w-3 h-3 rounded-full bg-yellow-400"></span>
-              <span>📋 Administrativo (DA)</span>
-            </button>
-            <button type="button" id="btn-ev-licencia" onclick="selectEventType('LICENCIA_MEDICA', 'LM')" class="event-choice-btn flex items-center space-x-2 p-2.5 rounded-xl border border-orange-200 bg-orange-50 hover:bg-orange-100 text-orange-800 text-xs font-semibold transition">
-              <span class="w-3 h-3 rounded-full bg-orange-500"></span>
-              <span>🏥 Licencia Médica (LM)</span>
-            </button>
-            <button type="button" id="btn-ev-devolucion" onclick="selectEventType('DEVOLUCION_TIEMPO', 'H+6')" class="event-choice-btn flex items-center space-x-2 p-2.5 rounded-xl border border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-800 text-xs font-semibold transition">
-              <span class="w-3 h-3 rounded-full bg-purple-500"></span>
-              <span>⏱️ Devolución / Extras</span>
-            </button>
-            <button type="button" id="btn-ev-comision" onclick="selectEventType('COMISION_SERVICIO', '*')" class="event-choice-btn flex items-center space-x-2 p-2.5 rounded-xl border border-pink-200 bg-pink-50 hover:bg-pink-100 text-pink-800 text-xs font-semibold transition">
-              <span class="w-3 h-3 rounded-full bg-pink-500"></span>
-              <span>🏢 Comisión de Serv. (*)</span>
-            </button>
-            <button type="button" id="btn-ev-singoce" onclick="selectEventType('SIN_GOCE_SUELDO', 'PSG')" class="event-choice-btn flex items-center space-x-2 p-2.5 rounded-xl border border-blue-900/30 bg-blue-900/10 hover:bg-blue-900/20 text-blue-950 text-xs font-semibold transition">
-              <span class="w-3 h-3 rounded-full bg-blue-900"></span>
-              <span>💼 Sin Goce Sueldo</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Shift Types -->
-        <div>
-          <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Turnos Rotativos / Horarios</label>
-          <div class="grid grid-cols-4 gap-2 text-center">
-            <button type="button" id="btn-ev-largo" onclick="selectEventType('TURNO', 'L')" class="event-choice-btn p-2 rounded-xl border border-orange-300 bg-orange-100 hover:bg-orange-200 text-orange-900 text-xs font-bold transition">
-              <div>L</div>
-              <div class="text-[10px] font-normal text-orange-700">Largo (08-20)</div>
-            </button>
-            <button type="button" id="btn-ev-noche" onclick="selectEventType('TURNO', 'N')" class="event-choice-btn p-2 rounded-xl border border-slate-600 bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold transition">
-              <div>N</div>
-              <div class="text-[10px] font-normal text-slate-300">Noche (20-08)</div>
-            </button>
-            <button type="button" id="btn-ev-manana" onclick="selectEventType('TURNO', 'M')" class="event-choice-btn p-2 rounded-xl border border-sky-300 bg-sky-100 hover:bg-sky-200 text-sky-900 text-xs font-bold transition">
-              <div>M</div>
-              <div class="text-[10px] font-normal text-sky-700">Mañana</div>
-            </button>
-            <button type="button" id="btn-ev-tarde" onclick="selectEventType('TURNO', 'T')" class="event-choice-btn p-2 rounded-xl border border-indigo-300 bg-indigo-100 hover:bg-indigo-200 text-indigo-900 text-xs font-bold transition">
-              <div>T</div>
-              <div class="text-[10px] font-normal text-indigo-700">Tarde</div>
-            </button>
-          </div>
-        </div>
-
-        <!-- Custom Code or Hours Input -->
-        <div>
-          <label class="block text-xs font-medium text-slate-700 mb-1">Código o Texto a Registrar (ej: FL, LM, DA, H+6, 16:00-17:00, L):</label>
-          <input type="text" id="modal-custom-code" oninput="onCustomCodeInput(this.value)" placeholder="Código o glosa..." class="w-full px-3 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 font-semibold text-slate-800">
-        </div>
-
-      </div>
-
-      <!-- Modal Footer -->
-      <div class="bg-slate-50 px-4 py-3 border-t border-slate-100 flex items-center justify-between">
-        <button type="button" onclick="clearCurrentRangeShift()" class="text-rose-600 hover:text-rose-700 font-bold text-xs flex items-center space-x-1 transition">
-          <i data-lucide="trash-2" class="w-4 h-4"></i>
-          <span id="btn-clear-range-label">Limpiar Días (Libre)</span>
-        </button>
-        <div class="flex items-center space-x-2">
-          <button type="button" onclick="closeShiftModal()" class="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-200 rounded-lg transition font-medium">Cancelar</button>
-          <button type="button" onclick="saveShiftModal()" id="btn-apply-shift" class="px-4 py-1.5 text-xs bg-sky-600 hover:bg-sky-500 text-white rounded-lg shadow font-bold transition flex items-center space-x-1.5">
-            <i data-lucide="check" class="w-3.5 h-3.5"></i>
-            <span id="btn-apply-label">Aplicar</span>
-          </button>
+          <button id="btnAddTdmAssign" class="btn btn-primary" data-role-req="editor">+ Asignar a Puesto TDM</button>
         </div>
       </div>
 
-    </div>
-  </div>
+      <div class="tdm-grid-layout">
+        <div class="tdm-card">
+          <div class="card-header">
+            <h3 id="tdmDailyTitle">Dotación Asignada del Día</h3>
+            <span class="badge" id="tdmDailyCount">0 asignados</span>
+          </div>
+          <div id="tdmDailyAlerts" class="tdm-alerts"></div>
+          <div class="table-Wrapper">
+            <table class="data-table" id="tdmDailyTable">
+              <thead>
+                <tr>
+                  <th>Funcionario</th>
+                  <th>RUT</th>
+                  <th>Estamento / Área</th>
+                  <th>Estación / Horario TDM</th>
+                  <th>Estado en Calendario General</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tdmDailyTbody"></tbody>
+            </table>
+          </div>
+        </div>
 
-  <!-- MODAL: Staff Editor (Completar RUT, Estamento, Jornada) -->
-  <div id="modal-staff-editor" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 hidden p-4">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-100 animate-fade-in">
-      <div class="bg-slate-900 text-white p-4 flex items-center justify-between">
-        <h3 class="text-sm font-bold flex items-center space-x-2">
-          <i data-lucide="user-cog" class="w-4 h-4 text-sky-400"></i>
-          <span id="modal-staff-title">Editar Datos del Funcionario</span>
-        </h3>
-        <button onclick="closeStaffModal()" class="text-slate-400 hover:text-white">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
+        <div class="tdm-card">
+          <div class="card-header">
+            <h3 id="tdmMonthMatrixTitle">Matriz Mensual de Rotación en Toma de Muestras</h3>
+            <span class="card-subtitle">Haz clic en cualquier celda del mes para asignar, cambiar puesto o quitar de TDM</span>
+          </div>
+          <div class="tdm-matrix-legend">
+            <span class="tdm-leg-item"><b class="tdm-chip-am">X</b> Box AM (08:00)</span>
+            <span class="tdm-leg-item"><b class="tdm-chip-730">7:30</b> Apertura (07:30)</span>
+            <span class="tdm-leg-item"><b class="tdm-chip-tarde">T</b> TDM Tarde (11-17h)</span>
+            <span class="tdm-leg-item"><b class="tdm-chip-rec">R</b> Recepción</span>
+            <span class="tdm-leg-item"><b class="tdm-chip-ori">O</b> Orientador/UMT</span>
+            <span class="tdm-leg-item"><b class="tdm-chip-sos">SOS</b> Refuerzo 08:30</span>
+            <span class="tdm-leg-item"><b class="tdm-chip-warn">!</b> Conflicto con Ausencia/Noche</span>
+          </div>
+          <div class="tdm-month-matrix-wrapper">
+            <table class="calendar-table compact-table" id="tdmMonthTable">
+              <thead id="tdmMonthThead"></thead>
+              <tbody id="tdmMonthTbody"></tbody>
+            </table>
+          </div>
+        </div>
       </div>
-      <div class="p-5 space-y-3 text-xs">
-        <input type="hidden" id="staff-edit-id">
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- VISTA 3: DIRECTORIO DE DOTACIÓN Y DATOS PENDIENTES                   -->
+    <!-- ==================================================================== -->
+    <section id="view-directory" class="view-panel">
+      <div class="panel-header">
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">Nombre Completo:</label>
-          <input type="text" id="staff-edit-name" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-sky-500 font-medium">
+          <h2>👥 Maestro Unificado de Dotación y Personal</h2>
+          <p>Registro consolidado cruzado con Nómina de Laboratorio y Dotación Oficial HRT. Cada funcionario existe una única vez sin duplicarse entre secciones.</p>
         </div>
-        <div>
-          <label class="block font-semibold text-slate-700 mb-1">RUT (Formato: 12.345.678-K o 12345678-9):</label>
-          <input type="text" id="staff-edit-rut" placeholder="12345678-9" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-mono focus:ring-2 focus:ring-sky-500">
-        </div>
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block font-semibold text-slate-700 mb-1">Estamento:</label>
-            <select id="staff-edit-estamento" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-sky-500 font-medium">
-              <option value="Tecnólogo Médico">Tecnólogo Médico (TM)</option>
-              <option value="Bioquímico">Bioquímico (BQ)</option>
-              <option value="TENS">TENS</option>
-              <option value="Auxiliar">Auxiliar</option>
-              <option value="Interno TM">Interno TM</option>
-              <option value="Administrativo">Administrativo</option>
-            </select>
-          </div>
-          <div>
-            <label class="block font-semibold text-slate-700 mb-1">Jornada:</label>
-            <select id="staff-edit-jornada" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-sky-500 font-medium">
-              <option value="Turno">Turno (4to Turno / Urgencias)</option>
-              <option value="Diurno">Diurno (Jornada Ordinaria)</option>
-            </select>
-          </div>
-        </div>
-        <div>
-          <label class="block font-semibold text-slate-700 mb-1">Sección / Área de Trabajo:</label>
-          <select id="staff-edit-section" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-sky-500 font-medium bg-white">
-            <option value="ALU">ALU (Urgencias / Biología Molecular)</option>
+        <div class="directory-controls">
+          <input type="text" id="dirSearch" class="search-input" placeholder="🔍 Filtrar por nombre, apellido o RUT..." />
+          <select id="dirFilterSection" class="select-input" title="Filtrar por Sección / Área Oficial">
+            <option value="all">Todas las Secciones</option>
+            <option value="ALU">ALU (Urgencia y Biol. Molecular)</option>
             <option value="AH">AH (Hematología)</option>
             <option value="AIC">AIC (Química / Inmunoquímica)</option>
             <option value="AMB">AMB (Microbiología)</option>
-            <option value="APA">APA (TENS / Paramédicos)</option>
+            <option value="APA">APA (TENS)</option>
+            <option value="ATE">ATE (Técnicas Especiales)</option>
             <option value="ADM">ADM (Administrativa)</option>
-            <option value="ATE">ATE (Toma de Exámenes)</option>
+            <option value="Auxiliares">Auxiliares</option>
+          </select>
+          <select id="dirFilterStatus" class="select-input" title="Filtrar por Estado de Ficha">
+            <option value="all">Todos los Estados</option>
+            <option value="incomplete">⚠️ Datos Incompletos (Sin RUT / 2° Apellido)</option>
+            <option value="complete">✅ Datos Completos</option>
+          </select>
+          <select id="dirFilterModality" class="select-input" title="Filtrar por Tipo de Jornada">
+            <option value="all">Todas las Jornadas</option>
+            <option value="4to Turno / Rotativo">🔄 En Turno (4to Turno / Rotativo)</option>
+            <option value="Diurno">☀️ Diurno (Lunes a Viernes)</option>
+          </select>
+          <select id="dirFilterEstamento" class="select-input" title="Filtrar por Estamento">
+            <option value="all">Todos los Estamentos</option>
+            <option value="Tecnólogo Médico">Tecnólogo Médico</option>
+            <option value="Bioquímico">Bioquímico</option>
+            <option value="TENS">TENS</option>
+            <option value="Auxiliar">Auxiliar</option>
+            <option value="Administrativo">Administrativo</option>
+            <option value="Interno TM">Interno TM</option>
+          </select>
+          <span id="dirCountBadge" class="badge">0 mostrados</span>
+          <button id="btnAddStaff" class="btn btn-primary" data-role-req="admin">+ Nuevo Funcionario</button>
+        </div>
+      </div>
+
+      <div class="alert-banner warning-banner" id="incompleteStaffBanner" data-role-req="admin">
+        <div class="banner-icon">⚠️</div>
+        <div class="banner-content">
+          <strong>Atención Coordinación:</strong> Se detectaron <span id="bannerIncompleteCount">0</span> registros en la planilla original a los cuales les falta el <strong>RUT</strong> o el <strong>Segundo Apellido</strong> (reemplazos o inducciones recientes). Haz clic en la tarjeta <strong>Pendientes por Completar</strong> o en <em>"Editar"</em> para actualizarlos.
+        </div>
+      </div>
+
+      <div class="stats-cards-row">
+        <div class="stat-card stat-card-clickable" data-dir-quick="all" title="Clic para mostrar toda la dotación">
+          <span class="stat-label">Total Dotación Unificada</span>
+          <strong class="stat-value" id="statTotalStaff">0</strong>
+        </div>
+        <div class="stat-card stat-ok stat-card-clickable" data-dir-quick="complete" title="Clic para filtrar funcionarios con datos completos">
+          <span class="stat-label">Datos Completos (RUT + Nombre Oficial)</span>
+          <strong class="stat-value" id="statCompleteStaff">0</strong>
+        </div>
+        <div class="stat-card stat-warn stat-card-clickable" data-dir-quick="incomplete" title="Clic para filtrar funcionarios con RUT o apellido pendiente">
+          <span class="stat-label">Pendientes por Completar</span>
+          <strong class="stat-value" id="statPendingStaff">0</strong>
+        </div>
+        <div class="stat-card stat-info stat-card-clickable" data-dir-quick="turno" title="Clic para filtrar funcionarios en modalidad 4to Turno / Rotativo">
+          <span class="stat-label">En 4to Turno / Rotativo</span>
+          <strong class="stat-value" id="statRotatingStaff">0</strong>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <table class="data-table" id="directoryTable">
+          <thead>
+            <tr>
+              <th>Estado</th>
+              <th>Nombre en Calendario</th>
+              <th>Nombre Legal Oficial (Nómina / GRC)</th>
+              <th>RUT</th>
+              <th>Estamento</th>
+              <th>Sección / Área</th>
+              <th>Modalidad</th>
+              <th>Módulos / Hojas</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="directoryTbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- VISTA 4: ESTADÍSTICAS Y EQUIDAD ANUAL                                -->
+    <!-- ==================================================================== -->
+    <section id="view-analytics" class="view-panel">
+      <div class="panel-header">
+        <div>
+          <h2>📊 Estadísticas Anuales de Carga Laboral, Ausentismo y Equidad (<span id="analyticsYearLabel">2026</span>)</h2>
+          <p>Consolidado anual por funcionario para control de equidad en turnos nocturnos, fines de semana/feriados, feriado legal, días administrativos y licencias médicas.</p>
+        </div>
+        <div class="analytics-controls">
+          <input type="text" id="analyticsSearch" class="search-input" placeholder="🔍 Filtrar funcionario en estadísticas..." />
+          <select id="analyticsFilterGroup" class="select-input">
+            <option value="all">Toda la Dotación</option>
+            <option value="ALU">Urgencias (ALU)</option>
+            <option value="APA">TENS (APA)</option>
+            <option value="AH">Hematología (AH)</option>
+            <option value="AIC">Química / Inmunoquímica (AIC)</option>
+            <option value="AMB">Microbiología (AMB)</option>
+            <option value="ATE">Técnicas Especiales (ATE)</option>
+            <option value="ADM">Administrativa (ADM)</option>
             <option value="Auxiliares">Auxiliares</option>
           </select>
         </div>
+      </div>
 
-        <!-- Quick link to Schedule / Rotation modal for this staff member -->
-        <div class="pt-1">
-          <button type="button" onclick="openShiftScheduleFromStaffModal()" class="w-full py-2 px-3 bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 rounded-lg font-bold text-xs flex items-center justify-center space-x-2 transition">
-            <i data-lucide="calendar-sync" class="w-4 h-4 text-sky-600"></i>
-            <span>⚡ Asignar Patrón 4to Turno / Traspaso / Rotación</span>
+      <div class="stats-cards-row" id="analyticsSummaryCards"></div>
+
+      <div class="table-card">
+        <table class="data-table" id="analyticsTable">
+          <thead>
+            <tr>
+              <th>Funcionario</th>
+              <th>RUT</th>
+              <th>Estamento / Sección</th>
+              <th class="num-col">Turnos Largo (L)</th>
+              <th class="num-col">Turnos Noche (N)</th>
+              <th class="num-col">Turnos Diurnos (D/M/T)</th>
+              <th class="num-col">Fines de Semana / Feriados</th>
+              <th class="num-col">Vacaciones (FL)</th>
+              <th class="num-col">Días Admin. (DA)</th>
+              <th class="num-col">Licencias (LM)</th>
+              <th class="num-col">Días en TDM</th>
+              <th>Ficha</th>
+            </tr>
+          </thead>
+          <tbody id="analyticsTbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- VISTA 5: BITÁCORA DE TRAZABILIDAD Y AUDITORÍA (SOLO JEFATURA/ADMIN)  -->
+    <!-- ==================================================================== -->
+    <section id="view-audit" class="view-panel">
+      <div class="panel-header">
+        <div>
+          <h2>📋 Bitácora de Trazabilidad y Control de Modificaciones</h2>
+          <p>Registro histórico inmutable de quién otorgó un día/permiso o modificó el calendario, con fecha/hora exacta y comparación del valor anterior vs. nuevo. <strong>Visible exclusivamente para Jefatura y Administración.</strong></p>
+        </div>
+        <div class="audit-controls">
+          <input type="text" id="auditSearch" class="search-input" placeholder="🔍 Buscar funcionario, fecha o código..." />
+          <select id="auditFilterUser" class="select-input" title="Filtrar por usuario que otorgó o modificó">
+            <option value="all">Todos los Usuarios / Jefaturas</option>
+          </select>
+          <select id="auditFilterCategory" class="select-input" title="Filtrar por tipo de acción">
+            <option value="all">Todas las Acciones</option>
+            <option value="AUSENCIA">📅 Otorgamiento de Días / Ausencias</option>
+            <option value="TURNO">🔄 Asignación / Cambio de Turnos</option>
+            <option value="ESQUEMA">⚙️ Rotaciones / Paso a Diurno / Swap</option>
+            <option value="TDM">🩸 Toma de Muestras (TDM)</option>
+            <option value="LIMPIEZA">🧹 Limpieza / Eliminación de Días</option>
+            <option value="PERSONAL">👥 Gestión de Personal / Usuarios</option>
+          </select>
+          <button id="btnExportAuditCSV" class="btn btn-outline-dark btn-sm" title="Descargar bitácora completa en formato CSV compatible con Excel">
+            📥 Exportar Trazabilidad CSV
           </button>
-        </div>
-      </div>
-      <div class="bg-slate-50 px-5 py-3 border-t border-slate-100 flex items-center justify-end space-x-2">
-        <button onclick="closeStaffModal()" class="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-200 rounded-lg font-medium">Cancelar</button>
-        <button onclick="saveStaffModal()" class="px-4 py-1.5 text-xs bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-lg shadow">Guardar Cambios</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL: Gestor de Esquemas de Turno y Rotaciones (4to Turno, Diurno, Intercambio) -->
-  <div id="modal-shift-schedule" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 hidden p-4">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden border border-slate-100 animate-fade-in flex flex-col max-h-[90vh]">
-      
-      <!-- Modal Header -->
-      <div class="bg-slate-900 text-white p-4 flex items-center justify-between shrink-0">
-        <div class="flex items-center space-x-2.5">
-          <div class="w-8 h-8 rounded-lg bg-sky-500/20 border border-sky-400/30 flex items-center justify-center text-sky-400">
-            <i data-lucide="calendar-sync" class="w-5 h-5"></i>
-          </div>
-          <div>
-            <h3 class="text-sm font-bold text-white">Gestión de Esquemas de Turno y Rotaciones</h3>
-            <p class="text-[11px] text-slate-400">Asignar 4to Turno (L-N-L-L), traspaso a diurno o intercambios de turno entre personal</p>
-          </div>
-        </div>
-        <button onclick="closeShiftScheduleModal()" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <!-- Tab Buttons for the 3 Operations -->
-      <div class="flex items-center border-b border-slate-200 bg-slate-50 px-4 pt-2 gap-2 shrink-0 overflow-x-auto">
-        <button onclick="switchScheduleTab('PATTERN')" id="tab-sched-pattern" class="px-3 py-2 text-xs font-bold border-b-2 border-sky-600 text-sky-700 flex items-center space-x-1.5 transition whitespace-nowrap">
-          <span>⚡ Asignar 4to Turno (L-N-L-L)</span>
-        </button>
-        <button onclick="switchScheduleTab('DIURNO')" id="tab-sched-diurno" class="px-3 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 border-b-2 border-transparent flex items-center space-x-1.5 transition whitespace-nowrap">
-          <span>☀️ Pasar a Diurno</span>
-        </button>
-        <button onclick="switchScheduleTab('SWAP')" id="tab-sched-swap" class="px-3 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 border-b-2 border-transparent flex items-center space-x-1.5 transition whitespace-nowrap">
-          <span>🔄 Intercambiar Rotación</span>
-        </button>
-      </div>
-
-      <!-- Tab Content Area (Scrollable) -->
-      <div class="p-5 overflow-y-auto space-y-4 text-xs">
-
-        <!-- TAB 1: ASIGNAR 4TO TURNO -->
-        <div id="sched-tab-content-pattern" class="space-y-4">
-          <div class="bg-sky-50/80 border border-sky-200 rounded-xl p-3 text-sky-950 text-xs">
-            <div class="font-bold flex items-center space-x-1 mb-0.5">
-              <i data-lucide="info" class="w-4 h-4 text-sky-600"></i>
-              <span>Patrón Operativo Oficial HRT (4to Turno):</span>
-            </div>
-            <span>Genera automáticamente la secuencia cíclica de 4 días: <strong>Largo (08:00 a 20:00)</strong> ➔ <strong>Noche (20:00 a 08:00)</strong> ➔ <strong>Saliente / Libre</strong> ➔ <strong>Libre</strong>.</span>
-          </div>
-
-          <!-- Funcionario selector -->
-          <div>
-            <label class="block font-bold text-slate-700 mb-1">Funcionario a Programar:</label>
-            <select id="sched-pattern-staff" onchange="updateSchedulePreview()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-semibold text-slate-800 bg-white focus:ring-2 focus:ring-sky-500">
-              <!-- Populated by JS -->
-            </select>
-          </div>
-
-          <!-- Date Range -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Fecha de Inicio (Primer Turno):</label>
-              <input type="date" id="sched-pattern-start" onchange="updateSchedulePreview()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-medium focus:ring-2 focus:ring-sky-500">
-            </div>
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Fecha de Término (Hasta):</label>
-              <input type="date" id="sched-pattern-end" onchange="updateSchedulePreview()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-medium focus:ring-2 focus:ring-sky-500">
-            </div>
-          </div>
-
-          <!-- Quick Date Range Presets -->
-          <div class="flex items-center space-x-1.5 flex-wrap">
-            <span class="text-[11px] font-bold text-slate-400">Rango rápido:</span>
-            <button type="button" onclick="setPatternQuickRange('MONTH')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium transition">Fin de Mes</button>
-            <button type="button" onclick="setPatternQuickRange('3MONTHS')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium transition">+3 Meses</button>
-            <button type="button" onclick="setPatternQuickRange('6MONTHS')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium transition">+6 Meses</button>
-            <button type="button" onclick="setPatternQuickRange('YEAR')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium transition">Fin de Año</button>
-          </div>
-
-          <!-- Starting Shift of the cycle -->
-          <div>
-            <label class="block font-bold text-slate-700 mb-1">Turno en la Fecha de Inicio (Turno de Partida):</label>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <label class="flex items-center p-2 rounded-lg border border-slate-200 bg-white hover:bg-orange-50 cursor-pointer space-x-2">
-                <input type="radio" name="sched-cycle-start" value="L" checked onchange="updateSchedulePreview()" class="text-sky-600 focus:ring-sky-500">
-                <div>
-                  <span class="font-bold text-orange-900 block text-xs">☀️ Largo (L)</span>
-                  <span class="text-[10px] text-slate-400">L ➔ N ➔ Libre ➔ Libre</span>
-                </div>
-              </label>
-              <label class="flex items-center p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 cursor-pointer space-x-2">
-                <input type="radio" name="sched-cycle-start" value="N" onchange="updateSchedulePreview()" class="text-sky-600 focus:ring-sky-500">
-                <div>
-                  <span class="font-bold text-slate-900 block text-xs">🌙 Noche (N)</span>
-                  <span class="text-[10px] text-slate-400">N ➔ Libre ➔ Libre ➔ L</span>
-                </div>
-              </label>
-              <label class="flex items-center p-2 rounded-lg border border-slate-200 bg-white hover:bg-emerald-50 cursor-pointer space-x-2">
-                <input type="radio" name="sched-cycle-start" value="X1" onchange="updateSchedulePreview()" class="text-sky-600 focus:ring-sky-500">
-                <div>
-                  <span class="font-bold text-emerald-900 block text-xs">🏖️ Libre 1 (Sal.)</span>
-                  <span class="text-[10px] text-slate-400">Libre ➔ Libre ➔ L ➔ N</span>
-                </div>
-              </label>
-              <label class="flex items-center p-2 rounded-lg border border-slate-200 bg-white hover:bg-emerald-50 cursor-pointer space-x-2">
-                <input type="radio" name="sched-cycle-start" value="X2" onchange="updateSchedulePreview()" class="text-sky-600 focus:ring-sky-500">
-                <div>
-                  <span class="font-bold text-emerald-900 block text-xs">🏖️ Libre 2</span>
-                  <span class="text-[10px] text-slate-400">Libre ➔ L ➔ N ➔ Libre</span>
-                </div>
-              </label>
-            </div>
-          </div>
-
-          <!-- Options -->
-          <div class="space-y-2 pt-1 border-t border-slate-100">
-            <label class="flex items-center space-x-2 cursor-pointer">
-              <input type="checkbox" id="sched-preserve-absences" checked onchange="updateSchedulePreview()" class="rounded text-sky-600 focus:ring-sky-500">
-              <span class="text-xs text-slate-700 font-medium">Preservar ausencias existentes (Vacaciones, Licencias Médicas, Administrativos)</span>
-            </label>
-            <label class="flex items-center space-x-2 cursor-pointer">
-              <input type="checkbox" id="sched-update-jornada-turno" checked class="rounded text-sky-600 focus:ring-sky-500">
-              <span class="text-xs text-slate-700 font-medium">Actualizar jornada oficial del funcionario a <strong>"Turno"</strong></span>
-            </label>
-          </div>
-
-          <!-- Live Preview Box -->
-          <div class="bg-slate-50 border border-slate-200 rounded-xl p-3" id="sched-pattern-preview-box">
-            <div class="font-bold text-slate-700 flex items-center justify-between mb-2">
-              <span>Vista previa de generación:</span>
-              <span id="sched-preview-summary" class="text-xs text-sky-700 font-bold">Calculando...</span>
-            </div>
-            <div id="sched-preview-pills" class="flex items-center space-x-1.5 overflow-x-auto pb-1 text-[11px]">
-              <!-- Generated preview pills -->
-            </div>
-          </div>
-        </div>
-
-        <!-- TAB 2: PASAR A DIURNO -->
-        <div id="sched-tab-content-diurno" class="hidden space-y-4">
-          <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-amber-900 text-xs">
-            <div class="font-bold flex items-center space-x-1 mb-0.5">
-              <i data-lucide="sun" class="w-4 h-4 text-amber-600"></i>
-              <span>Traspaso a Jornada Diurna (Lunes a Viernes):</span>
-            </div>
-            <span>Elimina todos los turnos rotativos (Largo 'L' y Noche 'N') en el rango seleccionado y rellena los días hábiles (Lunes a Viernes) con jornada normal ('D'). Los fines de semana quedan libres.</span>
-          </div>
-
-          <div>
-            <label class="block font-bold text-slate-700 mb-1">Funcionario a pasar a Diurno:</label>
-            <select id="sched-diurno-staff" onchange="updateDiurnoPreview()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-semibold text-slate-800 bg-white focus:ring-2 focus:ring-sky-500">
-              <!-- Populated by JS -->
-            </select>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Desde Fecha:</label>
-              <input type="date" id="sched-diurno-start" onchange="updateDiurnoPreview()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-medium focus:ring-2 focus:ring-sky-500">
-            </div>
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Hasta Fecha:</label>
-              <input type="date" id="sched-diurno-end" onchange="updateDiurnoPreview()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-medium focus:ring-2 focus:ring-sky-500">
-            </div>
-          </div>
-
-          <!-- Quick date buttons for Diurno -->
-          <div class="flex items-center space-x-1.5 pt-0.5">
-            <span class="text-[10px] text-slate-400 font-bold uppercase">Atajos:</span>
-            <button type="button" onclick="setDiurnoQuickRange('MONTH')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium transition">+Fin de Mes</button>
-            <button type="button" onclick="setDiurnoQuickRange('3MONTHS')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium transition">+3 Meses</button>
-            <button type="button" onclick="setDiurnoQuickRange('6MONTHS')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium transition">+6 Meses</button>
-            <button type="button" onclick="setDiurnoQuickRange('YEAR')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium transition">Fin de Año</button>
-          </div>
-
-          <div class="space-y-2 pt-1 border-t border-slate-100">
-            <label class="flex items-center space-x-2 cursor-pointer">
-              <input type="checkbox" id="sched-diurno-fill" checked onchange="updateDiurnoPreview()" class="rounded text-sky-600 focus:ring-sky-500">
-              <span class="text-xs text-slate-700 font-medium">Rellenar días hábiles (Lunes a Viernes) con turno ordinario <strong>"D"</strong> (08:00 a 17:00)</span>
-            </label>
-            <label class="flex items-center space-x-2 cursor-pointer">
-              <input type="checkbox" id="sched-diurno-omit-holidays" checked onchange="updateDiurnoPreview()" class="rounded text-sky-600 focus:ring-sky-500">
-              <span class="text-xs text-slate-700 font-medium">Omitir feriados nacionales (no programar turno en feriado)</span>
-            </label>
-            <label class="flex items-center space-x-2 cursor-pointer">
-              <input type="checkbox" id="sched-diurno-preserve-absences" checked onchange="updateDiurnoPreview()" class="rounded text-sky-600 focus:ring-sky-500">
-              <span class="text-xs text-slate-700 font-medium">Preservar ausencias legales existentes (Vacaciones, Licencias Médicas, Administrativos)</span>
-            </label>
-            <label class="flex items-center space-x-2 cursor-pointer">
-              <input type="checkbox" id="sched-update-jornada-diurno" checked class="rounded text-sky-600 focus:ring-sky-500">
-              <span class="text-xs text-slate-700 font-medium">Actualizar jornada oficial del funcionario a <strong>"Diurno"</strong></span>
-            </label>
-          </div>
-
-          <!-- Live Preview Box for Diurno -->
-          <div class="bg-slate-50 border border-slate-200 rounded-xl p-3" id="sched-diurno-preview-box">
-            <div class="font-bold text-slate-700 flex items-center justify-between mb-2">
-              <span>Vista previa de traspaso a Diurno:</span>
-              <span id="sched-diurno-preview-summary" class="text-xs text-sky-700 font-bold">Calculando...</span>
-            </div>
-            <div id="sched-diurno-preview-pills" class="flex items-center space-x-1.5 overflow-x-auto pb-1 text-[11px] no-scrollbar">
-              <!-- Generated preview pills -->
-            </div>
-          </div>
-        </div>
-
-        <!-- TAB 3: INTERCAMBIAR ROTACIÓN (SWAP) -->
-        <div id="sched-tab-content-swap" class="hidden space-y-4">
-          <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-indigo-900 text-xs">
-            <div class="font-bold flex items-center space-x-1 mb-0.5">
-              <i data-lucide="arrow-left-right" class="w-4 h-4 text-indigo-600"></i>
-              <span>Intercambio de Rotación entre Dos Funcionarios:</span>
-            </div>
-            <span>Intercambia todos los turnos operativos (Largos, Noches y Libres) entre los dos funcionarios seleccionados durante el período indicado.</span>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Funcionario A (Titular Turno A):</label>
-              <select id="sched-swap-staff-1" onchange="updateSwapPreview()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-semibold text-slate-800 bg-white focus:ring-2 focus:ring-sky-500">
-                <!-- Populated by JS -->
-              </select>
-            </div>
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Funcionario B (Titular Turno B):</label>
-              <select id="sched-swap-staff-2" onchange="updateSwapPreview()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-semibold text-slate-800 bg-white focus:ring-2 focus:ring-sky-500">
-                <!-- Populated by JS -->
-              </select>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Desde Fecha:</label>
-              <input type="date" id="sched-swap-start" onchange="updateSwapPreview()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-medium focus:ring-2 focus:ring-sky-500">
-            </div>
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Hasta Fecha:</label>
-              <input type="date" id="sched-swap-end" onchange="updateSwapPreview()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-medium focus:ring-2 focus:ring-sky-500">
-            </div>
-          </div>
-
-          <div>
-            <label class="flex items-center space-x-2 cursor-pointer">
-              <input type="checkbox" id="sched-swap-include-absences" onchange="updateSwapPreview()" class="rounded text-sky-600 focus:ring-sky-500">
-              <span class="text-xs text-slate-700 font-medium">Intercambiar también ausencias personales (Vacaciones, Administrativos) - <em>Por defecto se conservan las ausencias de cada uno</em></span>
-            </label>
-          </div>
-
-          <div class="bg-slate-50 border border-slate-200 rounded-xl p-3" id="sched-swap-preview-box">
-            <div class="font-bold text-slate-700 mb-1">Resumen del Intercambio:</div>
-            <div id="sched-swap-summary-text" class="text-xs text-slate-600">
-              Selecciona ambos funcionarios y las fechas para previsualizar el intercambio.
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Modal Footer with Action Buttons -->
-      <div class="bg-slate-50 px-5 py-3 border-t border-slate-200 flex items-center justify-between shrink-0">
-        <button type="button" onclick="closeShiftScheduleModal()" class="px-4 py-2 text-xs text-slate-600 hover:bg-slate-200 rounded-lg font-semibold transition">
-          Cancelar
-        </button>
-        <div class="flex items-center space-x-2">
-          <button type="button" id="btn-submit-schedule" onclick="executeShiftScheduleAction()" class="px-5 py-2 text-xs bg-sky-600 hover:bg-sky-500 text-white rounded-lg shadow font-bold transition flex items-center space-x-1.5">
-            <i data-lucide="check-check" class="w-4 h-4"></i>
-            <span id="btn-submit-schedule-label">Aplicar Esquema 4to Turno</span>
+          <button id="btnClearAuditLog" class="btn btn-danger-outline btn-sm" data-role-req="admin" title="Limpiar historial antiguo de trazabilidad (Solo Administrador)">
+            🗑️ Depurar
           </button>
         </div>
       </div>
 
+      <div class="stats-cards-row" id="auditSummaryCards"></div>
+
+      <div class="table-card">
+        <table class="data-table" id="auditTable">
+          <thead>
+            <tr>
+              <th>Fecha y Hora</th>
+              <th>Otorgado / Modificado por</th>
+              <th>Categoría</th>
+              <th>Funcionario Afectado</th>
+              <th>Fecha(s) Calendario</th>
+              <th>Cambio (Antes → Después)</th>
+              <th>Detalle / Autorización</th>
+            </tr>
+          </thead>
+          <tbody id="auditTbody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- ====================================================================== -->
+  <!-- MODAL 1: EDITAR CELDA / AGENDAR RANGO DE TURNOS O AUSENCIAS            -->
+  <!-- ====================================================================== -->
+  <div class="modal-backdrop hidden" id="modalCellEdit">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <h3 id="modalCellTitle">Programar Turno, Permiso o Ausencia</h3>
+        <button class="modal-close" id="btnCloseCellModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <!-- Banner de Trazabilidad del Registro Actual (Visible solo para Jefatura y Admin) -->
+        <div id="cellAuditTraceBanner" class="cell-audit-banner hidden"></div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cellStaffSelect">Funcionario</label>
+            <select id="cellStaffSelect" class="select-input full-width"></select>
+            <input type="hidden" id="cellStaffId" />
+          </div>
+          <div class="form-group">
+            <label for="cellRangeMode">Modo de Aplicación en el Rango</label>
+            <select id="cellRangeMode" class="select-input full-width">
+              <option value="all">Todos los días corridos (Lun a Dom)</option>
+              <option value="weekdays">Solo días hábiles (Lun a Vie, omite Sáb/Dom y Feriados)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cellDate">Fecha Desde</label>
+            <input type="date" id="cellDate" class="text-input" />
+          </div>
+          <div class="form-group">
+            <label for="cellEndDate">Fecha Hasta (inclusive)</label>
+            <input type="date" id="cellEndDate" class="text-input" />
+          </div>
+        </div>
+
+        <div class="quick-duration-bar">
+          <span class="qd-label">Duración rápida:</span>
+          <button type="button" class="qd-chip" data-days="1">Solo 1 día</button>
+          <button type="button" class="qd-chip" data-days="5">5 días (L-V)</button>
+          <button type="button" class="qd-chip" data-days="7">1 semana (7d)</button>
+          <button type="button" class="qd-chip" data-days="14">2 semanas (14d)</button>
+          <button type="button" class="qd-chip" data-days="15">15 días</button>
+          <button type="button" class="qd-chip" data-days="21">3 semanas (21d)</button>
+          <button type="button" class="qd-chip" data-days="month_end">Hasta fin de mes</button>
+        </div>
+
+        <div id="cellRangePreview" class="range-preview-banner">
+          Se aplicará a <strong>1 día</strong>.
+        </div>
+
+        <div class="form-group" id="cellCodeGroup">
+          <label for="cellCodeInput">Tipo de Asignación</label>
+          <input type="hidden" id="cellEventType" value="" />
+          <div class="quick-code-pills" id="quickCodePills">
+            <button type="button" class="code-pill" data-code="L" data-type="TURNO" title="Turno Largo (08:00 - 20:00)">L (Largo)</button>
+            <button type="button" class="code-pill" data-code="N" data-type="TURNO" title="Turno Noche (20:00 - 08:00)">N (Noche)</button>
+            <button type="button" class="code-pill" data-code="D" data-type="TURNO">D (Diurno)</button>
+            <button type="button" class="code-pill" data-code="M" data-type="TURNO">M (Mañana)</button>
+            <button type="button" class="code-pill" data-code="T" data-type="TURNO">T (Tarde)</button>
+            <button type="button" class="code-pill" data-code="FL" data-type="VACACIONES">FL (Vacaciones)</button>
+            <button type="button" class="code-pill" data-code="DA" data-type="ADMINISTRATIVO">DA (Admin.)</button>
+            <button type="button" class="code-pill" data-code="LM" data-type="LICENCIA_MEDICA">LM (Licencia)</button>
+            <button type="button" class="code-pill" data-code="DC" data-type="COMPENSATORIO" title="Permiso por Día Compensatorio (Ausencia justificada)">DC (Compensatorio)</button>
+            <button type="button" class="code-pill" data-code="DT" data-type="DEVOLUCION_TIEMPO" title="Ausencia o permiso usando horas a devolución">DT (Uso Devol.)</button>
+            <button type="button" class="code-pill" data-code="*" data-type="COMISION_SERVICIO">* (Capacitación)</button>
+            <button type="button" class="code-pill" data-code="PSG" data-type="SIN_GOCE_SUELDO">PSG (Sin Goce)</button>
+            <button type="button" class="code-pill pill-extra-e" data-code="E+2" data-type="EXTENSION_HORARIA" title="Extensión Horaria: quedarse más horas después de su jornada">E+n (Extensión)</button>
+            <button type="button" class="code-pill pill-extra-h" data-code="H+6" data-type="HORAS_TURNO_EXTRA" title="Horas realizadas por Turno Extra">H+n (Turno Extra)</button>
+          </div>
+
+          <!-- Campo directo para indicar cuántas horas (n) son cuando se selecciona E+n o H+n -->
+          <div class="extra-hours-builder hidden" id="extraHoursBuilder">
+            <label for="extraHoursNumberInput" class="eh-label" id="extraHoursBuilderLabel">Cantidad de horas a asignar:</label>
+            <div class="eh-input-inline">
+              <span class="eh-prefix-badge" id="extraHoursPrefixBadge">E+</span>
+              <input type="number" id="extraHoursNumberInput" class="text-input eh-number-input" min="1" max="24" step="1" value="2" />
+              <span class="eh-unit-text">horas</span>
+            </div>
+          </div>
+
+          <!-- Selector inmediato cuando se elige DA (Día Administrativo): Día Completo vs Medio Día (Mañana DA-M / Tarde DA-T) -->
+          <div class="da-mode-builder hidden" id="daModeBuilder">
+            <span class="da-builder-title">📋 Jornada del Día Administrativo:</span>
+            <div class="da-mode-radios">
+              <label class="da-radio-pill">
+                <input type="radio" name="daModeRadio" id="daModeFull" value="DA" checked />
+                <span>📅 Día Completo (<strong>DA</strong>)</span>
+              </label>
+              <label class="da-radio-pill">
+                <input type="radio" name="daModeRadio" id="daModeMorning" value="DA-M" />
+                <span>🌅 Media Jornada Mañana (<strong>DA-M</strong>)</span>
+              </label>
+              <label class="da-radio-pill">
+                <input type="radio" name="daModeRadio" id="daModeAfternoon" value="DA-T" />
+                <span>🌇 Media Jornada Tarde (<strong>DA-T</strong>)</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Selector inmediato cuando se elige DT (Uso de Devolución de Tiempo): Horario específico vs Todo el día -->
+          <div class="dt-schedule-builder hidden" id="dtScheduleBuilder">
+            <div class="dt-builder-header">
+              <span class="dt-builder-title">🟣 ¿En qué modalidad u horario será la Devolución de Tiempo (DT)?</span>
+              <div class="dt-mode-radios">
+                <label class="dt-radio-pill">
+                  <input type="radio" name="dtModeRadio" id="dtModePartial" value="partial" checked />
+                  <span>🕒 Entre horarios</span>
+                </label>
+                <label class="dt-radio-pill">
+                  <input type="radio" name="dtModeRadio" id="dtModeFull" value="full" />
+                  <span>📅 Todo el día</span>
+                </label>
+              </div>
+            </div>
+            <div class="dt-time-row" id="dtTimeInputsRow">
+              <span class="dt-time-label">Desde:</span>
+              <input type="time" id="dtStartTime" class="text-input dt-time-input" value="15:00" />
+              <span class="dt-time-label">Hasta:</span>
+              <input type="time" id="dtEndTime" class="text-input dt-time-input" value="17:00" />
+              <span class="dt-time-or">o glosa:</span>
+              <input type="text" id="dtScheduleTextInput" class="text-input dt-schedule-text" placeholder="Ej: 15:00-17:00" />
+            </div>
+            <small class="dt-builder-hint">En la celda se mostrará siempre <strong>DT</strong> para mantener el ancho uniforme de las columnas, y el horario exacto aparecerá al pasar el cursor.</small>
+          </div>
+
+          <input type="text" id="cellCodeInput" class="text-input" placeholder="Selecciona un botón o escribe el código (ej: L, FL, DC, DT, E+3)..." />
+        </div>
+
+        <!-- Opción de Retribución: "¿Es para Devolución de Tiempo?" (para E+N, H+N, y turnos puntuales L / N) -->
+        <div class="devolucion-toggle-card hidden" id="cellDevolucionGroup">
+          <label class="checkbox-label devolucion-checkbox-label">
+            <input type="checkbox" id="cellDevolucionCheck" />
+            <div>
+              <strong>🔄 Realizado para "Devolución de Tiempo"</strong>
+              <small>Marca la celda en <b>color rosado</b> (ej: <b>E+5</b>, <b>H+6</b>, <b>L</b> o <b>N</b> rosada) indicando que suma horas a devolución en lugar de pago extra.</small>
+            </div>
+          </label>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cellDescInput">Observación / Detalle</label>
+            <input type="text" id="cellDescInput" class="text-input" placeholder="Detalle opcional del turno, reemplazo o permiso..." />
+          </div>
+          <div class="form-group">
+            <label for="cellAuthorizedByInput">🛡️ Otorgado / Autorizado por (Trazabilidad)</label>
+            <input type="text" id="cellAuthorizedByInput" class="text-input" placeholder="Nombre de quien autoriza o modifica..." />
+          </div>
+        </div>
+
+        <hr class="divider" />
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="cellTdmCheck" />
+            <span>Asignar también a <strong>Toma de Muestras (TDM)</strong> en las fechas seleccionadas</span>
+          </label>
+        </div>
+
+        <div class="form-group hidden" id="cellTdmStationGroup">
+          <label for="cellTdmStation">Estación / Puesto en Toma de Muestras</label>
+          <select id="cellTdmStation" class="select-input full-width">
+            <option value="Box Toma de Muestra AM (08:00 - 11:00)">Box Toma de Muestra AM (08:00 - 11:00)</option>
+            <option value="TDM Tarde (11:00 - 17:00)">TDM Tarde (11:00 - 17:00)</option>
+            <option value="Apertura Toma de Muestra (07:30)">Apertura Toma de Muestra (07:30)</option>
+            <option value="Recepción de Pacientes (08:00 - 17:00)">Recepción de Pacientes (08:00 - 17:00)</option>
+            <option value="Recepción Apertura (07:30 - 08:00)">Recepción Apertura (07:30 - 08:00)</option>
+            <option value="Orientador y Apoyo (08:00)">Orientador y Apoyo (08:00)</option>
+            <option value="Box Toma de Muestra AM (08:00 - 11:00) · Encargada Registros e Insumos">Encargada Registros e Insumos (08:00)</option>
+            <option value="Box Toma de Muestra AM (08:00 - 11:00) · Encargado Muestras UMT">Encargado de dejar muestras a UMT</option>
+            <option value="Refuerzo SOS Toma de Muestra (08:30)">Refuerzo SOS Toma de Muestra (08:30)</option>
+            <option value="Apoyo Toma de Muestra (08:00 - 08:30)">Apoyo Toma de Muestra (08:00 - 08:30)</option>
+            <option value="Apoyo Urgencia (07:00 - 08:00)">Apoyo Urgencia (07:00 - 08:00)</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-danger-outline" id="btnClearCell">🗑️ Limpiar Rango</button>
+        <div class="footer-right">
+          <button class="btn btn-outline-dark" id="btnCancelCell">Cancelar</button>
+          <button class="btn btn-primary" id="btnSaveCell">💾 Guardar Asignación</button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Main JavaScript Logic -->
+  <!-- ====================================================================== -->
+  <!-- MODAL 2: GESTOR DE ESQUEMAS DE TURNO Y ROTACIONES                      -->
+  <!-- ====================================================================== -->
+  <div class="modal-backdrop hidden" id="modalShiftManager">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <h3>⚙️ Gestor de Esquemas de Turno, Paso a Diurno e Intercambios</h3>
+        <button class="modal-close" id="btnCloseShiftManager">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="sub-tabs" id="shiftManagerTabs">
+          <button type="button" class="sub-tab-btn active" data-sm-tab="4toturno">🔄 Generar Ciclo 4to Turno</button>
+          <button type="button" class="sub-tab-btn" data-sm-tab="diurno">☀️ Pasar a Diurno / Limpiar</button>
+          <button type="button" class="sub-tab-btn" data-sm-tab="swap">🔀 Intercambiar Rotación</button>
+        </div>
+
+        <div class="sm-panel active" id="sm-panel-4toturno">
+          <p class="sm-help">
+            Genera automáticamente la secuencia rotativa de <strong>4to Turno (Largo → Noche → Saliente → Libre)</strong> para un funcionario desde la fecha inicial hasta la fecha final seleccionada.
+          </p>
+          <div class="form-group">
+            <label for="smStaff">Funcionario</label>
+            <select id="smStaff" class="select-input full-width"></select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="smStartDate">Fecha Inicio del Ciclo</label>
+              <input type="date" id="smStartDate" class="text-input" />
+            </div>
+            <div class="form-group">
+              <label for="smEndDate">Fecha Término</label>
+              <input type="date" id="smEndDate" class="text-input" />
+            </div>
+          </div>
+          <div class="quick-duration-bar">
+            <span class="qd-label">Extensión rápida:</span>
+            <button type="button" class="sm-qd-chip" data-target="sm" data-span="month">Todo el mes actual</button>
+            <button type="button" class="sm-qd-chip" data-target="sm" data-span="quarter">Próximos 3 meses</button>
+            <button type="button" class="sm-qd-chip" data-target="sm" data-span="year_end">Hasta el 31 de Diciembre</button>
+          </div>
+          <div class="form-group">
+            <label for="smPattern">Fase del Ciclo en la Fecha de Inicio (Día 1)</label>
+            <select id="smPattern" class="select-input full-width">
+              <option value="L">Día 1 = Largo (L → N → Libre → Libre)</option>
+              <option value="N">Día 1 = Noche (N → Libre → Libre → L)</option>
+              <option value="X1">Día 1 = Libre 1 / Saliente (Libre → Libre → L → N)</option>
+              <option value="X2">Día 1 = Libre 2 (Libre → L → N → Libre)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="smPreserveAbsences" checked />
+              <span>Respetar ausencias legales ya registradas en el periodo (Vacaciones FL, Licencias LM, Días Admin DA)</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="sm-panel hidden" id="sm-panel-diurno">
+          <p class="sm-help">
+            Permite pasar a un funcionario desde modalidad de turno rotativo a <strong>Jornada Diurna (Lunes a Viernes)</strong> o limpiar sus turnos rotativos en un rango de fechas.
+          </p>
+          <div class="form-group">
+            <label for="smDiurnoStaff">Funcionario</label>
+            <select id="smDiurnoStaff" class="select-input full-width"></select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="smDiurnoStart">Fecha Desde</label>
+              <input type="date" id="smDiurnoStart" class="text-input" />
+            </div>
+            <div class="form-group">
+              <label for="smDiurnoEnd">Fecha Hasta</label>
+              <input type="date" id="smDiurnoEnd" class="text-input" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="smDiurnoFillD">Acción en Días Hábiles (Lunes a Viernes, excluyendo feriados)</label>
+            <select id="smDiurnoFillD" class="select-input full-width">
+              <option value="fill_D">Asignar código "D" (Jornada Diurna) de Lunes a Viernes y liberar fines de semana/feriados</option>
+              <option value="fill_M">Asignar código "M" (Mañana) de Lunes a Viernes y liberar fines de semana/feriados</option>
+              <option value="clear_only">Limpiar todos los turnos operativos en el rango (dejar celdas en blanco como personal diurno)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="smDiurnoUpdateProfile" checked />
+              <span>Actualizar también la modalidad del funcionario a <strong>"Diurno"</strong> en su ficha maestra</span>
+            </label>
+          </div>
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="smDiurnoPreserveAbs" checked />
+              <span>Mantener intactas las Vacaciones (FL), Licencias (LM) y Días Administrativos (DA) existentes</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="sm-panel hidden" id="sm-panel-swap">
+          <p class="sm-help">
+            Intercambia día por día los turnos asignados entre el <strong>Funcionario A</strong> y el <strong>Funcionario B</strong> durante el periodo indicado (cambio de turno o enroque de rotación).
+          </p>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="smSwapStaffA">Funcionario A</label>
+              <select id="smSwapStaffA" class="select-input full-width"></select>
+            </div>
+            <div class="form-group">
+              <label for="smSwapStaffB">Funcionario B</label>
+              <select id="smSwapStaffB" class="select-input full-width"></select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="smSwapStart">Fecha Desde</label>
+              <input type="date" id="smSwapStart" class="text-input" />
+            </div>
+            <div class="form-group">
+              <label for="smSwapEnd">Fecha Hasta</label>
+              <input type="date" id="smSwapEnd" class="text-input" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div></div>
+        <div class="footer-right">
+          <button class="btn btn-outline-dark" id="btnCancelShiftManager">Cancelar</button>
+          <button class="btn btn-primary" id="btnApplyShiftManager">✅ Aplicar Esquema / Cambio</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- MODAL 3: EDITAR / COMPLETAR FICHA DE FUNCIONARIO                       -->
+  <!-- ====================================================================== -->
+  <div class="modal-backdrop hidden" id="modalStaffEdit">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modalStaffTitle">Ficha de Funcionario</h3>
+        <button class="modal-close" id="btnCloseStaffModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="staffEditId" />
+
+        <div class="form-group">
+          <label for="staffEditName">Nombre Corto (Visualización en Calendario)</label>
+          <input type="text" id="staffEditName" class="text-input" placeholder="Ej: Patricia Morales Morales" />
+        </div>
+
+        <div class="form-group">
+          <label for="staffEditOfficialName">Nombre Completo Legal (Nombres + Dos Apellidos)</label>
+          <input type="text" id="staffEditOfficialName" class="text-input" placeholder="Ej: PATRICIA ANDREA MORALES MORALES" />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="staffEditRut">RUT (con guion)</label>
+            <input type="text" id="staffEditRut" class="text-input" placeholder="Ej: 16.555.264-4" />
+          </div>
+          <div class="form-group">
+            <label for="staffEditRole">Categoría</label>
+            <select id="staffEditRole" class="select-input full-width">
+              <option value="Profesional">Profesional</option>
+              <option value="TENS">TENS</option>
+              <option value="Administrativo">Administrativo</option>
+              <option value="Auxiliar">Auxiliar</option>
+              <option value="Interno TM">Interno TM</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="staffEditEstamento">Estamento Oficial</label>
+            <input type="text" id="staffEditEstamento" class="text-input" placeholder="Ej: Tecnólogo Médico, Bioquímico, TENS..." />
+          </div>
+          <div class="form-group">
+            <label for="staffEditSection">Sección / Área Oficial HRT</label>
+            <select id="staffEditSection" class="select-input full-width">
+              <option value="ALU">ALU (Urgencia y Biología Molecular)</option>
+              <option value="AH">AH (Hematología)</option>
+              <option value="AIC">AIC (Química / Inmunoquímica)</option>
+              <option value="AMB">AMB (Microbiología)</option>
+              <option value="APA">APA (TENS)</option>
+              <option value="ATE">ATE (Técnicas Especiales)</option>
+              <option value="ADM">ADM (Administrativa)</option>
+              <option value="Auxiliares">Auxiliares</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="staffEditModality">Modalidad de Jornada</label>
+          <select id="staffEditModality" class="select-input full-width">
+            <option value="Diurno">Diurno (Lunes a Viernes)</option>
+            <option value="4to Turno / Rotativo">4to Turno / Rotativo (L - N - Libre - Libre)</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div></div>
+        <div class="footer-right">
+          <button class="btn btn-outline-dark" id="btnCancelStaff">Cancelar</button>
+          <button class="btn btn-primary" id="btnSaveStaff">💾 Guardar Funcionario</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- MODAL 4: ASIGNAR FUNCIONARIO A TOMA DE MUESTRA (TDM)                   -->
+  <!-- ====================================================================== -->
+  <div class="modal-backdrop hidden" id="modalTdmAssign">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>🩸 Asignar Funcionario a Toma de Muestras (TDM)</h3>
+        <button class="modal-close" id="btnCloseTdmModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="tdmModalDate">Fecha Desde</label>
+            <input type="date" id="tdmModalDate" class="text-input" />
+          </div>
+          <div class="form-group">
+            <label for="tdmModalEndDate">Fecha Hasta (inclusive)</label>
+            <input type="date" id="tdmModalEndDate" class="text-input" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="tdmModalStaff">Seleccionar Funcionario (Unificado)</label>
+          <select id="tdmModalStaff" class="select-input full-width"></select>
+        </div>
+        <div id="tdmModalConflictAlert" class="tdm-conflict-box hidden"></div>
+        <div class="form-group">
+          <label for="tdmModalStation">Estación / Box / Horario</label>
+          <select id="tdmModalStation" class="select-input full-width">
+            <option value="Box Toma de Muestra AM (08:00 - 11:00)">Box Toma de Muestra AM (08:00 - 11:00)</option>
+            <option value="TDM Tarde (11:00 - 17:00)">TDM Tarde (11:00 - 17:00)</option>
+            <option value="Apertura Toma de Muestra (07:30)">Apertura Toma de Muestra (07:30)</option>
+            <option value="Recepción de Pacientes (08:00 - 17:00)">Recepción de Pacientes (08:00 - 17:00)</option>
+            <option value="Recepción Apertura (07:30 - 08:00)">Recepción Apertura (07:30 - 08:00)</option>
+            <option value="Orientador y Apoyo (08:00)">Orientador y Apoyo (08:00)</option>
+            <option value="Box Toma de Muestra AM (08:00 - 11:00) · Encargada Registros e Insumos">Encargada Registros e Insumos (08:00)</option>
+            <option value="Box Toma de Muestra AM (08:00 - 11:00) · Encargado Muestras UMT">Encargado de dejar muestras a UMT</option>
+            <option value="Refuerzo SOS Toma de Muestra (08:30)">Refuerzo SOS Toma de Muestra (08:30)</option>
+            <option value="Apoyo Toma de Muestra (08:00 - 08:30)">Apoyo Toma de Muestra (08:00 - 08:30)</option>
+            <option value="Apoyo Urgencia (07:00 - 08:00)">Apoyo Urgencia (07:00 - 08:00)</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div></div>
+        <div class="footer-right">
+          <button class="btn btn-outline-dark" id="btnCancelTdmModal">Cancelar</button>
+          <button class="btn btn-primary" id="btnSaveTdmModal">💾 Confirmar Asignación TDM</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- MODAL 5: FICHA ANUAL DEL FUNCIONARIO (VISTA 12 MESES + KPIS)           -->
+  <!-- ====================================================================== -->
+  <div class="modal-backdrop hidden" id="modalStaffAnnual">
+    <div class="modal-card modal-xl">
+      <div class="modal-header">
+        <div>
+          <h3 id="annualStaffTitle">Ficha Anual del Funcionario</h3>
+          <p id="annualStaffSubtitle" class="modal-subtitle"></p>
+        </div>
+        <div class="modal-header-actions">
+          <button class="btn btn-outline-dark btn-sm" id="btnAnnualEditProfile" data-role-req="admin">✏️ Editar Datos Personales</button>
+          <button class="btn btn-primary btn-sm" id="btnAnnualAddAbsence" data-role-req="editor">📅 Agendar Ausencia</button>
+          <button class="modal-close" id="btnCloseAnnualModal">✕</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="annual-kpi-grid" id="annualKpiGrid"></div>
+        <div class="annual-calendar-wrapper">
+          <table class="calendar-table compact-table" id="annualTimelineTable">
+            <thead id="annualTimelineThead"></thead>
+            <tbody id="annualTimelineTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- MODAL 6: INICIO DE SESIÓN (JEFATURA Y ADMINISTRADOR)                   -->
+  <!-- ====================================================================== -->
+  <div class="modal-backdrop hidden" id="modalLogin">
+    <div class="modal-card" style="max-width: 430px;">
+      <div class="modal-header">
+        <div>
+          <h3>🔐 Acceso Jefatura y Administración</h3>
+          <p class="modal-subtitle">Inicia sesión para habilitar la modificación del calendario y ver trazabilidad</p>
+        </div>
+        <button class="modal-close" id="btnCloseLoginModal">✕</button>
+      </div>
+      <form id="loginForm" class="modal-body">
+        <div id="loginErrorAlert" class="tdm-conflict-box hidden"></div>
+
+        <div class="form-group">
+          <label for="loginUsernameInput">Usuario o Correo Institucional</label>
+          <input type="text" id="loginUsernameInput" class="text-input" placeholder="Ej: grivera@hospitaldetalca.cl, laboratoriohrt@hospitaldetalca.cl o jefatura" autocomplete="username" required />
+        </div>
+
+        <div class="form-group">
+          <label for="loginPasswordInput">Contraseña</label>
+          <input type="password" id="loginPasswordInput" class="text-input" placeholder="Ingresa tu contraseña..." autocomplete="current-password" required />
+        </div>
+
+        <div class="login-roles-hint">
+          <strong>Niveles de Acceso del Sistema:</strong>
+          <ul>
+            <li>👀 <b>Acceso General (Sin Login):</b> Solo visualización del calendario y estadísticas.</li>
+            <li>🩺 <b>Rol Jefatura:</b> Permite marcar días/ausencias, rotaciones, TDM y ver trazabilidad.</li>
+            <li>🛡️ <b>Rol Administrador:</b> Permisos totales (incluye crear/editar usuarios, dotación y base de datos).</li>
+          </ul>
+          <div class="login-demo-credentials">
+            <span>Cuentas autorizadas iniciales:</span>
+            <div class="demo-cred-chips">
+              <button type="button" class="qd-chip btn-quick-fill-login" data-u="grivera@hospitaldetalca.cl" data-p="admin2026">🛡️ grivera@hospitaldetalca.cl</button>
+              <button type="button" class="qd-chip btn-quick-fill-login" data-u="laboratoriohrt@hospitaldetalca.cl" data-p="admin2026">🛡️ laboratoriohrt@hospitaldetalca.cl</button>
+              <button type="button" class="qd-chip btn-quick-fill-login" data-u="jefatura" data-p="jefe2026">🩺 Jefatura</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer" style="margin: 4px -18px -16px -18px;">
+          <button type="button" class="btn btn-outline-dark" id="btnCancelLoginModal">Seguir en Modo Lectura</button>
+          <button type="submit" class="btn btn-primary">🔓 Iniciar Sesión</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- MODAL 7: ADMINISTRACIÓN DE USUARIOS Y PERMISOS (SOLO ADMINISTRADOR)    -->
+  <!-- ====================================================================== -->
+  <div class="modal-backdrop hidden" id="modalUserManager">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <div>
+          <h3>🔑 Administración de Usuarios y Niveles de Acceso</h3>
+          <p class="modal-subtitle">Crea cuentas personalizadas para Jefatura o Administradores para identificar quién otorga cada día en la trazabilidad.</p>
+        </div>
+        <button class="modal-close" id="btnCloseUserManager">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="user-form-card">
+          <h4 id="userFormTitle">➕ Crear / Actualizar Usuario Autorizado</h4>
+          <input type="hidden" id="userEditOriginalUsername" value="" />
+          <div class="form-row">
+            <div class="form-group">
+              <label for="userEditFullName">Nombre y Cargo (Visible en Trazabilidad)</label>
+              <input type="text" id="userEditFullName" class="text-input" placeholder="Ej: TM María José — Jefatura" />
+            </div>
+            <div class="form-group">
+              <label for="userEditRoleSelect">Nivel de Permiso / Rol</label>
+              <select id="userEditRoleSelect" class="select-input full-width">
+                <option value="jefatura">🩺 Jefatura (Marcar Días, Turnos, TDM y Ver Trazabilidad)</option>
+                <option value="admin">🛡️ Administrador (Permisos Totales + Gestión de Usuarios y Dotación)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="userEditUsername">Nombre de Usuario (para iniciar sesión)</label>
+              <input type="text" id="userEditUsername" class="text-input" placeholder="Ej: mjose" />
+            </div>
+            <div class="form-group">
+              <label for="userEditPassword">Contraseña de Acceso</label>
+              <input type="text" id="userEditPassword" class="text-input" placeholder="Escribe la contraseña..." />
+            </div>
+          </div>
+          <div class="user-form-actions">
+            <button type="button" class="btn btn-outline-dark btn-sm hidden" id="btnCancelUserEdit">Cancelar Edición</button>
+            <button type="button" class="btn btn-primary btn-sm" id="btnSaveUserAccount">💾 Guardar Usuario</button>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <table class="data-table" id="usersListTable">
+            <thead>
+              <tr>
+                <th>Nombre en Trazabilidad</th>
+                <th>Usuario</th>
+                <th>Rol / Permisos</th>
+                <th>Contraseña</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="usersListTbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <small style="color:#64748b;">💡 Los funcionarios sin cuenta acceden automáticamente en modo Solo Visualización.</small>
+        <button class="btn btn-outline-dark" id="btnCloseUserManagerFooter">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- MODAL 8: CONEXIÓN WEB Y GOOGLE APPS SCRIPT (SOLO ADMINISTRADOR)        -->
+  <!-- ====================================================================== -->
+  <div class="modal-backdrop hidden" id="modalCloudConfig">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <div>
+          <h3>☁️ Ejecución en la Web y Sincronización con Google Apps Script</h3>
+          <p class="modal-subtitle">Configura el enlace de tu Web App de Google Apps Script o revisa el estado de almacenamiento.</p>
+        </div>
+        <button class="modal-close" id="btnCloseCloudConfig">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="sm-help">
+          <strong>¿Cómo funciona la sincronización web?</strong><br />
+          1. Si abres el sistema directamente dentro de <strong>Google Apps Script</strong>, se conecta de forma automática a tu Google Drive y escribe la hoja <code>BITÁCORA DE TRAZABILIDAD</code> en tu Google Sheet.<br />
+          2. Si abres el archivo desde tu PC o desde un hosting externo, puedes pegar abajo la <strong>URL de implementación de tu Apps Script</strong> para que guarde y lea en vivo desde la nube.
+        </div>
+
+        <div class="form-group">
+          <label for="gasWebAppUrlInput">URL de Web App de Google Apps Script (Opcional si se ejecuta fuera de Google)</label>
+          <input type="url" id="gasWebAppUrlInput" class="text-input" placeholder="https://script.google.com/macros/s/.../exec" />
+        </div>
+
+        <div class="cloud-status-box" id="cloudSyncStatusBox">
+          Estado actual: Verificando modo de ejecución...
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-dark" id="btnPullFromCloud">🔄 Descargar Datos desde Nube</button>
+        <div class="footer-right">
+          <button type="button" class="btn btn-outline-dark" id="btnCancelCloudConfig">Cerrar</button>
+          <button type="button" class="btn btn-primary" id="btnSaveCloudConfig">💾 Guardar y Sincronizar Ahora</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTIFICACIÓN TOAST -->
+  <div id="toastNotification" class="toast hidden"></div>
+
+  <!-- CARGA DE DATOS INICIALES Y LÓGICA DE APLICACIÓN -->
+  <script src="data/data_bundle.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
