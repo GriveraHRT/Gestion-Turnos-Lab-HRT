@@ -2332,8 +2332,8 @@ body.role-jefatura .incomplete-dot {
       <div class="toolbar-select-inline">
         <label for="groupBySelect">Agrupar:</label>
         <select id="groupBySelect" class="select-input select-compact">
-          <option value="estamento" selected>Por Estamento</option>
-          <option value="section">Por Sección / Área</option>
+          <option value="section" selected>Por Sección / Área</option>
+          <option value="estamento">Por Estamento</option>
           <option value="modality">Por Jornada</option>
           <option value="alpha">Alfabético (A-Z)</option>
         </select>
@@ -3456,7 +3456,7 @@ const state = {
   month: 10, // Octubre 2026 por defecto (mes vigente actualizado)
   activeTab: 'calendar',
   quickFilter: 'all',
-  groupBy: 'estamento',
+  groupBy: 'section',
   searchQuery: '',
   tdmDate: '2026-10-16',
   tdmStationFilter: 'all',

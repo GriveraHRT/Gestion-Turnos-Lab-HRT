@@ -113,7 +113,7 @@ const state = {
   month: 10, // Octubre 2026 por defecto (mes vigente actualizado)
   activeTab: 'calendar',
   quickFilter: 'all',
-  groupBy: 'estamento',
+  groupBy: 'section',
   searchQuery: '',
   tdmDate: '2026-10-16',
   tdmStationFilter: 'all',
