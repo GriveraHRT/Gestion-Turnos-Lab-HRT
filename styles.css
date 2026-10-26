@@ -80,26 +80,27 @@ body {
   background: #0f172a;
   border-bottom: 1px solid #1e293b;
   color: #ffffff;
-  padding: 8px 16px;
+  padding: 6px 12px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
+  gap: 8px;
   z-index: 50;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  min-height: 48px;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex-shrink: 0;
 }
 
 .brand-logo {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -108,19 +109,20 @@ body {
 }
 
 .brand-emblem-svg {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   display: block;
 }
 
 .brand-text h1 {
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: -0.2px;
   line-height: 1.2;
   display: flex;
   align-items: center;
   gap: 6px;
+  white-space: nowrap;
 }
 
 .brand-tag {
@@ -135,19 +137,21 @@ body {
 }
 
 .brand-text .subtitle {
-  font-size: 10.5px;
+  font-size: 10px;
   color: #94a3b8;
+  white-space: nowrap;
 }
 
 /* Pestañas integradas en la cabecera */
 .main-tabs {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .tab-list {
   display: flex;
-  gap: 4px;
+  gap: 2px;
   background: rgba(255, 255, 255, 0.06);
   padding: 3px;
   border-radius: 8px;
@@ -157,15 +161,15 @@ body {
 .tab-btn {
   background: transparent;
   border: none;
-  padding: 5px 12px;
+  padding: 4px 9px;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 600;
   color: #cbd5e1;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   transition: all 0.15s;
   white-space: nowrap;
 }
@@ -184,9 +188,9 @@ body {
 .tab-pill {
   background: rgba(255, 255, 255, 0.14);
   color: #e2e8f0;
-  padding: 1px 6px;
+  padding: 1px 5px;
   border-radius: 99px;
-  font-size: 10px;
+  font-size: 9.5px;
   font-weight: 700;
 }
 
@@ -219,15 +223,16 @@ body {
 .topbar-controls {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 .period-selector {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
   background: rgba(255, 255, 255, 0.07);
-  padding: 3px 5px;
+  padding: 2px 4px;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
@@ -236,9 +241,9 @@ body {
   background: transparent;
   color: #ffffff;
   border: none;
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 600;
-  padding: 3px 4px;
+  padding: 2px 3px;
   cursor: pointer;
   outline: none;
   font-family: inherit;
@@ -252,7 +257,7 @@ body {
 .select-year {
   color: #93c5fd;
   border-left: 1px solid rgba(255, 255, 255, 0.15);
-  padding-left: 6px;
+  padding-left: 5px;
 }
 
 .btn-icon {
@@ -260,7 +265,7 @@ body {
   color: #cbd5e1;
   border: none;
   border-radius: 5px;
-  padding: 3px 6px;
+  padding: 2px 5px;
   cursor: pointer;
   font-size: 10px;
   transition: all 0.15s;
@@ -276,9 +281,9 @@ body {
   color: #7dd3fc;
   border: 1px solid rgba(56, 189, 248, 0.3);
   border-radius: 5px;
-  padding: 2px 7px;
+  padding: 2px 6px;
   cursor: pointer;
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 600;
   margin-left: 2px;
   transition: all 0.15s;
@@ -292,7 +297,7 @@ body {
 .action-buttons {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .btn-topbar-icon {
@@ -300,9 +305,9 @@ body {
   color: #ffffff;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 6px;
-  padding: 5px 8px;
+  padding: 4px 7px;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 11.5px;
   transition: all 0.15s;
 }
 
@@ -316,9 +321,9 @@ body {
 }
 
 .btn {
-  padding: 6px 11px;
+  padding: 5px 9px;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 600;
   cursor: pointer;
   border: 1px solid transparent;
@@ -326,7 +331,7 @@ body {
   font-family: inherit;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   white-space: nowrap;
 }
 
@@ -1892,15 +1897,16 @@ body {
   display: flex;
   align-items: center;
   border-left: 1px solid rgba(255, 255, 255, 0.14);
-  padding-left: 10px;
-  margin-left: 2px;
+  padding-left: 7px;
+  margin-left: 1px;
+  flex-shrink: 0;
 }
 
 .auth-guest-view,
 .auth-logged-view {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 5px;
 }
 
 .viewer-mode-pill {
@@ -1908,7 +1914,7 @@ body {
   color: #cbd5e1;
   border: 1px solid rgba(148, 163, 184, 0.3);
   border-radius: 99px;
-  padding: 3px 9px;
+  padding: 3px 8px;
   font-size: 11px;
   font-weight: 600;
   white-space: nowrap;
@@ -1918,7 +1924,7 @@ body {
   background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
   color: #ffffff;
   border: 1px solid rgba(125, 211, 252, 0.4);
-  padding: 5px 11px;
+  padding: 5px 10px;
   border-radius: 6px;
   font-size: 11.5px;
   font-weight: 700;
@@ -1935,11 +1941,11 @@ body {
 .logged-user-chip {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 6px;
   background: rgba(16, 185, 129, 0.14);
   border: 1px solid rgba(52, 211, 153, 0.35);
-  padding: 3px 10px;
-  border-radius: 8px;
+  padding: 2px 8px;
+  border-radius: 7px;
 }
 
 .logged-user-chip.is-admin-chip {
@@ -1948,8 +1954,8 @@ body {
 }
 
 .role-dot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: #10b981;
   box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
@@ -1964,21 +1970,26 @@ body {
 .logged-user-meta {
   display: flex;
   flex-direction: column;
-  line-height: 1.1;
+  line-height: 1.08;
 }
 
 .logged-user-meta strong {
-  font-size: 11.5px;
+  font-size: 11px;
   color: #f8fafc;
   font-weight: 700;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .logged-user-meta small {
-  font-size: 9.5px;
+  font-size: 9px;
   color: #a7f3d0;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.25px;
+  white-space: nowrap;
 }
 
 .logged-user-chip.is-admin-chip .logged-user-meta small {
@@ -1989,7 +2000,7 @@ body {
   background: rgba(239, 68, 68, 0.16);
   color: #fecaca;
   border: 1px solid rgba(248, 113, 113, 0.35);
-  padding: 4px 9px;
+  padding: 4px 8px;
   border-radius: 6px;
   font-size: 11px;
   font-weight: 600;
@@ -2000,6 +2011,42 @@ body {
 .btn-logout-topbar:hover {
   background: #dc2626;
   color: #ffffff;
+}
+
+/* Ajuste responsivo automático para mantener siempre 1 sola línea limpia en notebooks */
+@media (max-width: 1480px) {
+  .topbar {
+    padding: 5px 10px;
+    gap: 6px;
+  }
+  .brand-text .subtitle {
+    display: none;
+  }
+  .tab-btn {
+    padding: 4px 7px;
+    font-size: 11px;
+    gap: 4px;
+  }
+  .topbar .btn {
+    padding: 4px 7px;
+    font-size: 11px;
+  }
+  .logged-user-meta strong {
+    max-width: 115px;
+  }
+}
+
+@media (max-width: 1280px) {
+  .brand-text {
+    display: none;
+  }
+  .tab-btn {
+    padding: 4px 6px;
+    font-size: 10.5px;
+  }
+  .logged-user-meta strong {
+    max-width: 95px;
+  }
 }
 
 /* Reglas automáticas según el Rol activo en body */

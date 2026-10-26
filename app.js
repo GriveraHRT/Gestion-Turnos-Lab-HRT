@@ -262,7 +262,9 @@ function applyRolePermissionsUI() {
   if (state.currentUser) {
     if (guestView) guestView.classList.add('hidden');
     if (loggedView) loggedView.classList.remove('hidden');
-    if (loggedName) loggedName.textContent = state.currentUser.name;
+    if (loggedName) {
+      loggedName.textContent = String(state.currentUser.name || '').replace(/\s*\([^)]*\)\s*$/, '').trim() || state.currentUser.name;
+    }
     if (loggedRole) {
       loggedRole.textContent = state.currentUser.role === 'admin'
         ? '🛡️ Administrador'
@@ -270,6 +272,7 @@ function applyRolePermissionsUI() {
     }
     if (loggedChip) {
       loggedChip.classList.toggle('is-admin-chip', state.currentUser.role === 'admin');
+      loggedChip.title = `${state.currentUser.name} — Sesión activa con permisos de edición y trazabilidad`;
     }
   } else {
     if (guestView) guestView.classList.remove('hidden');
