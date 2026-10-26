@@ -21,73 +21,58 @@ const AUTHORIZED_OWNERS = [
 ];
 
 /**
- * Otorga permisos totales de Edición en Google Drive / Google Sheets / Apps Script
- * a las cuentas oficiales del Laboratorio Clínico HRT.
+ * Verifica si un correo ya es propietario o editor antes de compartir,
+ * evitando que Google Drive envíe correos repetidos de notificación.
+ * NOTA: Esta función NO se ejecuta en cada guardado; los permisos ya son permanentes.
  */
-function ensureAuthorizedAccess(targetObj) {
+function ensureAuthorizedAccessOnce(targetObj) {
   if (!targetObj) return;
+  let existingEmails = [];
+  try {
+    const owner = targetObj.getOwner();
+    if (owner && owner.getEmail()) {
+      existingEmails.push(String(owner.getEmail()).toLowerCase());
+    }
+    const editors = targetObj.getEditors() || [];
+    for (let j = 0; j < editors.length; j++) {
+      if (editors[j] && editors[j].getEmail()) {
+        existingEmails.push(String(editors[j].getEmail()).toLowerCase());
+      }
+    }
+  } catch (_) {}
+
   for (let i = 0; i < AUTHORIZED_OWNERS.length; i++) {
-    const email = AUTHORIZED_OWNERS[i];
-    try {
-      targetObj.addEditor(email);
-    } catch (_) {
-      // Ignorar si ya es propietario o si las políticas del dominio restringen notificación
+    const email = AUTHORIZED_OWNERS[i].toLowerCase();
+    if (existingEmails.indexOf(email) === -1) {
+      try {
+        targetObj.addEditor(email);
+      } catch (_) {}
     }
   }
 }
 
 /**
- * Inicializa y comparte el proyecto de Apps Script, la Hoja de Bitácora y la Base de Datos
- * con grivera@hospitaldetalca.cl y laboratoriohrt@hospitaldetalca.cl.
+ * Función de configuración inicial (de ejecución única).
+ * NO reenvía correos si la cuenta ya figura como editora.
  */
 function setupCoOwnershipAndSheets() {
-  const result = {
+  const ss = getOrCreateAuditSpreadsheet();
+  return {
     ok: true,
     shared_with: AUTHORIZED_OWNERS,
-    script_id: '',
-    spreadsheet_url: ''
+    script_id: ScriptApp.getScriptId(),
+    spreadsheet_url: ss ? ss.getUrl() : ''
   };
-
-  try {
-    const scriptId = ScriptApp.getScriptId();
-    result.script_id = scriptId;
-    const scriptFile = DriveApp.getFileById(scriptId);
-    ensureAuthorizedAccess(scriptFile);
-  } catch (e) {
-    result.script_share_note = String(e);
-  }
-
-  try {
-    const ss = getOrCreateAuditSpreadsheet();
-    ensureAuthorizedAccess(ss);
-    const ssFile = DriveApp.getFileById(ss.getId());
-    ensureAuthorizedAccess(ssFile);
-    result.spreadsheet_url = ss.getUrl();
-  } catch (e) {
-    result.sheet_share_note = String(e);
-  }
-
-  try {
-    const files = DriveApp.getFilesByName(DB_FILENAME);
-    while (files.hasNext()) {
-      ensureAuthorizedAccess(files.next());
-    }
-  } catch (e) {
-    result.db_share_note = String(e);
-  }
-
-  return result;
 }
 
 /**
  * Punto de entrada GET:
  * - ?action=get_db -> Devuelve el JSON de la base de datos.
- * - ?action=init_permissions -> Comparte automáticamente Script, Sheet y DB con ambas cuentas.
- * - Sin parámetros -> Renderiza la aplicación web Index.html.
+ * - Sin parámetros -> Renderiza la aplicación web Index.html con los datos desde Google Drive.
  */
 function doGet(e) {
   const action = (e && e.parameter && e.parameter.action) ? String(e.parameter.action) : '';
-  if (action === 'get_db') {
+  if (action === 'get_db' || action === 'load') {
     const db = loadTurnosDatabase();
     return ContentService
       .createTextOutput(JSON.stringify({ ok: true, data: db }))
@@ -109,7 +94,7 @@ function doGet(e) {
 
 /**
  * Punto de entrada POST:
- * Recibe actualizaciones desde la versión Web (GitHub Pages o Local) y guarda en Google Drive + Sheets.
+ * Recibe actualizaciones desde la versión Web y guarda en Google Drive + Sheets (sin enviar correos).
  */
 function doPost(e) {
   try {
@@ -149,7 +134,8 @@ function loadTurnosDatabase() {
 }
 
 /**
- * Guarda la base de datos en Google Drive, asegura permisos en ambas cuentas y actualiza la Bitácora.
+ * Guarda la base de datos en Google Drive y actualiza la Bitácora en Google Sheets.
+ * (No ejecuta addEditor para no enviar correos de notificación).
  */
 function saveTurnosDatabase(payload) {
   const lock = LockService.getScriptLock();
@@ -172,9 +158,9 @@ function saveTurnosDatabase(payload) {
         dbFile.setContent(jsonString);
       } else {
         dbFile = DriveApp.createFile(DB_FILENAME, jsonString, MimeType.PLAIN_TEXT);
+        ensureAuthorizedAccessOnce(dbFile);
       }
     }
-    ensureAuthorizedAccess(dbFile);
 
     let sheetUrl = '';
     if (payload && Array.isArray(payload.audit_log)) {
@@ -184,7 +170,6 @@ function saveTurnosDatabase(payload) {
     return {
       ok: true,
       saved_at: new Date().toISOString(),
-      authorized_owners: AUTHORIZED_OWNERS,
       audit_sheet_url: sheetUrl
     };
   } finally {
@@ -193,7 +178,7 @@ function saveTurnosDatabase(payload) {
 }
 
 /**
- * Obtiene o crea la hoja de cálculo de Bitácora de Trazabilidad y asegura permisos para ambas cuentas.
+ * Obtiene o crea la hoja de cálculo de Bitácora de Trazabilidad (sin reenviar invitaciones por correo).
  */
 function getOrCreateAuditSpreadsheet() {
   let ss = null;
@@ -227,12 +212,12 @@ function getOrCreateAuditSpreadsheet() {
         ss = SpreadsheetApp.open(existing.next());
       } else {
         ss = SpreadsheetApp.create(AUDIT_SPREADSHEET_NAME);
+        ensureAuthorizedAccessOnce(ss);
       }
       props.setProperty('AUDIT_SPREADSHEET_ID', ss.getId());
     }
   }
 
-  ensureAuthorizedAccess(ss);
   let sheet = ss.getSheetByName(AUDIT_SHEET_NAME);
   if (!sheet) {
     sheet = ss.insertSheet(AUDIT_SHEET_NAME);

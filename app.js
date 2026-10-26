@@ -51,7 +51,7 @@ const DEFAULT_USERS = [
   }
 ];
 
-const DATA_VERSION = '4.3';
+const DATA_VERSION = '4.5';
 
 const MONTH_LABELS = [
   '', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
@@ -437,7 +437,27 @@ function normalizeSectionInMemory(s) {
 // ============================================================================
 // 2. INICIALIZACIÓN, PERSISTENCIA Y DESHACER (UNDO)
 // ============================================================================
-function initApp() {
+async function initApp() {
+  if (
+    (!window.TURNOS_INITIAL_DATA ||
+      !window.TURNOS_INITIAL_DATA.staff ||
+      Object.keys(window.TURNOS_INITIAL_DATA.staff).length === 0) &&
+    window.TURNOS_GZIP_B64 &&
+    typeof DecompressionStream !== 'undefined'
+  ) {
+    try {
+      const binStr = atob(window.TURNOS_GZIP_B64);
+      const bytes = new Uint8Array(binStr.length);
+      for (let i = 0; i < binStr.length; i++) bytes[i] = binStr.charCodeAt(i);
+      const ds = new DecompressionStream('gzip');
+      const stream = new Blob([bytes]).stream().pipeThrough(ds);
+      const text = await new Response(stream).text();
+      window.TURNOS_INITIAL_DATA = JSON.parse(text);
+    } catch (err) {
+      console.error('Error descomprimiendo base inicial:', err);
+    }
+  }
+
   const initial = window.TURNOS_INITIAL_DATA || {
     staff: {},
     turns_2026: [],
@@ -518,8 +538,14 @@ function initApp() {
     localStorage.setItem(STORAGE_KEYS.VERSION, DATA_VERSION);
   }
 
-  const savedStaff = localStorage.getItem(STORAGE_KEYS.STAFF);
-  state.staff = savedStaff ? JSON.parse(savedStaff) : structuredClone(initial.staff);
+  let parsedStaff = null;
+  try {
+    const rawS = localStorage.getItem(STORAGE_KEYS.STAFF);
+    if (rawS) parsedStaff = JSON.parse(rawS);
+  } catch (_) {}
+  state.staff = (parsedStaff && Object.keys(parsedStaff).length > 0)
+    ? parsedStaff
+    : structuredClone(initial.staff || {});
 
   if (initial.staff) {
     for (const [id, st] of Object.entries(initial.staff)) {
@@ -537,11 +563,23 @@ function initApp() {
   }
   Object.values(state.staff).forEach(normalizeSectionInMemory);
 
-  const savedTurns2026 = localStorage.getItem(STORAGE_KEYS.TURNS_2026);
-  state.turns2026 = savedTurns2026 ? JSON.parse(savedTurns2026) : structuredClone(initial.turns_2026 || []);
+  let parsedTurns2026 = null;
+  try {
+    const rawT = localStorage.getItem(STORAGE_KEYS.TURNS_2026);
+    if (rawT) parsedTurns2026 = JSON.parse(rawT);
+  } catch (_) {}
+  state.turns2026 = (Array.isArray(parsedTurns2026) && parsedTurns2026.length > 0)
+    ? parsedTurns2026
+    : structuredClone(initial.turns_2026 || []);
 
-  const savedTdm2026 = localStorage.getItem(STORAGE_KEYS.TDM_2026);
-  state.tdm2026 = savedTdm2026 ? JSON.parse(savedTdm2026) : structuredClone(initial.tdm_2026 || []);
+  let parsedTdm2026 = null;
+  try {
+    const rawM = localStorage.getItem(STORAGE_KEYS.TDM_2026);
+    if (rawM) parsedTdm2026 = JSON.parse(rawM);
+  } catch (_) {}
+  state.tdm2026 = (Array.isArray(parsedTdm2026) && parsedTdm2026.length > 0)
+    ? parsedTdm2026
+    : structuredClone(initial.tdm_2026 || []);
 
   const savedTurns2027 = localStorage.getItem(STORAGE_KEYS.TURNS_2027);
   state.turns2027 = savedTurns2027
@@ -661,14 +699,21 @@ function buildCurrentBundlePayload() {
 
 function applyRemotePayloadToState(remoteData) {
   if (!remoteData || typeof remoteData !== 'object') return false;
-  if (remoteData.staff && Object.keys(remoteData.staff).length > 0) {
-    state.staff = remoteData.staff;
-    Object.values(state.staff).forEach(normalizeSectionInMemory);
+  if (!remoteData.staff || Object.keys(remoteData.staff).length === 0) return false;
+  state.staff = remoteData.staff;
+  Object.values(state.staff).forEach(normalizeSectionInMemory);
+  if (Array.isArray(remoteData.turns_2026) && remoteData.turns_2026.length > 0) {
+    state.turns2026 = remoteData.turns_2026;
   }
-  if (Array.isArray(remoteData.turns_2026)) state.turns2026 = remoteData.turns_2026;
-  if (Array.isArray(remoteData.tdm_2026)) state.tdm2026 = remoteData.tdm_2026;
-  if (Array.isArray(remoteData.turns_2027)) state.turns2027 = remoteData.turns_2027;
-  if (Array.isArray(remoteData.tdm_2027)) state.tdm2027 = remoteData.tdm_2027;
+  if (Array.isArray(remoteData.tdm_2026) && remoteData.tdm_2026.length > 0) {
+    state.tdm2026 = remoteData.tdm_2026;
+  }
+  if (Array.isArray(remoteData.turns_2027) && remoteData.turns_2027.length > 0) {
+    state.turns2027 = remoteData.turns_2027;
+  }
+  if (Array.isArray(remoteData.tdm_2027) && remoteData.tdm_2027.length > 0) {
+    state.tdm2027 = remoteData.tdm_2027;
+  }
   if (Array.isArray(remoteData.users) && remoteData.users.length > 0) {
     state.users = remoteData.users;
   }
@@ -692,8 +737,8 @@ async function pullDatabaseFromCloud(showNotification = false) {
   if (typeof window !== 'undefined' && window.google && window.google.script && window.google.script.run) {
     window.google.script.run
       .withSuccessHandler(res => {
-        if (res && res.ok && res.data) {
-          applyRemotePayloadToState(res.data);
+        const data = (res && res.data) ? res.data : res;
+        if (applyRemotePayloadToState(data)) {
           if (showNotification) showToast('☁️ Datos sincronizados desde Google Drive / Apps Script.');
         }
       })
@@ -704,7 +749,7 @@ async function pullDatabaseFromCloud(showNotification = false) {
   // 2. Si tiene configurada una URL de Web App de Google Apps Script
   if (state.gasWebAppUrl && typeof fetch === 'function') {
     try {
-      const resp = await fetch(`${state.gasWebAppUrl}?action=load`, { method: 'GET' });
+      const resp = await fetch(`${state.gasWebAppUrl}?action=get_db`, { method: 'GET' });
       if (resp.ok) {
         const json = await resp.json();
         const data = json.data || json;
