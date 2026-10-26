@@ -746,8 +746,8 @@ body {
 .calendar-table {
   border-collapse: separate;
   border-spacing: 0;
-  width: max-content;
-  min-width: 100%;
+  width: 100%;
+  min-width: max-content;
   font-size: 12px;
 }
 
@@ -983,6 +983,24 @@ body {
   color: #dc2626 !important;
 }
 
+.calendar-table thead th.col-today {
+  background-color: #f3e8ff !important;
+  outline: 2px solid #7e22ce;
+  outline-offset: -2px;
+  box-shadow: inset 0 0 0 2px #7e22ce, 0 1px 0 var(--border-strong) !important;
+  z-index: 18;
+}
+
+.calendar-table thead th.col-today .day-num {
+  color: #6b21a8 !important;
+  font-weight: 800;
+}
+
+.calendar-table thead th.col-today .day-dow {
+  color: #7e22ce !important;
+  font-weight: 700;
+}
+
 /* Shift & Event Cells */
 .day-cell {
   cursor: pointer;
@@ -1160,6 +1178,7 @@ body {
   display: grid;
   grid-template-columns: 1fr;
   gap: 16px;
+  width: 100%;
 }
 
 .tdm-card,
@@ -1170,6 +1189,13 @@ body {
   overflow-x: auto;
   overflow-y: visible;
   flex-shrink: 0;
+  width: 100%;
+  min-width: 0;
+}
+
+.table-Wrapper {
+  width: 100%;
+  overflow-x: auto;
 }
 
 .card-header {
@@ -1224,7 +1250,30 @@ body {
 .tdm-chip-warn { background: #fee2e2; color: #991b1b; }
 
 .tdm-month-matrix-wrapper {
+  width: 100%;
   overflow-x: auto;
+}
+
+#tdmMonthTable {
+  width: 100%;
+  min-width: 100%;
+}
+
+#tdmMonthTable .day-col-header,
+#tdmMonthTable .day-cell {
+  min-width: 38px;
+  max-width: none;
+  width: auto;
+}
+
+#tdmMonthTable .summary-col {
+  width: 72px;
+  min-width: 72px;
+}
+
+#tdmMonthTable th:last-child,
+#tdmMonthTable td:last-child {
+  border-right: none;
 }
 
 .tdm-conflict-box {
@@ -1855,6 +1904,7 @@ body {
 }
 
 .compact-table {
+  width: 100%;
   min-width: 410px;
 }
 

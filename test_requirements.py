@@ -152,6 +152,8 @@ def test_html_and_css():
     assert '.is-devolucion' in css
     assert '.ev-EXTENSION_HORARIA' in css
     assert '.ev-HORAS_TURNO_EXTRA' in css
+    assert '.col-today' in css
+    assert '#tdmMonthTable' in css
     print("   -> HTML and CSS tests: PASSED!")
 
 

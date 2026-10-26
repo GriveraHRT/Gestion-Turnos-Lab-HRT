@@ -107,15 +107,38 @@ const EVENT_DESCRIPTIONS = {
   'HORARIO_ESPECIAL': 'Horario Especial'
 };
 
+function getTodayISO() {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+function getDefaultTdmDateForPeriod(yearStr, monthNum) {
+  const todayISO = getTodayISO();
+  const prefix = `${yearStr}-${String(monthNum).padStart(2, '0')}-`;
+  if (todayISO.startsWith(prefix)) {
+    return todayISO;
+  }
+  return `${prefix}01`;
+}
+
+const _initialNow = new Date();
+const _initialYear = (_initialNow.getFullYear() === 2026 || _initialNow.getFullYear() === 2027)
+  ? String(_initialNow.getFullYear())
+  : '2026';
+const _initialMonth = _initialNow.getMonth() + 1;
+
 // Estado reactivo global
 const state = {
-  year: '2026',
-  month: 10, // Octubre 2026 por defecto (mes vigente actualizado)
+  year: _initialYear,
+  month: _initialMonth, // Mes vigente actual automático
   activeTab: 'calendar',
   quickFilter: 'all',
   groupBy: 'section',
   searchQuery: '',
-  tdmDate: '2026-10-16',
+  tdmDate: getDefaultTdmDateForPeriod(_initialYear, _initialMonth),
   tdmStationFilter: 'all',
   dirSearch: '',
   dirFilterSection: 'all',
@@ -620,8 +643,12 @@ async function initApp() {
     generate2027Projection(false);
   }
 
+  const yearSel = document.getElementById('yearSelect');
+  if (yearSel) yearSel.value = String(state.year);
   const monthSel = document.getElementById('monthSelect');
   if (monthSel) monthSel.value = String(state.month);
+  const tdmDateInput = document.getElementById('tdmDateInput');
+  if (tdmDateInput) tdmDateInput.value = state.tdmDate;
 
   rebuildFastLookupMaps();
   bindEvents();
@@ -1492,6 +1519,7 @@ function renderCalendarMatrix() {
     <th class="sticky-col-name">Funcionario (${MONTH_LABELS[month]} ${year})</th>
     <th class="sticky-col-role">Área / Rol</th>`;
 
+  const todayISO = getTodayISO();
   const dayMeta = [];
   for (let d = 1; d <= daysCount; d++) {
     const dateObj = new Date(year, month - 1, d);
@@ -1499,13 +1527,21 @@ function renderCalendarMatrix() {
     const isWeekend = dow === 0 || dow === 6;
     const iso = formatDateISO(dateObj);
     const holiday = holidayMap[iso];
+    const isToday = iso === todayISO;
 
-    dayMeta.push({ d, dow, isWeekend, iso, holiday });
+    dayMeta.push({ d, dow, isWeekend, iso, holiday, isToday });
 
-    const cls = holiday ? 'col-holiday' : (isWeekend ? 'col-weekend' : '');
-    const titleAttr = holiday ? `title="Feriado Legal: ${holiday.name}"` : '';
+    const headerClasses = ['day-col-header'];
+    if (holiday) headerClasses.push('col-holiday');
+    else if (isWeekend) headerClasses.push('col-weekend');
+    if (isToday) headerClasses.push('col-today');
 
-    hHtml += `<th class="day-col-header ${cls}" ${titleAttr}>
+    const titleParts = [];
+    if (isToday) titleParts.push(`📍 Día Actual (Hoy: ${iso})`);
+    if (holiday) titleParts.push(`Feriado Legal: ${holiday.name}`);
+    const titleAttr = titleParts.length > 0 ? `title="${titleParts.join(' · ')}"` : '';
+
+    hHtml += `<th class="${headerClasses.join(' ')}" ${titleAttr}>
       <span class="day-num">${d}</span>
       <span class="day-dow">${DOW_SHORT[dow]}</span>
     </th>`;
@@ -1874,9 +1910,11 @@ function renderTdmView() {
     const dow = dateObj.getDay();
     const iso = formatDateISO(dateObj);
     const isSelectedDay = iso === selectedDate;
-    const cls = holidayMap[iso] ? 'col-holiday' : ((dow === 0 || dow === 6) ? 'col-weekend' : '');
-    const selStyle = isSelectedDay ? 'style="outline: 2px solid #7e22ce; background:#f3e8ff;"' : '';
-    mHead += `<th class="day-col-header ${cls}" ${selStyle} data-tdm-header-date="${iso}" style="cursor:pointer;" title="Ver tablero diario del ${iso}">
+    const headerClasses = ['day-col-header'];
+    if (holidayMap[iso]) headerClasses.push('col-holiday');
+    else if (dow === 0 || dow === 6) headerClasses.push('col-weekend');
+    if (isSelectedDay) headerClasses.push('col-today');
+    mHead += `<th class="${headerClasses.join(' ')}" data-tdm-header-date="${iso}" style="cursor:pointer;" title="Ver tablero diario del ${iso}">
       <span class="day-num">${d}</span>
       <span class="day-dow">${DOW_SHORT[dow]}</span>
     </th>`;
@@ -3540,14 +3578,14 @@ function bindEvents() {
   // Controles de Año y Mes
   document.getElementById('yearSelect').addEventListener('change', e => {
     state.year = e.target.value;
-    state.tdmDate = `${state.year}-${String(state.month).padStart(2, '0')}-01`;
+    state.tdmDate = getDefaultTdmDateForPeriod(state.year, state.month);
     document.getElementById('tdmDateInput').value = state.tdmDate;
     renderAll();
   });
 
   document.getElementById('monthSelect').addEventListener('change', e => {
     state.month = Number(e.target.value);
-    state.tdmDate = `${state.year}-${String(state.month).padStart(2, '0')}-01`;
+    state.tdmDate = getDefaultTdmDateForPeriod(state.year, state.month);
     document.getElementById('tdmDateInput').value = state.tdmDate;
     renderAll();
   });
@@ -3562,6 +3600,8 @@ function bindEvents() {
       }
     }
     document.getElementById('monthSelect').value = String(state.month);
+    state.tdmDate = getDefaultTdmDateForPeriod(state.year, state.month);
+    document.getElementById('tdmDateInput').value = state.tdmDate;
     renderAll();
   });
 
@@ -3575,18 +3615,25 @@ function bindEvents() {
       }
     }
     document.getElementById('monthSelect').value = String(state.month);
+    state.tdmDate = getDefaultTdmDateForPeriod(state.year, state.month);
+    document.getElementById('tdmDateInput').value = state.tdmDate;
     renderAll();
   });
 
   const btnCurrMonth = document.getElementById('btnCurrentMonth');
   if (btnCurrMonth) {
     btnCurrMonth.addEventListener('click', () => {
-      state.year = '2026';
-      state.month = 10;
-      document.getElementById('yearSelect').value = '2026';
-      document.getElementById('monthSelect').value = '10';
+      const now = new Date();
+      const yr = (now.getFullYear() === 2026 || now.getFullYear() === 2027) ? String(now.getFullYear()) : '2026';
+      const mo = now.getMonth() + 1;
+      state.year = yr;
+      state.month = mo;
+      state.tdmDate = getDefaultTdmDateForPeriod(yr, mo);
+      document.getElementById('yearSelect').value = yr;
+      document.getElementById('monthSelect').value = String(mo);
+      document.getElementById('tdmDateInput').value = state.tdmDate;
       renderAll();
-      showToast('📅 Posicionado en Octubre 2026.');
+      showToast(`📅 Posicionado en el día actual (${state.tdmDate}).`);
     });
   }
 
@@ -3635,6 +3682,12 @@ function bindEvents() {
 
       document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
       document.getElementById(`view-${state.activeTab}`).classList.add('active');
+
+      if (state.activeTab === 'tdm') {
+        state.tdmDate = getDefaultTdmDateForPeriod(state.year, state.month);
+        const tdmDateInput = document.getElementById('tdmDateInput');
+        if (tdmDateInput) tdmDateInput.value = state.tdmDate;
+      }
 
       const isCalendar = state.activeTab === 'calendar';
       const topTools = document.getElementById('calendarTopbarTools');
