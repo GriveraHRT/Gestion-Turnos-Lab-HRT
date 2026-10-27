@@ -310,9 +310,144 @@ def test_auth_traceability_and_gas():
     print(res.stdout.strip())
 
 
+def test_contract_vigencia_filtering():
+    print("5. Testing Contract Start/End (Relación de Servicio) default 01-01-2026 & monthly visibility...")
+    with open('data/staff_master.json', encoding='utf-8') as f:
+        db = json.load(f)
+
+    for sid, s in db.items():
+        assert s.get('contract_start') == '2026-01-01', f"Expected default contract_start='2026-01-01' for {sid}, got {s.get('contract_start')}"
+        assert s.get('contract_end') is None, f"Expected default contract_end=None for {sid}, got {s.get('contract_end')}"
+        assert s.get('contract_status') == 'indefinido', f"Expected default contract_status='indefinido' for {sid}, got {s.get('contract_status')}"
+        assert s.get('service_periods') == [{'start': '2026-01-01', 'end': None}], f"Expected default service_periods for {sid}, got {s.get('service_periods')}"
+
+    with open('index.html', encoding='utf-8') as f:
+        html = f.read()
+    for cid in ['staffEditContractStart', 'staffEditContractStatus', 'staffEditContractEnd', 'staffEditContractEndGroup', 'btnClearContractEnd', 'extraServicePeriodsList', 'btnAddServicePeriod']:
+        assert f'id="{cid}"' in html, f"Missing Relación de Servicio element id='{cid}' in index.html"
+
+    node_contract_test = """
+    global.window = global;
+    global.document = {
+      addEventListener: () => {},
+      getElementById: () => null,
+      querySelectorAll: () => [],
+      body: { classList: { remove: () => {}, add: () => {} } }
+    };
+    global.localStorage = { getItem: () => null, setItem: () => {}, removeItem: () => {} };
+    const fs = require('fs');
+    const code = fs.readFileSync('data/data_bundle.js', 'utf8') + '\\n' + fs.readFileSync('app.js', 'utf8') + `
+    state.staff = structuredClone(window.TURNOS_INITIAL_DATA.staff);
+    Object.values(state.staff).forEach(normalizeSectionInMemory);
+
+    // Verify default 2026-01-01 (01-01-2026) and indefinite for all staff
+    for (const s of Object.values(state.staff)) {
+      if (getStaffContractStart(s) !== '2026-01-01' || getStaffContractEnd(s) !== null) {
+        console.error('FAIL: Default contract start/end mismatch for', s.id);
+        process.exit(1);
+      }
+    }
+    if (formatDateCL('2026-01-01') !== '01-01-2026') {
+      console.error('FAIL: formatDateCL failed');
+      process.exit(1);
+    }
+
+    // Scenario 1: Staff member with contract until October 15, 2026
+    const target = state.staff['tiara_araya'];
+    target.contract_start = '2026-01-01';
+    target.contract_end = '2026-10-15';
+    target.contract_status = 'plazo_fijo';
+
+    // Must appear in August 2026 and October 2026, but NOT in November 2026
+    if (!isStaffActiveInMonth(target, '2026', 8)) {
+      console.error('FAIL: Should be active in August 2026');
+      process.exit(1);
+    }
+    if (!isStaffActiveInMonth(target, '2026', 10)) {
+      console.error('FAIL: Should be active in October 2026');
+      process.exit(1);
+    }
+    if (isStaffActiveInMonth(target, '2026', 11)) {
+      console.error('FAIL: Should NOT be active in November 2026');
+      process.exit(1);
+    }
+    if (!isStaffActiveOnDate(target, '2026-10-15') || isStaffActiveOnDate(target, '2026-10-16')) {
+      console.error('FAIL: Day-level contract end check failed');
+      process.exit(1);
+    }
+
+    // Verify getFilteredAndGroupedStaff() hides tiara_araya in November and shows her in August
+    state.year = '2026';
+    state.month = 11;
+    const novIds = getFilteredAndGroupedStaff().flatMap(([, members]) => members.map(m => m.id));
+    if (novIds.includes('tiara_araya')) {
+      console.error('FAIL: tiara_araya should not appear in November panoramic calendar');
+      process.exit(1);
+    }
+    state.month = 8;
+    const augIds = getFilteredAndGroupedStaff().flatMap(([, members]) => members.map(m => m.id));
+    if (!augIds.includes('tiara_araya')) {
+      console.error('FAIL: tiara_araya should appear in August panoramic calendar');
+      process.exit(1);
+    }
+
+    // Scenario 2: New staff member starting in September 2026 (2026-09-10)
+    const newHire = state.staff['brayans_saavedra'];
+    newHire.contract_start = '2026-09-10';
+    newHire.contract_end = null;
+    if (isStaffActiveInMonth(newHire, '2026', 8)) {
+      console.error('FAIL: New hire starting Sept 2026 should NOT appear in August 2026');
+      process.exit(1);
+    }
+    const augIdsAfter = getFilteredAndGroupedStaff().flatMap(([, members]) => members.map(m => m.id));
+    if (augIdsAfter.includes('brayans_saavedra')) {
+      console.error('FAIL: brayans_saavedra should not appear in August panoramic calendar before contract_start');
+      process.exit(1);
+    }
+    state.month = 10;
+    const octIdsAfter = getFilteredAndGroupedStaff().flatMap(([, members]) => members.map(m => m.id));
+    if (!octIdsAfter.includes('brayans_saavedra')) {
+      console.error('FAIL: brayans_saavedra should appear in October panoramic calendar after contract_start');
+      process.exit(1);
+    }
+
+    // Scenario 3: Sporadic replacement staff with MULTIPLE service_periods (e.g., Feb 10-25 and Aug 05-Oct 15)
+    const sporadic = state.staff['ignacio_brunel'];
+    sporadic.service_periods = [
+      { start: '2026-02-10', end: '2026-02-25' },
+      { start: '2026-08-05', end: '2026-10-15' }
+    ];
+    normalizeSectionInMemory(sporadic);
+
+    if (isStaffActiveInMonth(sporadic, '2026', 1) || isStaffActiveInMonth(sporadic, '2026', 3) || isStaffActiveInMonth(sporadic, '2026', 7) || isStaffActiveInMonth(sporadic, '2026', 11)) {
+      console.error('FAIL: Sporadic replacement should NOT be active in Jan, Mar, Jul, or Nov');
+      process.exit(1);
+    }
+    if (!isStaffActiveInMonth(sporadic, '2026', 2) || !isStaffActiveInMonth(sporadic, '2026', 8) || !isStaffActiveInMonth(sporadic, '2026', 9) || !isStaffActiveInMonth(sporadic, '2026', 10)) {
+      console.error('FAIL: Sporadic replacement MUST be active in Feb, Aug, Sep, and Oct');
+      process.exit(1);
+    }
+    if (isStaffActiveOnDate(sporadic, '2026-02-09') || !isStaffActiveOnDate(sporadic, '2026-02-15') || isStaffActiveOnDate(sporadic, '2026-02-26')) {
+      console.error('FAIL: Sporadic replacement day-level check failed in Feb');
+      process.exit(1);
+    }
+    if (isStaffActiveOnDate(sporadic, '2026-08-04') || !isStaffActiveOnDate(sporadic, '2026-08-10') || !isStaffActiveOnDate(sporadic, '2026-10-15') || isStaffActiveOnDate(sporadic, '2026-10-16')) {
+      console.error('FAIL: Sporadic replacement day-level check failed in Aug-Oct');
+      process.exit(1);
+    }
+    console.log('   -> Relación de Servicio (single & multi-period sporadic replacements) tests: PASSED!');
+    `;
+    eval(code);
+    """
+    res = subprocess.run(['node', '-e', node_contract_test], capture_output=True, text=True)
+    assert res.returncode == 0, f"Node contract test failed: {res.stderr}\n{res.stdout}"
+    print(res.stdout.strip())
+
+
 if __name__ == '__main__':
     test_data_bundle()
     test_html_and_css()
     test_morales_and_search_in_node()
     test_auth_traceability_and_gas()
+    test_contract_vigencia_filtering()
     print("\n=== ALL AUTOMATED VERIFICATION TESTS PASSED 100%! ===")

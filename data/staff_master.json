@@ -13,7 +13,16 @@
     "modality": "4to Turno / Rotativo",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "tiara_araya": {
     "id": "tiara_araya",
@@ -30,7 +39,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "erica_santelices": {
     "id": "erica_santelices",
@@ -46,7 +64,16 @@
     "modality": "4to Turno / Rotativo",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "gabriela_chandia": {
     "id": "gabriela_chandia",
@@ -62,7 +89,16 @@
     "modality": "4to Turno / Rotativo",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "jorge_perez": {
     "id": "jorge_perez",
@@ -78,7 +114,16 @@
     "modality": "4to Turno / Rotativo",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "ociel_beltran": {
     "id": "ociel_beltran",
@@ -94,7 +139,16 @@
     "modality": "4to Turno / Rotativo",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "sergio_bravo": {
     "id": "sergio_bravo",
@@ -110,7 +164,16 @@
     "modality": "4to Turno / Rotativo",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "daniela_castillo": {
     "id": "daniela_castillo",
@@ -126,7 +189,16 @@
     "modality": "4to Turno / Rotativo",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "javier_malpica": {
     "id": "javier_malpica",
@@ -142,7 +214,16 @@
     "modality": "4to Turno / Rotativo",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "olivia_belen_rosales": {
     "id": "olivia_belen_rosales",
@@ -158,7 +239,16 @@
     "modality": "4to Turno / Rotativo",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "leticia_oliva": {
     "id": "leticia_oliva",
@@ -174,7 +264,16 @@
     "modality": "4to Turno / Rotativo",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "valentino_becerra": {
     "id": "valentino_becerra",
@@ -190,7 +289,16 @@
     "modality": "4to Turno / Rotativo",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "nicolas_blanco": {
     "id": "nicolas_blanco",
@@ -206,7 +314,16 @@
     "modality": "4to Turno / Rotativo",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "jeanette_san_martin": {
     "id": "jeanette_san_martin",
@@ -223,7 +340,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "camila_gonzalez": {
     "id": "camila_gonzalez",
@@ -240,7 +366,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "arlett_hormazabal_cardenas": {
     "id": "arlett_hormazabal_cardenas",
@@ -257,7 +392,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "guillermo_rivera": {
     "id": "guillermo_rivera",
@@ -274,7 +418,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "rossana_albornoz": {
     "id": "rossana_albornoz",
@@ -290,7 +443,16 @@
     "modality": "4to Turno / Rotativo",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "elieser_valdebenito": {
     "id": "elieser_valdebenito",
@@ -308,7 +470,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "ana_toledo": {
     "id": "ana_toledo",
@@ -324,7 +495,16 @@
     "modality": "4to Turno / Rotativo",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "barbara_gutierrez": {
     "id": "barbara_gutierrez",
@@ -342,7 +522,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "barbara_cepeda": {
     "id": "barbara_cepeda",
@@ -358,7 +547,16 @@
     "modality": "4to Turno / Rotativo",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "esmeralda_abarza": {
     "id": "esmeralda_abarza",
@@ -376,7 +574,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "lucia_pena": {
     "id": "lucia_pena",
@@ -394,7 +601,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "michelle_mino": {
     "id": "michelle_mino",
@@ -410,7 +626,16 @@
     "modality": "4to Turno / Rotativo",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "loreto_ramirez": {
     "id": "loreto_ramirez",
@@ -426,7 +651,16 @@
     "modality": "4to Turno / Rotativo",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "carolina_campos": {
     "id": "carolina_campos",
@@ -442,7 +676,16 @@
     "modality": "4to Turno / Rotativo",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "sergio_rojo": {
     "id": "sergio_rojo",
@@ -458,7 +701,16 @@
     "modality": "4to Turno / Rotativo",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "yessenia_caceres": {
     "id": "yessenia_caceres",
@@ -475,7 +727,16 @@
     "modality": "4to Turno / Rotativo",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "deisy_moreno": {
     "id": "deisy_moreno",
@@ -491,7 +752,16 @@
     "modality": "4to Turno / Rotativo",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "anahis_albornoz": {
     "id": "anahis_albornoz",
@@ -509,7 +779,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "rodrigo_cantero": {
     "id": "rodrigo_cantero",
@@ -527,7 +806,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "susana_santos": {
     "id": "susana_santos",
@@ -545,7 +833,16 @@
     "modality": "4to Turno / Rotativo",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "tamara_lara": {
     "id": "tamara_lara",
@@ -562,7 +859,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "carolina_valenzuela": {
     "id": "carolina_valenzuela",
@@ -580,7 +886,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "marcia_vega_c_interna_tm": {
     "id": "marcia_vega_c_interna_tm",
@@ -598,6 +913,15 @@
     "needs_completion": true,
     "missing_fields": [
       "Segundo Apellido / Nombre Completo"
+    ],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
     ]
   },
   "muriel_correa": {
@@ -616,7 +940,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "barbara_alcantara": {
     "id": "barbara_alcantara",
@@ -634,7 +967,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "ignacio_brunel": {
     "id": "ignacio_brunel",
@@ -651,7 +993,16 @@
     "modality": "4to Turno / Rotativo",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "makarena_zurita_o_interna_tm": {
     "id": "makarena_zurita_o_interna_tm",
@@ -669,6 +1020,15 @@
     "needs_completion": true,
     "missing_fields": [
       "Segundo Apellido / Nombre Completo"
+    ],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
     ]
   },
   "fernando_barrera_c_interno_tm": {
@@ -687,6 +1047,15 @@
     "needs_completion": true,
     "missing_fields": [
       "Segundo Apellido / Nombre Completo"
+    ],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
     ]
   },
   "consuelo_alarcon": {
@@ -705,7 +1074,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "francisca_campos_sepulveda": {
     "id": "francisca_campos_sepulveda",
@@ -723,7 +1101,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "constanza_gomez_sepulveda": {
     "id": "constanza_gomez_sepulveda",
@@ -741,7 +1128,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "guillermo_acuna": {
     "id": "guillermo_acuna",
@@ -759,7 +1155,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "merlam_espinoza": {
     "id": "merlam_espinoza",
@@ -777,7 +1182,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "nicol_riquelme_galvez": {
     "id": "nicol_riquelme_galvez",
@@ -795,7 +1209,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "francisca_urzua_g_interna_tm": {
     "id": "francisca_urzua_g_interna_tm",
@@ -813,6 +1236,15 @@
     "needs_completion": true,
     "missing_fields": [
       "Segundo Apellido / Nombre Completo"
+    ],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
     ]
   },
   "martin_munoz_d_interno_tm": {
@@ -831,6 +1263,15 @@
     "needs_completion": true,
     "missing_fields": [
       "Segundo Apellido / Nombre Completo"
+    ],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
     ]
   },
   "francisco_san_martin_a_interno_tm": {
@@ -847,7 +1288,16 @@
     "modality": "4to Turno / Rotativo",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "elizabel_sanchez": {
     "id": "elizabel_sanchez",
@@ -865,7 +1315,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "johana_valdes_carrasco_interna_tm": {
     "id": "johana_valdes_carrasco_interna_tm",
@@ -883,6 +1342,15 @@
     "needs_completion": true,
     "missing_fields": [
       "Segundo Apellido / Nombre Completo"
+    ],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
     ]
   },
   "melissa_silva_villagra_interna_tm": {
@@ -901,6 +1369,15 @@
     "needs_completion": true,
     "missing_fields": [
       "Segundo Apellido / Nombre Completo"
+    ],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
     ]
   },
   "lucas_valenzuela_r_interno_tm": {
@@ -919,6 +1396,15 @@
     "needs_completion": true,
     "missing_fields": [
       "Segundo Apellido / Nombre Completo"
+    ],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
     ]
   },
   "juan_bravo_novoa_interno_tm": {
@@ -937,6 +1423,15 @@
     "needs_completion": true,
     "missing_fields": [
       "Segundo Apellido / Nombre Completo"
+    ],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
     ]
   },
   "fernanda_torres_cofre_interna_tm": {
@@ -955,6 +1450,15 @@
     "needs_completion": true,
     "missing_fields": [
       "Segundo Apellido / Nombre Completo"
+    ],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
     ]
   },
   "rosa_bernal_munoz": {
@@ -972,7 +1476,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "jimena_caceres_valdes": {
     "id": "jimena_caceres_valdes",
@@ -988,7 +1501,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "ruth_jara_lara": {
     "id": "ruth_jara_lara",
@@ -1005,7 +1527,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "ingrid_silva_valdivia": {
     "id": "ingrid_silva_valdivia",
@@ -1022,7 +1553,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "laura_perez": {
     "id": "laura_perez",
@@ -1039,7 +1579,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "patricia_morales_morales": {
     "id": "patricia_morales_morales",
@@ -1056,7 +1605,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "susana_quintana": {
     "id": "susana_quintana",
@@ -1072,7 +1630,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "jimena_gonzalez": {
     "id": "jimena_gonzalez",
@@ -1089,7 +1656,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "valeria_montes": {
     "id": "valeria_montes",
@@ -1105,7 +1681,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "maria_riquelme": {
     "id": "maria_riquelme",
@@ -1122,7 +1707,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "camila_walker": {
     "id": "camila_walker",
@@ -1138,7 +1732,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "consuelo_cerda_wehinger": {
     "id": "consuelo_cerda_wehinger",
@@ -1154,7 +1757,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "juan_cerpa_castillo": {
     "id": "juan_cerpa_castillo",
@@ -1170,7 +1782,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "romina_diaz_espinoza": {
     "id": "romina_diaz_espinoza",
@@ -1186,7 +1807,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "patricia_morales_rojas": {
     "id": "patricia_morales_rojas",
@@ -1202,7 +1832,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "marcela_salgado_carreno": {
     "id": "marcela_salgado_carreno",
@@ -1218,7 +1857,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "miryam_espina_herrera": {
     "id": "miryam_espina_herrera",
@@ -1234,7 +1882,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "maria_alejandra_vorphal_vasquez": {
     "id": "maria_alejandra_vorphal_vasquez",
@@ -1250,7 +1907,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "carolina_arancibia_jara": {
     "id": "carolina_arancibia_jara",
@@ -1266,7 +1932,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "daniel_schulz": {
     "id": "daniel_schulz",
@@ -1282,7 +1957,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "camila_reyes_vivero": {
     "id": "camila_reyes_vivero",
@@ -1298,7 +1982,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "loreto_diaz_rios": {
     "id": "loreto_diaz_rios",
@@ -1314,7 +2007,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "daniel_calderon_calderon": {
     "id": "daniel_calderon_calderon",
@@ -1330,7 +2032,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "melissa_canales_mejias": {
     "id": "melissa_canales_mejias",
@@ -1346,7 +2057,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "diego_rojas_verdugo": {
     "id": "diego_rojas_verdugo",
@@ -1362,7 +2082,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "nicole_hernandez_norambuena": {
     "id": "nicole_hernandez_norambuena",
@@ -1379,7 +2108,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "francisco_sepulveda": {
     "id": "francisco_sepulveda",
@@ -1395,7 +2133,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "katalina_barrera": {
     "id": "katalina_barrera",
@@ -1412,7 +2159,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "barbara_fuenzalida_ibanez": {
     "id": "barbara_fuenzalida_ibanez",
@@ -1428,7 +2184,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "rodrigo_benavente_contreras": {
     "id": "rodrigo_benavente_contreras",
@@ -1444,7 +2209,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "carolina_diaz_ponce": {
     "id": "carolina_diaz_ponce",
@@ -1460,7 +2234,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "arlette_garrido_mino": {
     "id": "arlette_garrido_mino",
@@ -1476,7 +2259,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "camila_mejias": {
     "id": "camila_mejias",
@@ -1493,7 +2285,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "cristian_andrade": {
     "id": "cristian_andrade",
@@ -1509,7 +2310,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "constanza_riquelme": {
     "id": "constanza_riquelme",
@@ -1526,7 +2336,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "camila_gutierrez": {
     "id": "camila_gutierrez",
@@ -1542,7 +2361,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "salomon_conejera": {
     "id": "salomon_conejera",
@@ -1558,7 +2386,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "susana_sepulveda": {
     "id": "susana_sepulveda",
@@ -1574,7 +2411,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "pamela_alvarez": {
     "id": "pamela_alvarez",
@@ -1590,7 +2436,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "esteban_canales": {
     "id": "esteban_canales",
@@ -1606,7 +2461,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "maria_elizabeth_reemplazo_aux": {
     "id": "maria_elizabeth_reemplazo_aux",
@@ -1625,6 +2489,15 @@
     "missing_fields": [
       "RUT",
       "Segundo Apellido / Nombre Completo"
+    ],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
     ]
   },
   "cecilia_medel": {
@@ -1641,7 +2514,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "maria_jose_penailillo": {
     "id": "maria_jose_penailillo",
@@ -1657,7 +2539,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "brayans_saavedra": {
     "id": "brayans_saavedra",
@@ -1673,7 +2564,16 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   },
   "teresa_fuentes_munoz": {
     "id": "teresa_fuentes_munoz",
@@ -1689,6 +2589,15 @@
     "modality": "Diurno",
     "active_2027": true,
     "needs_completion": false,
-    "missing_fields": []
+    "missing_fields": [],
+    "contract_start": "2026-01-01",
+    "contract_end": null,
+    "contract_status": "indefinido",
+    "service_periods": [
+      {
+        "start": "2026-01-01",
+        "end": null
+      }
+    ]
   }
 }

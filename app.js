@@ -393,8 +393,133 @@ function matchesSearch(member, query) {
   });
 }
 
+const DEFAULT_CONTRACT_START = '2026-01-01';
+
+function formatDateCL(isoStr) {
+  if (!isoStr || typeof isoStr !== 'string') return '';
+  const parts = isoStr.trim().split('-');
+  if (parts.length !== 3) return isoStr;
+  return `${parts[2]}-${parts[1]}-${parts[0]}`;
+}
+
+function getStaffContractStart(member) {
+  if (!member) return DEFAULT_CONTRACT_START;
+  if (Array.isArray(member.service_periods) && member.service_periods.length > 1) {
+    const first = String(member.service_periods[0]?.start || '').trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(first)) return first;
+  }
+  const val = String(member.contract_start || '').trim();
+  return /^\d{4}-\d{2}-\d{2}$/.test(val) ? val : DEFAULT_CONTRACT_START;
+}
+
+function getStaffContractEnd(member) {
+  if (!member) return null;
+  if (Array.isArray(member.service_periods) && member.service_periods.length > 1) {
+    const last = String(member.service_periods[member.service_periods.length - 1]?.end || '').trim();
+    return /^\d{4}-\d{2}-\d{2}$/.test(last) ? last : null;
+  }
+  const val = String(member.contract_end || '').trim();
+  return /^\d{4}-\d{2}-\d{2}$/.test(val) ? val : null;
+}
+
+function getStaffServicePeriods(member) {
+  if (!member) return [{ start: DEFAULT_CONTRACT_START, end: null }];
+  if (Array.isArray(member.service_periods) && member.service_periods.length > 0) {
+    const cleaned = member.service_periods
+      .map(p => {
+        const st = (p && p.start && /^\d{4}-\d{2}-\d{2}$/.test(String(p.start).trim()))
+          ? String(p.start).trim()
+          : DEFAULT_CONTRACT_START;
+        const en = (p && p.end && /^\d{4}-\d{2}-\d{2}$/.test(String(p.end).trim()))
+          ? String(p.end).trim()
+          : null;
+        return { start: st, end: en };
+      })
+      .sort((a, b) => a.start.localeCompare(b.start));
+    if (cleaned.length === 1 && cleaned[0].start === DEFAULT_CONTRACT_START && cleaned[0].end === null) {
+      const directStart = (member.contract_start && /^\d{4}-\d{2}-\d{2}$/.test(String(member.contract_start).trim()))
+        ? String(member.contract_start).trim()
+        : cleaned[0].start;
+      const directEnd = (member.contract_end && /^\d{4}-\d{2}-\d{2}$/.test(String(member.contract_end).trim()))
+        ? String(member.contract_end).trim()
+        : null;
+      return [{ start: directStart, end: directEnd }];
+    }
+    return cleaned;
+  }
+  return [{
+    start: getStaffContractStart(member),
+    end: getStaffContractEnd(member)
+  }];
+}
+
+function hasEndedOrMultipleServicePeriods(member) {
+  const periods = getStaffServicePeriods(member);
+  return periods.length > 1 || Boolean(periods[0]?.end);
+}
+
+function isStaffActiveOnDate(member, isoDate) {
+  if (!member || !isoDate) return true;
+  const periods = getStaffServicePeriods(member);
+  return periods.some(p => isoDate >= p.start && (!p.end || isoDate <= p.end));
+}
+
+function isStaffActiveInMonth(member, year, month) {
+  if (!member) return false;
+  const y = Number(year);
+  const m = Number(month);
+  const daysCount = getDaysInMonth(y, m);
+  const monthStart = `${y}-${String(m).padStart(2, '0')}-01`;
+  const monthEnd = `${y}-${String(m).padStart(2, '0')}-${String(daysCount).padStart(2, '0')}`;
+  const periods = getStaffServicePeriods(member);
+  return periods.some(p => p.start <= monthEnd && (!p.end || p.end >= monthStart));
+}
+
+function isStaffActiveInYear(member, year) {
+  if (!member) return false;
+  const y = String(year);
+  const yearStart = `${y}-01-01`;
+  const yearEnd = `${y}-12-31`;
+  const periods = getStaffServicePeriods(member);
+  return periods.some(p => p.start <= yearEnd && (!p.end || p.end >= yearStart));
+}
+
+function getStaffContractSummaryText(member) {
+  const periods = getStaffServicePeriods(member);
+  if (periods.length > 1) {
+    return periods
+      .map((p, idx) => `P${idx + 1}: ${formatDateCL(p.start)} al ${p.end ? formatDateCL(p.end) : 'Indefinida'}`)
+      .join(' · ');
+  }
+  const p0 = periods[0] || { start: DEFAULT_CONTRACT_START, end: null };
+  if (p0.end) {
+    return `${formatDateCL(p0.start)} al ${formatDateCL(p0.end)}`;
+  }
+  return `Desde ${formatDateCL(p0.start)} · Indefinida / Permanente`;
+}
+
 function normalizeSectionInMemory(s) {
   if (!s) return;
+  if (!s.contract_start || !/^\d{4}-\d{2}-\d{2}$/.test(String(s.contract_start).trim())) {
+    s.contract_start = DEFAULT_CONTRACT_START;
+  } else {
+    s.contract_start = String(s.contract_start).trim();
+  }
+  if (s.contract_end && /^\d{4}-\d{2}-\d{2}$/.test(String(s.contract_end).trim())) {
+    s.contract_end = String(s.contract_end).trim();
+    s.contract_status = 'plazo_fijo';
+  } else {
+    s.contract_end = null;
+    s.contract_status = 'indefinido';
+  }
+  if (!Array.isArray(s.service_periods) || s.service_periods.length === 0) {
+    s.service_periods = [{ start: s.contract_start, end: s.contract_end }];
+  } else {
+    s.service_periods = getStaffServicePeriods(s);
+    s.contract_start = s.service_periods[0].start;
+    s.contract_end = s.service_periods[s.service_periods.length - 1].end;
+    s.contract_status = (s.service_periods.length === 1 && !s.service_periods[0].end) ? 'indefinido' : 'plazo_fijo';
+  }
   if (s.id === 'patricia_morales_rojas') {
     if (!s.name) s.name = 'Patricia Morales R.';
     s.official_name = 'PATRICIA ESTER AIDA MORALES ROJAS';
@@ -978,6 +1103,7 @@ function generate2027Projection(notify = true) {
 
   for (const staff of Object.values(state.staff)) {
     if (staff.modality !== '4to Turno / Rotativo') continue;
+    if (!isStaffActiveInYear(staff, '2027')) continue;
 
     const tail = decDates.map(d => {
       const rec = map2026[`${staff.id}_${d}`];
@@ -1003,6 +1129,7 @@ function generate2027Projection(notify = true) {
       const d = new Date(startDate);
       d.setDate(startDate.getDate() + dayIdx);
       const iso = formatDateISO(d);
+      if (!isStaffActiveOnDate(staff, iso)) continue;
       const shiftCode = pattern[(dayIdx + cycleOffset) % 4];
       if (shiftCode) {
         newTurns2027.push({
@@ -1318,6 +1445,8 @@ function getFilteredAndGroupedStaff() {
   const monthPrefix = `${state.year}-${String(state.month).padStart(2, '0')}-`;
 
   let list = Object.values(state.staff).filter(s => {
+    // Filtrar automáticamente por vigencia de relación de servicio / contrato en el mes visualizado
+    if (!isStaffActiveInMonth(s, state.year, state.month)) return false;
     if (!matchesSearch(s, q)) return false;
 
     if (qf === 'urgencia') {
@@ -1487,9 +1616,10 @@ function renderAll() {
 
 function renderTopBadges() {
   const staffArr = Object.values(state.staff);
+  const activeMonthStaff = staffArr.filter(s => isStaffActiveInMonth(s, state.year, state.month));
   const incompleteCount = staffArr.filter(s => s.needs_completion).length;
 
-  document.getElementById('badgeTotalStaff').textContent = staffArr.length;
+  document.getElementById('badgeTotalStaff').textContent = activeMonthStaff.length;
   document.getElementById('badgeIncompleteStaff').textContent = incompleteCount;
 
   const prefix = `${state.year}-${String(state.month).padStart(2, '0')}-`;
@@ -1576,6 +1706,7 @@ function renderCalendarMatrix() {
     const rotativoLAbsentNames = [];
 
     for (const s of tensStaffList) {
+      if (!isStaffActiveOnDate(s, dm.iso)) continue;
       const ev = state.turnsMap[`${s.id}_${dm.iso}`];
       const codeUp = String(ev?.code || '').toUpperCase().trim();
       const rawUp = String(ev?.raw_value || '').toUpperCase().trim();
@@ -1640,9 +1771,27 @@ function renderCalendarMatrix() {
         ? `<span class="incomplete-dot" title="Falta completar: ${(member.missing_fields || []).join(', ')}"></span>`
         : '';
 
+      const periods = getStaffServicePeriods(member);
+      const contractSummary = getStaffContractSummaryText(member);
       const officialTooltip = member.official_name
-        ? `Nombre Oficial: ${member.official_name} | RUT: ${member.rut || 'Pendiente'} — Clic para abrir Ficha Anual`
-        : `RUT: ${member.rut || 'Pendiente'} — Clic para abrir Ficha Anual`;
+        ? `Nombre Oficial: ${member.official_name} | RUT: ${member.rut || 'Pendiente'} | Relación de Servicio: ${contractSummary} — Clic para abrir Ficha Anual`
+        : `RUT: ${member.rut || 'Pendiente'} | Relación de Servicio: ${contractSummary} — Clic para abrir Ficha Anual`;
+
+      const monthStartISO = `${year}-${String(month).padStart(2, '0')}-01`;
+      const monthEndISO = `${year}-${String(month).padStart(2, '0')}-${String(daysCount).padStart(2, '0')}`;
+      const monthPeriods = periods.filter(p => p.start <= monthEndISO && (!p.end || p.end >= monthStartISO));
+
+      let contractTagHtml = '';
+      if (periods.length > 1) {
+        contractTagHtml += `<span class="contract-period-tag tag-end" title="Relación de Servicio por períodos: ${contractSummary}">📋 ${periods.length} períodos</span>`;
+      } else if (monthPeriods.length === 1) {
+        const mp = monthPeriods[0];
+        if (mp.end) {
+          contractTagHtml += `<span class="contract-period-tag tag-end" title="Término de Relación de Servicio: ${formatDateCL(mp.end)}">Hasta ${formatDateCL(mp.end)}</span>`;
+        } else if (mp.start > DEFAULT_CONTRACT_START) {
+          contractTagHtml += `<span class="contract-period-tag tag-start" title="Inicio de Relación de Servicio: ${formatDateCL(mp.start)}">Desde ${formatDateCL(mp.start)}</span>`;
+        }
+      }
 
       const isTdmMember = (member.sheets || []).includes('TOMA DE MUESTRA');
       const secBadge = `<span class="badge ${member.section === 'APA' ? 'badge-ok' : 'badge-blue'}" style="font-size:9.5px; padding:1px 5px;">${member.section}</span>`;
@@ -1655,11 +1804,11 @@ function renderCalendarMatrix() {
           <div class="staff-cell-inner">
             <span class="staff-name-main" data-staff-id="${member.id}">${member.name}</span>
             <span style="display:inline-flex; align-items:center; gap:4px; flex-shrink:0;">
-              <button type="button" class="btn-inline-edit-name" data-edit-staff-id="${member.id}" title="Editar nombre o ficha de ${member.name}">✏️</button>
+              <button type="button" class="btn-inline-edit-name" data-edit-staff-id="${member.id}" title="Editar ficha o fechas de inicio/término de ${member.name}">✏️</button>
               ${incDot}
             </span>
           </div>
-          <div class="staff-rut-sub">${member.rut || 'RUT Pendiente'} · ${member.estamento || member.role}</div>
+          <div class="staff-rut-sub">${member.rut || 'RUT Pendiente'} · ${member.estamento || member.role}${contractTagHtml}</div>
         </td>
         <td class="sticky-col-role">${secBadge}${tdmBadge}</td>`;
 
@@ -1667,6 +1816,7 @@ function renderCalendarMatrix() {
         const key = `${member.id}_${dm.iso}`;
         const ev = state.turnsMap[key];
         const tdm = state.tdmMap[key];
+        const activeOnDay = isStaffActiveOnDate(member, dm.iso);
 
         let cellClasses = ['day-cell'];
         if (dm.holiday) cellClasses.push('col-holiday');
@@ -1676,7 +1826,11 @@ function renderCalendarMatrix() {
         let tooltipParts = [`${member.name} — ${dm.d} ${MONTH_LABELS[month]} ${year}`];
         if (dm.holiday) tooltipParts.push(`🎉 Feriado: ${dm.holiday.name}`);
 
-        if (ev) {
+        if (!activeOnDay && !ev && !tdm) {
+          cellClasses.push('cell-out-of-contract');
+          displayCode = '—';
+          tooltipParts.push(`⛔ Sin Relación de Servicio activa en esta fecha (${contractSummary})`);
+        } else if (ev) {
           displayCode = ev.event_type === 'DEVOLUCION_TIEMPO' ? 'DT' : (ev.code || '');
           const uCode = displayCode.toUpperCase();
           if (ev.event_type && ev.event_type !== 'TURNO') {
@@ -1764,8 +1918,14 @@ function renderCalendarMatrix() {
   const monthLabelEl = document.getElementById('calendarMonthLabel');
   if (monthLabelEl) monthLabelEl.textContent = `${MONTH_LABELS[month]} ${year}`;
 
+  const allStaffArr = Object.values(state.staff);
+  const activeInMonthCount = allStaffArr.filter(s => isStaffActiveInMonth(s, year, month)).length;
+  const inactiveInMonthCount = allStaffArr.length - activeInMonthCount;
   const visCountEl = document.getElementById('calendarVisibleCount');
-  if (visCountEl) visCountEl.textContent = `Mostrando ${totalVisibleStaff} de ${Object.keys(state.staff).length} funcionarios`;
+  if (visCountEl) {
+    const inactiveSuffix = inactiveInMonthCount > 0 ? ` (${inactiveInMonthCount} sin Relación de Servicio en ${MONTH_LABELS[month]})` : '';
+    visCountEl.textContent = `Mostrando ${totalVisibleStaff} de ${activeInMonthCount} funcionarios activos${inactiveSuffix}`;
+  }
 
   const tensPillEl = document.getElementById('tensAbsenceSummaryPill');
   if (tensPillEl) {
@@ -1798,6 +1958,14 @@ function getPreviousDayISO(dateStr) {
 }
 
 function checkStaffConflictOnDate(staffId, dateStr) {
+  const st = state.staff[staffId];
+  if (st && !isStaffActiveOnDate(st, dateStr)) {
+    return {
+      hasConflict: true,
+      badgeHtml: `<span class="badge badge-danger">⛔ Sin Relación de Servicio</span>`,
+      text: `Sin Relación de Servicio activa el ${formatDateCL(dateStr)} (${getStaffContractSummaryText(st)})`
+    };
+  }
   const mainEv = state.turnsMap[`${staffId}_${dateStr}`];
   const prevIso = getPreviousDayISO(dateStr);
   const prevEv = state.turnsMap[`${staffId}_${prevIso}`];
@@ -1896,9 +2064,10 @@ function renderTdmView() {
   const monthPrefix = `${year}-${String(month).padStart(2, '0')}-`;
   const monthRecords = tdmArray.filter(t => t.date.startsWith(monthPrefix));
 
-  // Mostrar todos los funcionarios que participan en TDM este mes (o habitualmente en la hoja TDM)
+  // Mostrar todos los funcionarios vigentes que participan en TDM este mes (o habitualmente en la hoja TDM)
   const staffIdsInMonth = new Set(monthRecords.map(r => r.staff_id));
   for (const s of Object.values(state.staff)) {
+    if (!isStaffActiveInMonth(s, year, month)) continue;
     if ((s.sheets || []).includes('TOMA DE MUESTRA') && monthRecords.length === 0) {
       staffIdsInMonth.add(s.id);
     }
@@ -2001,6 +2170,9 @@ function renderDirectoryView() {
   const filtered = allStaff.filter(s => {
     if (!matchesSearch(s, q)) return false;
     if (fSection !== 'all' && s.section !== fSection) return false;
+    if (fStatus === 'active_month' && !isStaffActiveInMonth(s, state.year, state.month)) return false;
+    if (fStatus === 'with_end_date' && !hasEndedOrMultipleServicePeriods(s)) return false;
+    if (fStatus === 'ended_month' && isStaffActiveInMonth(s, state.year, state.month)) return false;
     if (fStatus === 'incomplete' && !s.needs_completion) return false;
     if (fStatus === 'complete' && s.needs_completion) return false;
     if (fModality !== 'all' && s.modality !== fModality) return false;
@@ -2026,6 +2198,34 @@ function renderDirectoryView() {
       ? `<span class="badge badge-warn">⚠️ Falta: ${(s.missing_fields || []).join(', ')}</span>`
       : `<span class="badge badge-ok">✅ Completo</span>`;
 
+    const periods = getStaffServicePeriods(s);
+    const activeInPeriod = isStaffActiveInMonth(s, state.year, state.month);
+    let contractHtml = '';
+    if (periods.length === 1 && !periods[0].end) {
+      contractHtml = `
+        <div><span class="badge badge-ok">🟢 Indefinida / Permanente</span></div>
+        <div style="font-size:10.5px; color:#64748b; margin-top:2px;">Inicio: ${formatDateCL(periods[0].start)}${!activeInPeriod ? ` · <b style="color:#d97706;">Oculto en ${MONTH_LABELS[state.month]} ${state.year}</b>` : ''}</div>
+      `;
+    } else if (periods.length === 1 && periods[0].end) {
+      const badgeCls = activeInPeriod ? 'badge-warn' : 'badge-danger';
+      const badgeIcon = activeInPeriod ? '📅' : '🔴';
+      const labelPrefix = activeInPeriod ? 'Hasta' : 'Finalizada';
+      contractHtml = `
+        <div><span class="badge ${badgeCls}">${badgeIcon} ${labelPrefix}: ${formatDateCL(periods[0].end)}</span></div>
+        <div style="font-size:10.5px; color:#64748b; margin-top:2px;">Inicio: ${formatDateCL(periods[0].start)}${!activeInPeriod ? ` · <b style="color:#dc2626;">Oculto en ${MONTH_LABELS[state.month]} ${state.year}</b>` : ''}</div>
+      `;
+    } else {
+      const badgeCls = activeInPeriod ? 'badge-purple' : 'badge-danger';
+      const statusSuffix = activeInPeriod ? 'Activo este mes' : `Oculto en ${MONTH_LABELS[state.month]}`;
+      const periodsLines = periods
+        .map((p, i) => `<div><b>#${i + 1}:</b> ${formatDateCL(p.start)} → ${p.end ? formatDateCL(p.end) : 'Indefinida'}</div>`)
+        .join('');
+      contractHtml = `
+        <div><span class="badge ${badgeCls}">🔄 ${periods.length} Períodos (${statusSuffix})</span></div>
+        <div style="font-size:10px; color:#475569; margin-top:3px; line-height:1.3;">${periodsLines}</div>
+      `;
+    }
+
     const sheetsBadges = (s.sheets || []).map(sh => `<span class="badge">${sh}</span>`).join(' ');
 
     html += `<tr>
@@ -2038,6 +2238,7 @@ function renderDirectoryView() {
       <td>${s.estamento || s.role}</td>
       <td><span class="badge badge-blue" title="${SECTION_DESCRIPTIONS[s.section] || s.section}">${s.section}</span></td>
       <td><span class="badge ${s.modality.includes('4to') ? 'badge-purple' : 'badge-ok'}">${s.modality}</span></td>
+      <td>${contractHtml}</td>
       <td>${sheetsBadges}</td>
       <td style="display:flex; gap:4px;">
         <button class="btn btn-outline btn-annual-staff" style="padding:4px 8px; font-size:11px; color:#1e40af; border-color:#bfdbfe;" data-id="${s.id}" title="Ver calendario anual completo del funcionario">
@@ -2051,7 +2252,7 @@ function renderDirectoryView() {
   }
 
   if (filtered.length === 0) {
-    html = `<tr><td colspan="9" style="text-align:center; padding:24px; color:#64748b;">
+    html = `<tr><td colspan="10" style="text-align:center; padding:24px; color:#64748b;">
       No se encontraron funcionarios para los criterios seleccionados.
     </td></tr>`;
   }
@@ -2113,6 +2314,7 @@ function renderAnalyticsView() {
   const q = state.analyticsSearch;
 
   const staffList = Object.values(state.staff).filter(s => {
+    if (!isStaffActiveInYear(s, state.year)) return false;
     if (!matchesSearch(s, q)) return false;
     if (fg === 'all') return true;
     return s.section === fg;
@@ -2174,7 +2376,7 @@ function openStaffAnnualModal(staffId) {
   document.getElementById('annualStaffTitle').textContent =
     `${st.name} — Ficha Anual ${state.year}`;
   document.getElementById('annualStaffSubtitle').textContent =
-    `Nombre Legal: ${st.official_name || st.name} · RUT: ${st.rut || 'Pendiente'} · Estamento: ${st.estamento || st.role} · Área: ${SECTION_DESCRIPTIONS[st.section] || st.section} · Modalidad: ${st.modality}`;
+    `Nombre Legal: ${st.official_name || st.name} · RUT: ${st.rut || 'Pendiente'} · Estamento: ${st.estamento || st.role} · Área: ${SECTION_DESCRIPTIONS[st.section] || st.section} · Modalidad: ${st.modality} · Vigencia: ${getStaffContractSummaryText(st)}`;
 
   const m = computeStaffAnnualMetrics(staffId, state.year);
   document.getElementById('annualKpiGrid').innerHTML = `
@@ -2216,13 +2418,17 @@ function openStaffAnnualModal(staffId) {
       const iso = formatDateISO(dateObj);
       const ev = state.turnsMap[`${staffId}_${iso}`];
       const tdm = state.tdmMap[`${staffId}_${iso}`];
+      const activeOnDay = isStaffActiveOnDate(st, iso);
 
       let cls = ['day-cell', 'annual-day-cell'];
       if (holidayMap[iso]) cls.push('col-holiday');
       else if (dow === 0 || dow === 6) cls.push('col-weekend');
 
       let code = '';
-      if (ev) {
+      if (!activeOnDay && !ev && !tdm) {
+        cls.push('cell-out-of-contract');
+        code = '—';
+      } else if (ev) {
         code = ev.event_type === 'DEVOLUCION_TIEMPO' ? 'DT' : (ev.code || '');
         const u = code.toUpperCase();
         if (ev.event_type && ev.event_type !== 'TURNO') {
@@ -2265,7 +2471,9 @@ function openStaffAnnualModal(staffId) {
 function populateStaffSelect(selectId, selectedStaffId = null) {
   const sel = document.getElementById(selectId);
   if (!sel) return;
-  const sorted = Object.values(state.staff).sort((a, b) => a.name.localeCompare(b.name, 'es'));
+  const sorted = Object.values(state.staff)
+    .filter(s => s.id === selectedStaffId || isStaffActiveInMonth(s, state.year, state.month))
+    .sort((a, b) => a.name.localeCompare(b.name, 'es'));
   sel.innerHTML = sorted
     .map(s => `<option value="${s.id}" ${s.id === selectedStaffId ? 'selected' : ''}>${s.name} — ${s.section} (${s.rut || 'Sin RUT'})</option>`)
     .join('');
@@ -2861,15 +3069,71 @@ function openShiftManagerModal() {
   document.getElementById('modalShiftManager').classList.remove('hidden');
 }
 
+function syncStaffContractEndUI() {
+  const statusSel = document.getElementById('staffEditContractStatus');
+  const endGroup = document.getElementById('staffEditContractEndGroup');
+  const startLabel = document.getElementById('labelStaffContractStart');
+  if (!statusSel || !endGroup) return;
+  const hasEnd = statusSel.value === 'plazo_fijo';
+  endGroup.classList.toggle('hidden', !hasEnd);
+  if (startLabel) {
+    startLabel.textContent = hasEnd ? 'Fecha de Inicio (Período #1)' : 'Fecha de Inicio';
+  }
+}
+
+function renumberExtraServicePeriodRows() {
+  const container = document.getElementById('extraServicePeriodsList');
+  if (!container) return;
+  container.querySelectorAll('.extra-period-row').forEach((row, idx) => {
+    const badge = row.querySelector('.sp-period-badge');
+    if (badge) badge.textContent = `Período #${idx + 2}`;
+  });
+}
+
+function addExtraServicePeriodRow(startVal = '', endVal = '') {
+  const container = document.getElementById('extraServicePeriodsList');
+  if (!container) return;
+  const idx = container.querySelectorAll('.extra-period-row').length + 2;
+  const defaultStart = startVal || `${state.year}-${String(state.month).padStart(2, '0')}-01`;
+  const row = document.createElement('div');
+  row.className = 'extra-period-row';
+  row.innerHTML = `
+    <span class="sp-period-badge">Período #${idx}</span>
+    <label class="sp-field-inline">
+      <span>Inicio:</span>
+      <input type="date" class="text-input sp-extra-start" value="${defaultStart}" />
+    </label>
+    <label class="sp-field-inline">
+      <span>Término:</span>
+      <input type="date" class="text-input sp-extra-end" value="${endVal || ''}" title="Deja vacío si este último período continúa activo de forma indefinida" />
+    </label>
+    <button type="button" class="btn btn-danger-outline btn-sm btn-remove-extra-period" style="padding:3px 7px; font-size:11px;" title="Eliminar este período">🗑️</button>
+  `;
+  container.appendChild(row);
+}
+
+function renderExtraServicePeriodsList(extraPeriods = []) {
+  const container = document.getElementById('extraServicePeriodsList');
+  if (!container) return;
+  container.innerHTML = '';
+  for (const p of extraPeriods) {
+    addExtraServicePeriodRow(p.start || '', p.end || '');
+  }
+}
+
 function openStaffModal(staffId = null) {
-  if (!isAdmin()) {
-    showToast('🔒 Solo el perfil Administrador puede crear o modificar fichas maestras de funcionarios.');
+  if (!canEditCalendar()) {
+    showToast('🔒 Inicia sesión como Jefatura o Administrador para modificar fichas o Relación de Servicio.');
     return;
   }
   const isNew = !staffId;
   document.getElementById('modalStaffTitle').textContent = isNew
     ? 'Registrar Nuevo Funcionario'
     : 'Editar / Completar Ficha de Funcionario';
+
+  const startInput = document.getElementById('staffEditContractStart');
+  const statusSelect = document.getElementById('staffEditContractStatus');
+  const endInput = document.getElementById('staffEditContractEnd');
 
   if (isNew) {
     document.getElementById('staffEditId').value = '';
@@ -2880,6 +3144,10 @@ function openStaffModal(staffId = null) {
     document.getElementById('staffEditEstamento').value = 'Tecnólogo Médico';
     document.getElementById('staffEditSection').value = 'ALU';
     document.getElementById('staffEditModality').value = 'Diurno';
+    if (startInput) startInput.value = DEFAULT_CONTRACT_START;
+    if (statusSelect) statusSelect.value = 'indefinido';
+    if (endInput) endInput.value = '';
+    renderExtraServicePeriodsList([]);
   } else {
     const s = state.staff[staffId];
     document.getElementById('staffEditId').value = s.id;
@@ -2890,14 +3158,22 @@ function openStaffModal(staffId = null) {
     document.getElementById('staffEditEstamento').value = s.estamento || '';
     document.getElementById('staffEditSection').value = OFFICIAL_SECTIONS.includes(s.section) ? s.section : 'ALU';
     document.getElementById('staffEditModality').value = s.modality || 'Diurno';
+    const periods = getStaffServicePeriods(s);
+    const firstP = periods[0] || { start: DEFAULT_CONTRACT_START, end: null };
+    const isMultiOrEnded = periods.length > 1 || Boolean(firstP.end);
+    if (startInput) startInput.value = firstP.start;
+    if (statusSelect) statusSelect.value = isMultiOrEnded ? 'plazo_fijo' : 'indefinido';
+    if (endInput) endInput.value = firstP.end || '';
+    renderExtraServicePeriodsList(periods.slice(1));
   }
 
+  syncStaffContractEndUI();
   document.getElementById('modalStaffEdit').classList.remove('hidden');
 }
 
 function saveStaffModal() {
-  if (!isAdmin()) {
-    showToast('🔒 Solo el perfil Administrador puede guardar cambios en la dotación.');
+  if (!canEditCalendar()) {
+    showToast('🔒 Inicia sesión como Jefatura o Administrador para guardar cambios en la dotación.');
     return;
   }
   const existingId = document.getElementById('staffEditId').value;
@@ -2908,11 +3184,55 @@ function saveStaffModal() {
   const estamento = document.getElementById('staffEditEstamento').value.trim();
   let section = document.getElementById('staffEditSection').value;
   const modality = document.getElementById('staffEditModality').value;
+  const rawStart = (document.getElementById('staffEditContractStart')?.value || '').trim();
+  const firstStart = /^\d{4}-\d{2}-\d{2}$/.test(rawStart) ? rawStart : DEFAULT_CONTRACT_START;
+  const contractStatusSel = document.getElementById('staffEditContractStatus')?.value || 'indefinido';
+  const rawEnd = (document.getElementById('staffEditContractEnd')?.value || '').trim();
+  const firstEnd = (contractStatusSel === 'plazo_fijo' && /^\d{4}-\d{2}-\d{2}$/.test(rawEnd))
+    ? rawEnd
+    : null;
 
   if (!name) {
     showToast('⚠️ El nombre del funcionario es obligatorio.');
     return;
   }
+
+  const collectedPeriods = [];
+  if (contractStatusSel === 'indefinido') {
+    collectedPeriods.push({ start: firstStart, end: null });
+  } else {
+    const extraContainer = document.getElementById('extraServicePeriodsList');
+    const extraRows = extraContainer ? Array.from(extraContainer.querySelectorAll('.extra-period-row')) : [];
+
+    if (!firstEnd && extraRows.length === 0) {
+      showToast('⚠️ Indica la Fecha de Término o cambia la Relación de Servicio a Indefinida / Permanente.');
+      return;
+    }
+    if (firstEnd && firstEnd < firstStart) {
+      showToast('⚠️ En el Período #1, la fecha de término no puede ser anterior a la fecha de inicio.');
+      return;
+    }
+    collectedPeriods.push({ start: firstStart, end: firstEnd });
+
+    for (let i = 0; i < extraRows.length; i++) {
+      const stVal = (extraRows[i].querySelector('.sp-extra-start')?.value || '').trim();
+      const enVal = (extraRows[i].querySelector('.sp-extra-end')?.value || '').trim();
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(stVal)) {
+        showToast(`⚠️ Indica la fecha de inicio del Período #${i + 2}.`);
+        return;
+      }
+      const cleanEn = /^\d{4}-\d{2}-\d{2}$/.test(enVal) ? enVal : null;
+      if (cleanEn && cleanEn < stVal) {
+        showToast(`⚠️ En el Período #${i + 2}, la fecha de término no puede ser anterior a la fecha de inicio.`);
+        return;
+      }
+      collectedPeriods.push({ start: stVal, end: cleanEn });
+    }
+  }
+
+  collectedPeriods.sort((a, b) => a.start.localeCompare(b.start));
+  const contractStart = collectedPeriods[0].start;
+  const contractEnd = collectedPeriods[collectedPeriods.length - 1].end;
 
   if (role === 'TENS') section = 'APA';
   if (role === 'Auxiliar') section = 'Auxiliares';
@@ -2926,6 +3246,7 @@ function saveStaffModal() {
 
   const isNewStaff = !state.staff[id];
   const prev = state.staff[id] || { sheets: ['RUTINA'] };
+  const prevContractSummary = isNewStaff ? 'Sin registro' : getStaffContractSummaryText(prev);
   state.staff[id] = {
     ...prev,
     id,
@@ -2936,6 +3257,10 @@ function saveStaffModal() {
     estamento: estamento || role,
     section,
     modality,
+    contract_start: contractStart,
+    contract_end: contractEnd,
+    contract_status: (collectedPeriods.length === 1 && !contractEnd) ? 'indefinido' : 'plazo_fijo',
+    service_periods: collectedPeriods,
     needs_completion: missing.length > 0,
     missing_fields: missing
   };
@@ -2947,15 +3272,17 @@ function saveStaffModal() {
     if (r.staff_id === id) r.staff_name = name;
   }
 
+  const newContractSummary = getStaffContractSummaryText(state.staff[id]);
+
   recordAuditEntry({
     category: 'PERSONAL',
-    action: isNewStaff ? 'Incorporación de Nuevo Funcionario' : 'Actualización de Ficha de Personal',
+    action: isNewStaff ? 'Incorporación de Nuevo Funcionario' : 'Actualización de Ficha / Relación de Servicio',
     staffId: id,
     staffName: name,
-    dateRange: 'Maestro Dotación',
-    beforeVal: isNewStaff ? 'Sin registro' : (prev.rut || 'Ficha previa'),
+    dateRange: newContractSummary,
+    beforeVal: isNewStaff ? 'Sin registro' : `${prev.rut || 'Ficha'} (${prevContractSummary})`,
     afterVal: `${name} (${rut || 'Sin RUT'} · ${section})`,
-    detail: `Estamento: ${estamento || role} · Modalidad: ${modality}`
+    detail: `Estamento: ${estamento || role} · Modalidad: ${modality} · Relación de Servicio: ${newContractSummary}`
   });
 
   saveStateToStorage();
@@ -2964,7 +3291,7 @@ function saveStaffModal() {
   if (state.annualModalStaffId === id && !document.getElementById('modalStaffAnnual').classList.contains('hidden')) {
     openStaffAnnualModal(id);
   }
-  showToast(`✅ Ficha de ${name} actualizada correctamente.`);
+  showToast(`✅ Ficha de ${name} actualizada (${newContractSummary}).`);
 }
 
 function updateTdmModalConflictPreview() {
@@ -4042,6 +4369,57 @@ function bindEvents() {
   document.getElementById('btnCloseStaffModal').addEventListener('click', () => closeModal('modalStaffEdit'));
   document.getElementById('btnCancelStaff').addEventListener('click', () => closeModal('modalStaffEdit'));
   document.getElementById('btnSaveStaff').addEventListener('click', saveStaffModal);
+
+  const contractStatusSelect = document.getElementById('staffEditContractStatus');
+  if (contractStatusSelect) {
+    contractStatusSelect.addEventListener('change', () => {
+      syncStaffContractEndUI();
+      if (contractStatusSelect.value === 'indefinido') {
+        const endEl = document.getElementById('staffEditContractEnd');
+        if (endEl) endEl.value = '';
+      } else {
+        const endEl = document.getElementById('staffEditContractEnd');
+        if (endEl && !endEl.value) {
+          const lastDay = getDaysInMonth(Number(state.year), Number(state.month));
+          endEl.value = `${state.year}-${String(state.month).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+        }
+      }
+    });
+  }
+
+  const btnClearContractEnd = document.getElementById('btnClearContractEnd');
+  if (btnClearContractEnd) {
+    btnClearContractEnd.addEventListener('click', () => {
+      const statusSel = document.getElementById('staffEditContractStatus');
+      const endEl = document.getElementById('staffEditContractEnd');
+      if (statusSel) statusSel.value = 'indefinido';
+      if (endEl) endEl.value = '';
+      renderExtraServicePeriodsList([]);
+      syncStaffContractEndUI();
+    });
+  }
+
+  const btnAddServicePeriod = document.getElementById('btnAddServicePeriod');
+  if (btnAddServicePeriod) {
+    btnAddServicePeriod.addEventListener('click', () => {
+      const lastDay = getDaysInMonth(Number(state.year), Number(state.month));
+      const defStart = `${state.year}-${String(state.month).padStart(2, '0')}-01`;
+      const defEnd = `${state.year}-${String(state.month).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+      addExtraServicePeriodRow(defStart, defEnd);
+    });
+  }
+
+  const extraPeriodsListEl = document.getElementById('extraServicePeriodsList');
+  if (extraPeriodsListEl) {
+    extraPeriodsListEl.addEventListener('click', e => {
+      const rmBtn = e.target.closest('.btn-remove-extra-period');
+      if (rmBtn) {
+        const row = rmBtn.closest('.extra-period-row');
+        if (row) row.remove();
+        renumberExtraServicePeriodRows();
+      }
+    });
+  }
   const staffRoleSelect = document.getElementById('staffEditRole');
   if (staffRoleSelect) {
     staffRoleSelect.addEventListener('change', e => {

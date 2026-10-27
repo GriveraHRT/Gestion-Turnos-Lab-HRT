@@ -2107,10 +2107,135 @@ body.role-viewer .incomplete-dot {
   display: none !important;
 }
 
-body.role-jefatura .btn-inline-edit-name,
-body.role-jefatura .btn-edit-staff,
-body.role-jefatura .incomplete-dot {
-  display: none !important;
+/* Vigencia de Contrato / Relación de Servicio */
+.contract-vigencia-box {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-left: 4px solid #2563eb;
+  border-radius: 8px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.contract-box-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.contract-box-header strong {
+  font-size: 12.5px;
+  color: #0f172a;
+}
+
+.contract-box-header small,
+.field-hint {
+  font-size: 11px;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+.contract-end-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.contract-end-row .text-input {
+  flex: 1;
+}
+
+.extra-periods-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.extra-period-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 6px 8px;
+  flex-wrap: wrap;
+}
+
+.extra-period-row .sp-period-badge {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #1e40af;
+  background: #dbeafe;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.extra-period-row .sp-field-inline {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  min-width: 150px;
+}
+
+.extra-period-row .sp-field-inline span {
+  font-size: 11px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.extra-period-row .text-input {
+  padding: 4px 6px;
+  font-size: 12px;
+  flex: 1;
+}
+
+.extra-periods-actions {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.contract-period-tag {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 0 5px;
+  border-radius: 4px;
+  margin-left: 3px;
+  line-height: 1.35;
+  vertical-align: middle;
+}
+
+.contract-period-tag.tag-start {
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #93c5fd;
+}
+
+.contract-period-tag.tag-end {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+}
+
+.day-cell.cell-out-of-contract {
+  background: repeating-linear-gradient(
+    -45deg,
+    #f1f5f9,
+    #f1f5f9 4px,
+    #e2e8f0 4px,
+    #e2e8f0 8px
+  ) !important;
+  color: #94a3b8 !important;
+  font-weight: 500;
+  font-size: 10px;
 }
 
 /* Banner de Trazabilidad en Modal de Celda */

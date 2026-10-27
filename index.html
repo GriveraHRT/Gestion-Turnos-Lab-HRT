@@ -394,8 +394,11 @@
             <option value="ADM">ADM (Administrativa)</option>
             <option value="Auxiliares">Auxiliares</option>
           </select>
-          <select id="dirFilterStatus" class="select-input" title="Filtrar por Estado de Ficha">
+          <select id="dirFilterStatus" class="select-input" title="Filtrar por Estado de Ficha o Relación de Servicio">
             <option value="all">Todos los Estados</option>
+            <option value="active_month">🟢 Con Relación de Servicio Activa en el Mes</option>
+            <option value="with_end_date">📅 Con Término o Múltiples Períodos de Servicio</option>
+            <option value="ended_month">🔴 Sin Relación de Servicio en el Mes (Ocultos en Calendario)</option>
             <option value="incomplete">⚠️ Datos Incompletos (Sin RUT / 2° Apellido)</option>
             <option value="complete">✅ Datos Completos</option>
           </select>
@@ -455,6 +458,7 @@
               <th>Estamento</th>
               <th>Sección / Área</th>
               <th>Modalidad</th>
+              <th>Relación de Servicio</th>
               <th>Módulos / Hojas</th>
               <th>Acciones</th>
             </tr>
@@ -954,6 +958,46 @@
             <option value="Diurno">Diurno (Lunes a Viernes)</option>
             <option value="4to Turno / Rotativo">4to Turno / Rotativo (L - N - Libre - Libre)</option>
           </select>
+        </div>
+
+        <div class="contract-vigencia-box">
+          <div class="contract-box-header">
+            <strong>📋 Relación de Servicio</strong>
+            <small>Define uno o múltiples períodos de Relación de Servicio (inicio y término) para controlar en qué meses y días aparece el funcionario en el calendario.</small>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="staffEditContractStart" id="labelStaffContractStart">Fecha de Inicio (Período 1)</label>
+              <input type="date" id="staffEditContractStart" class="text-input" value="2026-01-01" />
+              <small class="field-hint">Por defecto 01-01-2026. No aparecerá en meses previos a su inicio.</small>
+            </div>
+            <div class="form-group">
+              <label for="staffEditContractStatus">Tipo de Relación de Servicio</label>
+              <select id="staffEditContractStatus" class="select-input full-width">
+                <option value="indefinido">🟢 Indefinida / Permanente (Continua)</option>
+                <option value="plazo_fijo">📅 Con Fecha de Término o por Períodos (Reemplazos)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group hidden" id="staffEditContractEndGroup">
+            <label for="staffEditContractEnd">Fecha de Término (Período 1)</label>
+            <div class="contract-end-row">
+              <input type="date" id="staffEditContractEnd" class="text-input" />
+              <button type="button" class="btn btn-outline-dark btn-sm" id="btnClearContractEnd" title="Volver a Relación de Servicio Indefinida / Permanente">
+                ↺ Dejar Indefinida
+              </button>
+            </div>
+
+            <div id="extraServicePeriodsList" class="extra-periods-list"></div>
+
+            <div class="extra-periods-actions">
+              <button type="button" class="btn btn-outline-dark btn-sm" id="btnAddServicePeriod" title="Agregar otro período de inicio y término (para reemplazos cortos o esporádicos)">
+                ➕ Agregar otro período de Relación de Servicio
+              </button>
+            </div>
+            <small class="field-hint">Puedes registrar múltiples períodos para reemplazos esporádicos (ej. febrero y luego agosto). Si el último período continúa activo, deja su fecha de término en blanco.</small>
+          </div>
         </div>
       </div>
       <div class="modal-footer">

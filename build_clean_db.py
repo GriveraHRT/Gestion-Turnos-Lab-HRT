@@ -442,6 +442,10 @@ def register_staff(canon_name, rut=None, role=None, section=None, sheet=None, mo
             'section': official_sec,
             'sheets': [sheet] if sheet else [],
             'modality': modality or 'Diurno',
+            'contract_start': '2026-01-01',
+            'contract_end': None,
+            'contract_status': 'indefinido',
+            'service_periods': [{'start': '2026-01-01', 'end': None}],
             'active_2027': True,
             'needs_completion': False,
             'missing_fields': []
@@ -1156,7 +1160,7 @@ if existing_staff_path.exists():
         for sid, st in staff_master.items():
             if sid in prev_staff:
                 p = prev_staff[sid]
-                for field in ('name', 'official_name', 'rut', 'role', 'estamento', 'section', 'modality', 'needs_completion', 'missing_fields'):
+                for field in ('name', 'official_name', 'rut', 'role', 'estamento', 'section', 'modality', 'contract_start', 'contract_end', 'contract_status', 'service_periods', 'needs_completion', 'missing_fields'):
                     if p.get(field) is not None:
                         st[field] = p[field]
     except Exception as e:
