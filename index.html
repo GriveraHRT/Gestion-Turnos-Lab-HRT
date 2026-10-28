@@ -178,7 +178,24 @@
   <!-- NIVEL 2: BARRA DE TRABAJO CONTEXTUAL DEL CALENDARIO (1 LÍNEA)         -->
   <!-- ==================================================================== -->
   <section class="calendar-toolbar" id="calendarQuickBar">
-    <!-- Izquierda: Filtros de Sección Sobrios -->
+    <!-- Protagonista: Buscador Rápido de Funcionario (Izquierda / Centro) -->
+    <div class="search-hero-wrapper" id="searchHeroWrapper">
+      <div class="search-box search-box-hero" id="globalSearchBox">
+        <span class="search-hero-icon" aria-hidden="true">🔍</span>
+        <input
+          type="text"
+          id="globalSearch"
+          placeholder="Buscar funcionario por nombre, apellido, RUT o sección..."
+          autocomplete="off"
+          aria-label="Buscar funcionario en el calendario"
+        />
+        <span id="searchMatchBadge" class="search-match-badge hidden" title="Funcionarios encontrados en el mes">0</span>
+        <kbd id="searchShortcutHint" class="search-kbd-hint" title="Atajo de teclado: presiona Ctrl+K o / para buscar rápidamente">Ctrl+K</kbd>
+        <button type="button" id="btnClearSearch" class="btn-clear-search hidden" title="Limpiar búsqueda (Esc)">✕ Limpiar</button>
+      </div>
+    </div>
+
+    <!-- Centro: Filtros Rápidos de Sección -->
     <div class="quick-filters">
       <button class="filter-chip active" data-filter="all">Todos</button>
       <button class="filter-chip" data-filter="urgencia">Urgencias (ALU)</button>
@@ -190,13 +207,8 @@
       <button class="filter-chip" data-filter="absent_month" title="Funcionarios con Vacaciones, Licencias o Permisos este mes">Con Ausencias</button>
     </div>
 
-    <!-- Derecha: Búsqueda, Agrupación y Botones de Paneles Auxiliares (Pintar / Leyenda) -->
+    <!-- Derecha: Agrupación y Botones de Paneles Auxiliares (Pintar / Leyenda) -->
     <div id="calendarTopbarTools" class="calendar-topbar-tools">
-      <div class="search-box">
-        <input type="text" id="globalSearch" placeholder="🔍 Buscar funcionario o RUT..." autocomplete="off" />
-        <button id="btnClearSearch" class="btn-clear-search hidden" title="Limpiar búsqueda">✕</button>
-      </div>
-
       <div class="toolbar-select-inline">
         <label for="groupBySelect">Agrupar:</label>
         <select id="groupBySelect" class="select-input select-compact">

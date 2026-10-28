@@ -129,6 +129,7 @@ def test_html_and_css():
 
     required_ids = [
         'calendarTopbarTools', 'calendarQuickBar', 'calendarLegendBar',
+        'searchHeroWrapper', 'globalSearchBox', 'globalSearch', 'searchMatchBadge', 'searchShortcutHint', 'btnClearSearch',
         'paintToolsGroup', 'btnUndoAction', 'btnOpenShiftManager', 'btnQuickRangeAbsence',
         'modalCellEdit', 'cellStaffSelect', 'cellStaffId', 'cellDate', 'cellEndDate',
         'cellRangeMode', 'cellRangePreview', 'extraHoursBuilder', 'daModeBuilder',

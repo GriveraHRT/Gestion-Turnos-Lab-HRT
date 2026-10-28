@@ -1927,6 +1927,31 @@ function renderCalendarMatrix() {
     visCountEl.textContent = `Mostrando ${totalVisibleStaff} de ${activeInMonthCount} funcionarios activos${inactiveSuffix}`;
   }
 
+  // Actualizar estado visual del buscador protagonista (contador de coincidencias y atajo)
+  const hasSearchQuery = Boolean(state.searchQuery && state.searchQuery.trim());
+  const searchBoxHero = document.getElementById('globalSearchBox');
+  const searchMatchBadge = document.getElementById('searchMatchBadge');
+  const searchShortcutHint = document.getElementById('searchShortcutHint');
+  const btnClearSearch = document.getElementById('btnClearSearch');
+  if (searchBoxHero) {
+    searchBoxHero.classList.toggle('has-active-query', hasSearchQuery);
+  }
+  if (searchMatchBadge) {
+    searchMatchBadge.classList.toggle('hidden', !hasSearchQuery);
+    searchMatchBadge.classList.toggle('match-zero', hasSearchQuery && totalVisibleStaff === 0);
+    if (hasSearchQuery) {
+      searchMatchBadge.textContent = totalVisibleStaff === 1
+        ? '1 encontrado'
+        : `${totalVisibleStaff} encontrados`;
+    }
+  }
+  if (searchShortcutHint) {
+    searchShortcutHint.classList.toggle('hidden', hasSearchQuery);
+  }
+  if (btnClearSearch) {
+    btnClearSearch.classList.toggle('hidden', !hasSearchQuery);
+  }
+
   const tensPillEl = document.getElementById('tensAbsenceSummaryPill');
   if (tensPillEl) {
     if (highAbsenceDays > 0) {
@@ -3979,14 +4004,39 @@ function bindEvents() {
     renderCalendarMatrix();
   });
 
+  searchInput.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && state.searchQuery) {
+      e.preventDefault();
+      state.searchQuery = '';
+      searchInput.value = '';
+      renderCalendarMatrix();
+    }
+  });
+
   if (btnClearSearch) {
     btnClearSearch.addEventListener('click', () => {
       state.searchQuery = '';
       searchInput.value = '';
       btnClearSearch.classList.add('hidden');
       renderCalendarMatrix();
+      searchInput.focus();
     });
   }
+
+  // Atajos de teclado globales para enfocar el buscador protagonista (Ctrl+K, Ctrl+F o / en Calendario General)
+  document.addEventListener('keydown', e => {
+    if (state.activeTab !== 'calendar' || !searchInput) return;
+    const isInputTarget = e.target && e.target.matches && e.target.matches('input, select, textarea, [contenteditable="true"]');
+    if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'k' || e.key.toLowerCase() === 'f')) {
+      e.preventDefault();
+      searchInput.focus();
+      searchInput.select();
+    } else if (e.key === '/' && !isInputTarget && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      e.preventDefault();
+      searchInput.focus();
+      searchInput.select();
+    }
+  });
 
   // Botón Deshacer y atajo Ctrl+Z
   const btnUndo = document.getElementById('btnUndoAction');
