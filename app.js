@@ -342,6 +342,24 @@ function applyRolePermissionsUI() {
 // ============================================================================
 // 1. UTILIDADES DE BÚSQUEDA Y NORMALIZACIÓN (RUT Y TEXTO SIN TILDES)
 // ============================================================================
+function formatRutCL(rawRut) {
+  if (!rawRut) return '';
+  const str = String(rawRut).trim();
+  if (!str || str.toUpperCase() === 'N/A' || str.toUpperCase() === 'PENDIENTE') return str;
+  const clean = str.toUpperCase().replace(/[^0-9K]/g, '');
+  if (clean.length < 2) return str.toUpperCase();
+  const body = clean.slice(0, -1).replace(/^0+/, '') || '0';
+  const dv = clean.slice(-1);
+  if (!/^\d+$/.test(body)) return str.toUpperCase();
+  const formattedBody = body.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return `${formattedBody}-${dv}`;
+}
+
+function cleanRutForSearch(rawRut) {
+  if (!rawRut) return '';
+  return String(rawRut).toLowerCase().replace(/[^0-9k]/g, '');
+}
+
 function normalizeSearchText(str) {
   if (!str) return '';
   return String(str)
@@ -361,8 +379,14 @@ function getMemberSearchTokens(member) {
   const nameTokens = normalizeSearchText(member.name || '').split(' ').filter(Boolean);
   const offTokens = normalizeSearchText(member.official_name || '').split(' ').filter(Boolean);
   const baseNameTokens = offTokens.length >= nameTokens.length ? offTokens : nameTokens;
+  const rutFormatted = formatRutCL(member.rut || '');
+  const rutClean = cleanRutForSearch(member.rut || '');
+  const rutBody = rutClean.length > 1 ? rutClean.slice(0, -1) : '';
   const extraTokens = normalizeSearchText([
     member.rut,
+    rutFormatted,
+    rutClean,
+    rutBody,
     secCode,
     secHuman,
     member.estamento,
@@ -379,7 +403,9 @@ function matchesSearch(member, query) {
 
   const qTokens = qNorm.split(' ').filter(Boolean);
   const memberTokens = getMemberSearchTokens(member);
-  const rutClean = normalizeSearchText(member.rut || '').replace(/\s+/g, '');
+  const rutClean = cleanRutForSearch(member.rut || '');
+  const rutFormattedLower = formatRutCL(member.rut || '').toLowerCase();
+  const rutNoDotsWithHyphen = rutFormattedLower.replace(/\./g, '');
 
   const qTokenCounts = {};
   for (const qt of qTokens) {
@@ -387,7 +413,9 @@ function matchesSearch(member, query) {
   }
 
   return Object.entries(qTokenCounts).every(([qt, requiredCount]) => {
-    if (rutClean.includes(qt)) return true;
+    if (rutClean && (rutClean.includes(qt) || rutFormattedLower.includes(qt) || rutNoDotsWithHyphen.includes(qt))) {
+      return true;
+    }
     const matchCount = memberTokens.filter(mt => mt.includes(qt)).length;
     return matchCount >= requiredCount;
   });
@@ -500,6 +528,9 @@ function getStaffContractSummaryText(member) {
 
 function normalizeSectionInMemory(s) {
   if (!s) return;
+  if (s.rut) {
+    s.rut = formatRutCL(s.rut);
+  }
   if (!s.contract_start || !/^\d{4}-\d{2}-\d{2}$/.test(String(s.contract_start).trim())) {
     s.contract_start = DEFAULT_CONTRACT_START;
   } else {
@@ -1773,9 +1804,10 @@ function renderCalendarMatrix() {
 
       const periods = getStaffServicePeriods(member);
       const contractSummary = getStaffContractSummaryText(member);
+      const formattedRut = member.rut ? formatRutCL(member.rut) : 'Pendiente';
       const officialTooltip = member.official_name
-        ? `Nombre Oficial: ${member.official_name} | RUT: ${member.rut || 'Pendiente'} | Relación de Servicio: ${contractSummary} — Clic para abrir Ficha Anual`
-        : `RUT: ${member.rut || 'Pendiente'} | Relación de Servicio: ${contractSummary} — Clic para abrir Ficha Anual`;
+        ? `Nombre Oficial: ${member.official_name} | RUT: ${formattedRut} | Relación de Servicio: ${contractSummary} — Clic para abrir Ficha Anual`
+        : `RUT: ${formattedRut} | Relación de Servicio: ${contractSummary} — Clic para abrir Ficha Anual`;
 
       const monthStartISO = `${year}-${String(month).padStart(2, '0')}-01`;
       const monthEndISO = `${year}-${String(month).padStart(2, '0')}-${String(daysCount).padStart(2, '0')}`;
@@ -1808,7 +1840,7 @@ function renderCalendarMatrix() {
               ${incDot}
             </span>
           </div>
-          <div class="staff-rut-sub">${member.rut || 'RUT Pendiente'} · ${member.estamento || member.role}${contractTagHtml}</div>
+          <div class="staff-rut-sub">${member.rut ? formatRutCL(member.rut) : 'RUT Pendiente'} · ${member.estamento || member.role}${contractTagHtml}</div>
         </td>
         <td class="sticky-col-role">${secBadge}${tdmBadge}</td>`;
 
@@ -2056,7 +2088,7 @@ function renderTdmView() {
 
     rowsHtml += `<tr>
       <td><strong class="staff-name-main" data-staff-id="${item.staff_id}">${st.name}</strong></td>
-      <td style="font-family: 'JetBrains Mono', monospace; font-size:11.5px;">${st.rut || 'Pendiente'}</td>
+      <td style="font-family: 'JetBrains Mono', monospace; font-size:11.5px;">${st.rut ? formatRutCL(st.rut) : 'Pendiente'}</td>
       <td>${st.estamento || st.role} · <span class="badge badge-blue">${st.section}</span></td>
       <td><span class="badge badge-purple">${item.station}</span></td>
       <td>${statusInfo.badgeHtml}</td>
@@ -2258,7 +2290,7 @@ function renderDirectoryView() {
       <td><strong class="staff-name-main" data-staff-id="${s.id}">${s.name}</strong></td>
       <td>${s.official_name || '<em style="color:#94a3b8;">Sin cruce nominal completo</em>'}</td>
       <td style="font-family: 'JetBrains Mono', monospace; font-weight:600;">
-        ${s.rut || '<span style="color:#dc2626; font-weight:700;">Falta RUT</span>'}
+        ${s.rut ? formatRutCL(s.rut) : '<span style="color:#dc2626; font-weight:700;">Falta RUT</span>'}
       </td>
       <td>${s.estamento || s.role}</td>
       <td><span class="badge badge-blue" title="${SECTION_DESCRIPTIONS[s.section] || s.section}">${s.section}</span></td>
@@ -2358,7 +2390,7 @@ function renderAnalyticsView() {
 
     html += `<tr>
       <td><strong class="staff-name-main" data-staff-id="${s.id}">${s.name}</strong></td>
-      <td style="font-family: 'JetBrains Mono', monospace; font-size:11.5px;">${s.rut || 'Pendiente'}</td>
+      <td style="font-family: 'JetBrains Mono', monospace; font-size:11.5px;">${s.rut ? formatRutCL(s.rut) : 'Pendiente'}</td>
       <td>${s.estamento || s.role} · <span class="badge badge-blue">${s.section}</span></td>
       <td class="num-col">${m.L || '-'}</td>
       <td class="num-col">${m.N || '-'}</td>
@@ -2401,7 +2433,7 @@ function openStaffAnnualModal(staffId) {
   document.getElementById('annualStaffTitle').textContent =
     `${st.name} — Ficha Anual ${state.year}`;
   document.getElementById('annualStaffSubtitle').textContent =
-    `Nombre Legal: ${st.official_name || st.name} · RUT: ${st.rut || 'Pendiente'} · Estamento: ${st.estamento || st.role} · Área: ${SECTION_DESCRIPTIONS[st.section] || st.section} · Modalidad: ${st.modality} · Vigencia: ${getStaffContractSummaryText(st)}`;
+    `Nombre Legal: ${st.official_name || st.name} · RUT: ${st.rut ? formatRutCL(st.rut) : 'Pendiente'} · Estamento: ${st.estamento || st.role} · Área: ${SECTION_DESCRIPTIONS[st.section] || st.section} · Modalidad: ${st.modality} · Vigencia: ${getStaffContractSummaryText(st)}`;
 
   const m = computeStaffAnnualMetrics(staffId, state.year);
   document.getElementById('annualKpiGrid').innerHTML = `
@@ -2500,7 +2532,7 @@ function populateStaffSelect(selectId, selectedStaffId = null) {
     .filter(s => s.id === selectedStaffId || isStaffActiveInMonth(s, state.year, state.month))
     .sort((a, b) => a.name.localeCompare(b.name, 'es'));
   sel.innerHTML = sorted
-    .map(s => `<option value="${s.id}" ${s.id === selectedStaffId ? 'selected' : ''}>${s.name} — ${s.section} (${s.rut || 'Sin RUT'})</option>`)
+    .map(s => `<option value="${s.id}" ${s.id === selectedStaffId ? 'selected' : ''}>${s.name} — ${s.section} (${s.rut ? formatRutCL(s.rut) : 'Sin RUT'})</option>`)
     .join('');
 }
 
@@ -3178,7 +3210,7 @@ function openStaffModal(staffId = null) {
     document.getElementById('staffEditId').value = s.id;
     document.getElementById('staffEditName').value = s.name || '';
     document.getElementById('staffEditOfficialName').value = s.official_name || '';
-    document.getElementById('staffEditRut').value = s.rut || '';
+    document.getElementById('staffEditRut').value = s.rut ? formatRutCL(s.rut) : '';
     document.getElementById('staffEditRole').value = s.role || 'Profesional';
     document.getElementById('staffEditEstamento').value = s.estamento || '';
     document.getElementById('staffEditSection').value = OFFICIAL_SECTIONS.includes(s.section) ? s.section : 'ALU';
@@ -3204,7 +3236,8 @@ function saveStaffModal() {
   const existingId = document.getElementById('staffEditId').value;
   const name = document.getElementById('staffEditName').value.trim();
   const officialName = document.getElementById('staffEditOfficialName').value.trim().toUpperCase();
-  const rut = document.getElementById('staffEditRut').value.trim().toUpperCase();
+  const rawRut = document.getElementById('staffEditRut').value.trim();
+  const rut = rawRut ? formatRutCL(rawRut) : '';
   const role = document.getElementById('staffEditRole').value;
   const estamento = document.getElementById('staffEditEstamento').value.trim();
   let section = document.getElementById('staffEditSection').value;
@@ -3679,6 +3712,7 @@ function renderAuditView() {
   }
 
   const q = normalizeSearchText(state.auditSearch);
+  const qRutClean = cleanRutForSearch(state.auditSearch);
   const fUser = state.auditFilterUser;
   const fCat = state.auditFilterCategory;
 
@@ -3686,8 +3720,15 @@ function renderAuditView() {
     if (fUser !== 'all' && item.user_username !== fUser) return false;
     if (fCat !== 'all' && item.category !== fCat) return false;
     if (q) {
+      const staffMember = item.staff_id ? state.staff[item.staff_id] : null;
+      const staffRut = staffMember?.rut || '';
+      const staffRutClean = cleanRutForSearch(staffRut);
       const hay = normalizeSearchText([
         item.staff_name,
+        staffMember?.official_name,
+        staffRut,
+        formatRutCL(staffRut),
+        staffRutClean,
         item.user_name,
         item.authorized_by,
         item.action,
@@ -3695,8 +3736,14 @@ function renderAuditView() {
         item.before_val,
         item.after_val,
         item.detail
-      ].join(' '));
-      if (!hay.includes(q)) return false;
+      ].filter(Boolean).join(' '));
+      const hayRutClean = cleanRutForSearch([
+        staffRut,
+        item.before_val,
+        item.after_val,
+        item.detail
+      ].filter(Boolean).join(' '));
+      if (!hay.includes(q) && !(qRutClean && hayRutClean.includes(qRutClean))) return false;
     }
     return true;
   });
@@ -3877,7 +3924,7 @@ function exportCurrentMonthCSV() {
       const cols = [
         `"${m.name}"`,
         `"${m.official_name || ''}"`,
-        `"${m.rut || ''}"`,
+        `"${m.rut ? formatRutCL(m.rut) : ''}"`,
         `"${m.estamento || m.role}"`,
         `"${m.section}"`,
         `"${m.modality}"`
@@ -4471,6 +4518,14 @@ function bindEvents() {
     });
   }
   const staffRoleSelect = document.getElementById('staffEditRole');
+  const staffRutInput = document.getElementById('staffEditRut');
+  if (staffRutInput) {
+    staffRutInput.addEventListener('blur', () => {
+      if (staffRutInput.value.trim()) {
+        staffRutInput.value = formatRutCL(staffRutInput.value);
+      }
+    });
+  }
   if (staffRoleSelect) {
     staffRoleSelect.addEventListener('change', e => {
       const r = e.target.value;

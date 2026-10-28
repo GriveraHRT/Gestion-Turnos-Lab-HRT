@@ -211,10 +211,36 @@ def test_morales_and_search_in_node():
       console.error('FAIL: toma de muestra search did not isolate PMM over PMR');
       process.exit(1);
     }
-    // 5. RUT search with and without dots/hyphen
+    // 5. RUT search with and without dots/hyphen & automatic formatRutCL standardization
+    if (formatRutCL('18559854-3') !== '18.559.854-3' || formatRutCL('185598543') !== '18.559.854-3' || formatRutCL('21305600-k') !== '21.305.600-K' || formatRutCL('9876543-2') !== '9.876.543-2') {
+      console.error('FAIL: formatRutCL did not standardize RUT properly');
+      process.exit(1);
+    }
+    const testMemberUnformatted = {
+      id: 'camila_mejias_test',
+      name: 'Camila Mejías O.',
+      official_name: 'CAMILA IGNACIA MEJIAS ORELLANA',
+      rut: '18559854-3',
+      role: 'Profesional',
+      estamento: 'Tecnólogo Médico',
+      section: 'ALU'
+    };
+    normalizeSectionInMemory(testMemberUnformatted);
+    if (testMemberUnformatted.rut !== '18.559.854-3') {
+      console.error('FAIL: normalizeSectionInMemory did not standardize unformatted RUT:', testMemberUnformatted.rut);
+      process.exit(1);
+    }
+    for (const qVariant of ['18559854-3', '18.559.854-3', '185598543', '18559854', '18.559.854']) {
+      if (!matchesSearch(testMemberUnformatted, qVariant)) {
+        console.error('FAIL: matchesSearch failed for RUT query variant:', qVariant);
+        process.exit(1);
+      }
+    }
     const resRut1 = Object.values(staff).filter(m => matchesSearch(m, '185431746'));
     const resRut2 = Object.values(staff).filter(m => matchesSearch(m, '18.543.174-6'));
-    if (resRut1.length !== 1 || resRut2.length !== 1 || resRut1[0].id !== 'ociel_beltran') {
+    const resRut3 = Object.values(staff).filter(m => matchesSearch(m, '18543174-6'));
+    const resRut4 = Object.values(staff).filter(m => matchesSearch(m, '18543174'));
+    if (resRut1.length !== 1 || resRut2.length !== 1 || resRut3.length !== 1 || resRut4.length !== 1 || resRut1[0].id !== 'ociel_beltran') {
       console.error('FAIL: RUT search without punctuation failed', resRut1);
       process.exit(1);
     }
